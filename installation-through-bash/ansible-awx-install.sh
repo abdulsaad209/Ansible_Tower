@@ -79,4 +79,4 @@ systemctl restart docker
 echo "Running Job in Background"
 echo "Run ps -aux | grep ansible"
 echo "docker ps"
-nohup ansible-playbook -i /root/awx/installer/inventory /root/awx/installer/install.yml --vault-password-file /root/vault_password.txt > /root/awx_install.log 2>&1 &
+ansible-playbook -i /root/awx/installer/inventory /root/awx/installer/install.yml --vault-password-file /root/vault_password.txt
