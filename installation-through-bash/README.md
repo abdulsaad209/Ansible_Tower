@@ -45,3 +45,6 @@ Note: If after running script job get's failed then run below command again
 ansible-playbook -i /root/awx/installer/inventory /root/awx/installer/install.yml --vault-password-file /root/vault_password.txt
 
 
+
+
+
