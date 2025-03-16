@@ -3,7 +3,7 @@
 
 
 # Ansible_Tower
-**** Installation of Ansible Tower/AWX through Docker on ubuntu 22.04LTS *****
+**** Installation of Ansible Tower/AWX through Docker on CentOS/RedHat 7 *****
 
 ## If you are not able to use yum package manager then add base repo in repositories directory
 sudo curl https://raw.githubusercontent.com/sdhmh/enable-centos-7-repo/main/CentOS-Base.repo --output /etc/yum.repos.d/CentOS-Base.repo
