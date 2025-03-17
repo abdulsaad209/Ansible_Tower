@@ -1,6 +1,0 @@
-[prod:children]
-portfolio_web
-
-
-[portfolio_web]
-portfolio ansible_host=139.185.33.89
