@@ -1,0 +1,9 @@
+# tasks file for roles/webserver
+- name: Load RedHat-specific tasks
+  include_tasks: tasks/RedHat.yml
+  when: ansible_os_family == "RedHat"
+
+- name: Load Debian-specific tasks
+  include_tasks: tasks/Debian.yml
+  when: ansible_os_family == "Debian"
+

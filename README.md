@@ -1,9 +1,11 @@
+I will contine update this repo you can fork it! 
+
 ![image](https://github.com/user-attachments/assets/65cdf663-3537-4116-bb97-c52a0beefc5b)
 ![image](https://github.com/user-attachments/assets/f09822d0-c622-4a8e-99d8-7c3771792dd6)
 
 
 # Ansible_Tower
-**** Installation of Ansible Tower/AWX through Docker on ubuntu 22.04LTS *****
+**** Installation of Ansible Tower/AWX through Docker on CentOS/RedHat 7 *****
 
 ## If you are not able to use yum package manager then add base repo in repositories directory
 sudo curl https://raw.githubusercontent.com/sdhmh/enable-centos-7-repo/main/CentOS-Base.repo --output /etc/yum.repos.d/CentOS-Base.repo
