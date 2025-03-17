@@ -1,7 +1,0 @@
----
-- name: Deploy Web Server
-  hosts: webservers
-  become: yes
-  roles:
-    - webserver
-

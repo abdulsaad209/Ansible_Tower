@@ -1,4 +1,0 @@
----
-nginx_version: latest
-server_root: /var/www/html
-
