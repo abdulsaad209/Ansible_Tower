@@ -1,13 +1,8 @@
 # tasks file for roles/webserver
 ---
-- name: Install Nginx
-  apt:
-    name: nginx
-    state: present
-  notify: Restart Nginx
-
-- name: Deploy Website
-  template:
-    src: index.html.j2
-    dest: "{{ server_root }}/index.html"
-
+  
+- include: RedHat.yml
+  when: ansible_os_family == 'RedHat'
+  
+- include: Debian.yml
+  when: ansible_os_family == 'Debian'
