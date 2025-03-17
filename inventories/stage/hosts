@@ -1,0 +1,6 @@
+[webservers]
+web01 ansible_host=10.224.48.10 ansible_user=ubuntu
+
+[databases]
+db01 ansible_host=10.224.48.20 ansible_user=ubuntu
+
