@@ -1,6 +1,6 @@
 [webservers]
-web02 ansible_host=10.224.50.10 ansible_user=ubuntu
+web02 ansible_host=10.224.50.10 ansible_user=ansibleawx
 
 [databases]
-db02 ansible_host=10.224.50.20 ansible_user=ubuntu
+db02 ansible_host=10.224.50.20 ansible_user=ansibleawx
 
