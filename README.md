@@ -1,7 +1,8 @@
 ## You can Install Ansible Tower through Bash as well. 
 Please check the ![Bash Script](https://github.com/abdulsaad209/Ansible_Tower/tree/master/installation-through-bash).
 
-![image](https://github.com/user-attachments/assets/f888c922-9f9e-499e-bbe7-3f8a5ff752a5)
+
+![image](https://github.com/user-attachments/assets/3dcc2667-f155-4077-a593-dcc4ce9ad2fe)
 ![image](https://github.com/user-attachments/assets/f09822d0-c622-4a8e-99d8-7c3771792dd6)
 
 
