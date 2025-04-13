@@ -1,2 +1,38 @@
+# tasks file for roles/sssd
 ---
-# tasks file for sssd
+- name: Include installation tasks
+  include_tasks: packages.yml
+
+- name: Configure DNS
+  include_tasks: dns_entries.yml
+
+- name: Configure /etc/hosts file
+  include_tasks: hosts_entries.yml
+
+- name: Configure dhclient
+  include_tasks: dhcclient.yml
+
+- name: Add ops group into sudoers
+  include_tasks: sudoers.yml
+
+- name: Configure SSH
+  include_tasks: sshd_config.yml
+
+- name: Configure Kerberos
+  include_tasks: kerberos.yml
+
+- name: Configure sssd
+  include_tasks: sssd_config.yml
+
+- name: Removing kerberos cache and leave realm if its already joined
+  include_tasks: removing_cache_kerberos.yml
+
+- name: Join Active Directory
+  include_tasks: join_ad.yml
+
+- name: Restart Required Services
+  include_tasks: restart_services.yml
+
+- name: Join the server with AD Domain with Custom FQDN
+  include_tasks: join_dc.yml
+  

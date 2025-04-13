@@ -1,0 +1,34 @@
+---
+- name: Install required packages
+  yum:
+    name: "{{ item }}"
+    state: present
+  loop:
+    - epel-release
+    - expect
+    - python-pip
+    - sssd
+    - realmd
+    - krb5-workstation
+    - oddjob
+    - oddjob-mkhomedir
+    - adcli
+    - samba-common
+    - samba-common-tools
+    - samba-winbind
+    - samba-winbind-clients
+    - openldap-clients
+    - pam_krb5
+  register: package_installation
+
+- name: Installing pexpect package
+  shell:
+    cmd: pip install --upgrade pexpect --trusted-host pypi.python.org --trusted-host files.pythonhosted.org --trusted-host pypi.org
+
+- name: Display status of package installation
+  debug:
+    msg: "{{ item.item }} is successfully installed"
+  loop: "{{ package_installation.results }}"
+  when: item.changed
+  loop_control:
+    label: "{{ item.item }}"
