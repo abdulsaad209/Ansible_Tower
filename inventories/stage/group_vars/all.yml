@@ -1,0 +1,9 @@
+domain_name: "saad-corp-ad.saad.com"  # your AD Domain
+domain_short: "saad-corp-ad"          # your AD sub domain name
+realm_name: "SAAD-CORP-AD.SAAD.COM"   # Your realm name 
+DNS1_IP: "10.0.0.2"                   # Your DNS IP #1
+DNS2_IP: "10.0.0.3"                   # Your DNS IP #2
+group_name: "ops"                     # Your user's group
+admin_user: "admin"                   # Your AD admin user using which you will join the server with AD
+ou_in_zurple_corp_ad: "Prod"          # Your AD organizational Unit where you will store record of the joined servers
+bind_password: "<my-password>"        # Your AD admin user's password
