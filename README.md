@@ -2,7 +2,8 @@
 Please check the ![Bash Script](https://github.com/abdulsaad209/Ansible_Tower/tree/master/installation-through-bash).
 
 
-![image](https://github.com/user-attachments/assets/3dcc2667-f155-4077-a593-dcc4ce9ad2fe)
+![image](https://github.com/user-attachments/assets/f2c957b9-d1cf-4fcd-a866-4947c2b12d19)
+
 ![image](https://github.com/user-attachments/assets/f09822d0-c622-4a8e-99d8-7c3771792dd6)
 
 
