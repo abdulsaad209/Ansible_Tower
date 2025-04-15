@@ -4,7 +4,8 @@ Please check the ![Bash Script](https://github.com/abdulsaad209/Ansible_Tower/tr
 
 ![image](https://github.com/user-attachments/assets/f2c957b9-d1cf-4fcd-a866-4947c2b12d19)
 
-![image](https://github.com/user-attachments/assets/f09822d0-c622-4a8e-99d8-7c3771792dd6)
+![image](https://github.com/user-attachments/assets/c8dc1bdd-f4dd-47fc-9d47-df031eee529c)
+
 
 
 # Ansible_Tower
