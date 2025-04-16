@@ -5,7 +5,7 @@
 
 - name: Include CentOS 7-specific install task
   include_tasks: install_centos7.yml
-  when: ansible_distribution == "CentOS" and ansible_distribution_major_version == "7"
+  when: ansible_distribution == "CentOS"
 
 - name: Include Windows-specific install task
   include_tasks: install_windows.yml
