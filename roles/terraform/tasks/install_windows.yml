@@ -1,0 +1,22 @@
+---
+- name: Download Terraform zip for Windows
+  win_get_url:
+    url: https://releases.hashicorp.com/terraform/1.11.4/terraform_1.11.4_windows_amd64.zip
+    dest: C:\Windows\Temp\terraform.zip
+
+- name: Ensure Terraform directory exists
+  win_file:
+    path: C:\terraform
+    state: directory
+
+- name: Extract Terraform
+  win_unzip:
+    src: C:\Windows\Temp\terraform.zip
+    dest: C:\terraform
+
+- name: Add Terraform to system PATH
+  win_environment:
+    name: Path
+    state: present
+    value: C:\terraform
+    separator: ";"
