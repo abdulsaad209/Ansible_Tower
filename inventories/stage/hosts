@@ -3,8 +3,10 @@ webservers
 databases
 
 [webservers]
-web01 ansible_host=192.168.100.20 ansible_user=ansibleawx
+web01               ansible_host=192.168.100.20
 
-[databases]
-db01 ansible_host=192.168.100.30 ansible_user=ansibleawx
+#[databases]
+#db01               ansible_host=192.168.100.30
 
+[awx]
+ansible-awx          ansible_host=192.168.100.32

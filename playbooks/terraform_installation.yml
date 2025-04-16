@@ -1,0 +1,6 @@
+---
+- name: Install Terraform on all platforms
+  hosts: all
+  become: yes
+  roles:
+    - terraform
