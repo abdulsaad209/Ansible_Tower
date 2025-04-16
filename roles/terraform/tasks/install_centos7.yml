@@ -2,15 +2,13 @@
 - name: Add HashiCorp YUM repo
   yum_repository:
     name: hashicorp
-    description: "HashiCorp Stable - $basearch"
-    baseurl: https://rpm.releases.hashicorp.com/RHEL/hashicorp.repo
+    description: "HashiCorp Stable - x86_64"
+    baseurl: https://rpm.releases.hashicorp.com/RHEL/7/x86_64/stable
+    gpgcheck: yes
+    gpgkey: https://rpm.releases.hashicorp.com/gpg
     enabled: yes
 
-- name: Installing Terraform
+- name: Install Terraform
   yum:
-    name: "{{ item }}"
+    name: terraform
     state: present
-  loop:
-    - yum-utils
-    - terraform
-  
