@@ -1,13 +1,13 @@
 [stage:children]
 webservers
-databases
+#databases
 awx
 
 [webservers]
 web01               ansible_host=192.168.100.20
 
-[databases]
-db01               ansible_host=192.168.100.30
+#[databases]
+#db01               ansible_host=192.168.100.30
 
 [awx]
 ansible-awx          ansible_host=192.168.100.32
