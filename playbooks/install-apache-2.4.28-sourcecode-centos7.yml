@@ -3,4 +3,4 @@
   become: yes
   tasks:
     - name: Installing Apache
-      script: files/install-apache-2.4.28-source-code-centos7.sh
+      script: bin/install-apache-2.4.28-source-code-centos7.sh
