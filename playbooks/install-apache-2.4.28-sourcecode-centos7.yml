@@ -2,7 +2,18 @@
   hosts: centos
   become: yes
   tasks:
-    - name: Run script from bin directory
-      shell: "{{ playbook_dir }}/bin/install-apache-2.4.28-source-code-centos7.sh"
-      args:
-        executable: /bin/bash
+    - name: Debug playbook_dir and script path
+      debug:
+        msg: |
+          playbook_dir: {{ playbook_dir }}
+          script path: {{ playbook_dir }}/../bin/install-apache-2.4.28-source-code-centos7.sh
+          absolute path: {{ lookup('env', 'PWD') }}
+
+    - name: List project directory contents
+      command: ls -la {{ playbook_dir }}/..
+      register: dir_list
+      changed_when: false
+
+    - name: Show directory listing
+      debug:
+        var: dir_list.stdout_lines
