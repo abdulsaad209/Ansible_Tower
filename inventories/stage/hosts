@@ -1,9 +1,13 @@
 [stage:children]
 webservers
 awx
+centos
 
 [webservers]
 web01               ansible_host=192.168.100.20
 
 [awx]
 ansible-awx         ansible_host=192.168.100.32
+
+[centos]
+centos7             ansible_host=192.168.100.34

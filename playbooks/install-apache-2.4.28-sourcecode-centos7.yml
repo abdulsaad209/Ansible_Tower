@@ -1,0 +1,8 @@
+- name: Install Apache 2.4.28 From Source Code
+  hosts: centos
+  become: yes
+  tasks:
+    - name: Run script from bin directory
+      shell: "{{ playbook_dir }}/../bin/install-apache-2.4.28-source-code-centos7.sh"
+      args:
+        executable: /bin/bash
