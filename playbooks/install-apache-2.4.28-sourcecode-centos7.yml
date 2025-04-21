@@ -2,11 +2,5 @@
   hosts: centos
   become: yes
   tasks:
-    - name: Copy script to remote
-      copy:
-        src: files/install-apache-2.4.28-source-code-centos7.sh
-        dest: /tmp/install-apache.sh
-        mode: '0755'
-    
-    - name: Execute script
-      command: /tmp/install-apache.sh
+    - name: Execute script directly from AWX
+      script: files/install-apache-2.4.28-source-code-centos7.sh
