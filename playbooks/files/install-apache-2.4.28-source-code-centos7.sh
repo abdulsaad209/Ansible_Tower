@@ -1,8 +1,13 @@
 #!/bin/bash 
+set -x  # Enable debugging
+echo "Starting Apache installation..."
+
+echo "Install Necessary Packages and Dependencies"
 yum groupinstall " Development Tools"  -y
 
 yum install expat-devel pcre pcre-devel openssl-devel -y
 
+echo "Getting apache, apr, apr-utils archives"
 wget https://github.com/apache/httpd/archive/2.4.28.tar.gz -O httpd-2.4.28.tar.gz
 
 wget https://github.com/apache/apr/archive/1.6.2.tar.gz -O apr-1.6.2.tar.gz
@@ -18,16 +23,21 @@ mv apr-util-1.6.0 httpd-2.4.28/srclib/apr-util
 
 cd httpd-2.4.28
 
+echo "building packages"
 ./buildconf
 
+echo "configuring packages"
 ./configure --enable-ssl --enable-so --with-mpm=event --with-included-apr --prefix=/usr/local/httpd
 
+echo "Installing Apache"
 make
 
 make install
 
+echo "Adding apache into Path"
 echo "export PATH=/usr/local/httpd/bin:$PATH" > /etc/profile.d/httpd.sh
 
+echo "Adding apache into system daemon"
 cat << 'EOF' > /etc/systemd/system/httpd.service
 [Unit]
 Description=The Apache HTTP Server
@@ -48,3 +58,5 @@ EOF
 systemctl daemon-reload
 
 systemctl enable --now httpd 
+
+echo "Installation complete"
