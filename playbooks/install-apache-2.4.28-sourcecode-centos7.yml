@@ -2,5 +2,5 @@
   hosts: centos
   become: yes
   tasks:
-    - name: Execute script directly from AWX
+    - name: Installing Apache
       script: files/install-apache-2.4.28-source-code-centos7.sh
