@@ -1,16 +1,3 @@
-
-#- name: Download and install the HashiCorp .repo file
-#  shell: |
-#    yum-config-manager --add-repo https://rpm.releases.hashicorp.com/RHEL/hashicorp.repo
-
-#- name: Install Terraform
-#  yum:
-#    name: "{{ item }}"
-#    state: present
-#  loop:
-#    - yum-utils
-#    - terraform
-
 ---
 - name: Download Terraform RPM
   get_url:
