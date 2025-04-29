@@ -1,5 +1,14 @@
 ---
 
+- name: Create empty vars file if not present
+  copy:
+    dest: /etc/openvpn/easy-rsa/vars
+    content: ""
+    force: no  # Avoid overwriting if file exists
+    owner: root
+    group: root
+    mode: '0644'
+
 - name: Configure vars file for key generation
   blockinfile:
     path: /etc/openvpn/easy-rsa/vars
