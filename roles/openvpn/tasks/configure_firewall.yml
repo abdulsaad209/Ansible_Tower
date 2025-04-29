@@ -1,0 +1,45 @@
+---
+
+- name: Enable IP forwarding
+  sysctl:
+    name: net.ipv4.ip_forward
+    value: '1'
+    state: present
+    reload: yes
+
+- name: Install iptables-services
+  yum:
+    name: iptables-services
+    state: present
+
+- name: Mask firewalld and enable iptables
+  systemd:
+    name: "{{ item }}"
+    enabled: true
+    masked: "{{ item == 'firewalld' }}"
+    state: "{{ 'stopped' if item == 'firewalld' else 'started' }}"
+  loop:
+    - firewalld
+    - iptables
+
+- name: Flush iptables
+  command: iptables -F
+
+- name: Add MASQUERADE rule for VPN traffic
+  command: iptables -t nat -A POSTROUTING -s 10.8.0.0/24 -o eth0 -j MASQUERADE
+  args:
+    warn: false
+
+- name: Save iptables rules
+  command: iptables-save
+  register: iptables_rules
+
+- name: Persist iptables config
+  copy:
+    content: "{{ iptables_rules.stdout }}"
+    dest: /etc/sysconfig/iptables
+
+- name: Restart network
+  systemd:
+    name: network
+    state: restarted

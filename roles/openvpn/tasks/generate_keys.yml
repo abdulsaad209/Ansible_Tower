@@ -1,0 +1,43 @@
+---
+
+- name: Configure vars file for key generation
+  blockinfile:
+    path: /etc/openvpn/easy-rsa/vars
+    marker: "# {mark} ANSIBLE MANAGED BLOCK"
+    block: |
+      export KEY_COUNTRY="US"
+      export KEY_PROVINCE="CA"
+      export KEY_CITY="SanFrancisco"
+      export KEY_ORG="Zurple"
+      export KEY_EMAIL="abdul.quddos@z57.com"
+      export KEY_OU="server"
+      export KEY_NAME="EasyRSA"
+
+- name: Copy openssl.cnf
+  copy:
+    src: /etc/openvpn/easy-rsa/openssl-1.0.0.cnf
+    dest: /etc/openvpn/easy-rsa/openssl.cnf
+    remote_src: yes
+
+- name: Initialize PKI
+  shell: |
+    cd /etc/openvpn/easy-rsa && \
+    source ./vars && \
+    ./clean-all && \
+    ./build-ca --batch && \
+    ./build-key-server server --batch && \
+    ./build-key client --batch && \
+    ./build-dh
+  args:
+    creates: /etc/openvpn/easy-rsa/keys/ca.crt
+
+- name: Copy server certs and keys
+  copy:
+    remote_src: yes
+    src: "/etc/openvpn/easy-rsa/keys/{{ item }}"
+    dest: "/etc/openvpn/{{ item }}"
+  loop:
+    - dh2048.pem
+    - ca.crt
+    - server.crt
+    - server.key

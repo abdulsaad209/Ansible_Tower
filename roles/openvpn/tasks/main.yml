@@ -1,2 +1,22 @@
 ---
-# tasks file for openvpn
+
+#- name: Enable EPEL Repo
+#  include_tasks: enable_epel.yml
+
+- name: Install OpenVPN and Easy-RSA
+  include_tasks: install_openvpn.yml
+
+- name: Generate Keys and Certificates
+  include_tasks: generate_keys.yml
+
+- name: Configure OpenVPN Server
+  include_tasks: configure_server.yml
+
+- name: Configure Firewall and IP Forwarding
+  include_tasks: configure_firewall.yml
+
+- name: Start and Enable OpenVPN Service
+  include_tasks: start_service.yml
+
+- name: Generate Client Configuration
+  include_tasks: generate_client_ovpn.yml

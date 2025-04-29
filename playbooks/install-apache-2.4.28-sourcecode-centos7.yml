@@ -1,6 +1,6 @@
 - name: Install Apache 2.4.28 From Source Code
   hosts: centos
-  become: yes
+  become: true
   tasks:
     - name: Installing Apache
       script: bin/install-apache-2.4.28-source-code-centos7.sh

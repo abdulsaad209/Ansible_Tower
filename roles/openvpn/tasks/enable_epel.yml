@@ -1,0 +1,16 @@
+---
+
+- name: Copy EPEL RPM
+  copy:
+    src: epel-release-7-9.noarch.rpm
+    dest: /tmp/epel-release-7-9.noarch.rpm
+
+- name: Install EPEL Release
+  command: rpm -ihv /tmp/epel-release-7-9.noarch.rpm
+  args:
+    creates: /etc/yum.repos.d/epel.repo
+
+- name: Update all packages
+  yum:
+    name: '*'
+    state: latest

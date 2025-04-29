@@ -1,0 +1,21 @@
+---
+
+- name: Install OpenVPN and easy-rsa
+  yum:
+    name:
+      - openvpn
+      - easy-rsa
+    state: present
+
+- name: Create easy-rsa directory
+  file:
+    path: /etc/openvpn/easy-rsa/keys
+    state: directory
+    mode: 0755
+    recurse: yes
+
+- name: Copy easy-rsa scripts
+  copy:
+    src: /usr/share/easy-rsa/2.0/
+    dest: /etc/openvpn/easy-rsa/
+    remote_src: yes
