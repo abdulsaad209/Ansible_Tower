@@ -24,7 +24,7 @@
 
 - name: Copy openssl.cnf
   copy:
-    src: /etc/openvpn/easy-rsa/openssl-1.0.0.cnf
+    src: /etc/openvpn/easy-rsa/openssl-easyrsa.cnf
     dest: /etc/openvpn/easy-rsa/openssl.cnf
     remote_src: yes
 
