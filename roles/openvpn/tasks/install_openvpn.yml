@@ -12,6 +12,26 @@
     url: https://github.com/OpenVPN/easy-rsa-old/archive/2.3.3.tar.gz
     dest: /tmp/easyrsa-2.3.3.tar.gz
 
+- name: Extract Easy-RSA 2.3.3
+  unarchive:
+    src: /tmp/easyrsa-2.3.3.tar.gz
+    dest: /etc/openvpn/
+    remote_src: yes
+
+- name: Copy Easy-RSA files to expected location
+  copy:
+    src: /etc/openvpn/easy-rsa-old-2.3.3/easy-rsa/2.0/
+    dest: /etc/openvpn/easy-rsa/
+    remote_src: yes
+  notify: Set permissions for easy-rsa
+
+- name: Set permissions for easy-rsa
+  file:
+    path: /etc/openvpn/easy-rsa/
+    state: directory
+    mode: '0755'
+    recurse: yes
+          
 - name: Create easy-rsa directory
   file:
     path: /etc/openvpn/easy-rsa/keys
