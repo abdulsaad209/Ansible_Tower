@@ -39,11 +39,13 @@
     chdir: /etc/openvpn/easy-rsa
   become: true
 
-- name: Build CA certificate
-  command: ./build-ca --batch
+- name: Initialize the CA (create ca.crt and ca.key)
+  shell: |
+    source ./vars
+    ./pkitool --initca
   args:
     chdir: /etc/openvpn/easy-rsa
-  become: true
+
 
 - name: Build server key
   shell: |
