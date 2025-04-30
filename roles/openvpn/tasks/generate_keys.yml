@@ -55,9 +55,9 @@
 - name: Clean all existing keys
   shell: | 
     source /etc/openvpn/easy-rsa/vars
-    /etc/openvpn/easy-rsa/clean-all
-    /etc/openvpn/easy-rsa/build-ca
-    /etc/openvpn/easy-rsa/build-key-server server
+    /etc/openvpn/easy-rsa/clean-all --batch
+    /etc/openvpn/easy-rsa/build-ca --batch
+    /etc/openvpn/easy-rsa/build-key-server server --batch
     /etc/openvpn/easy-rsa/build-dh
   args:
     chdir: /etc/openvpn/easy-rsa
