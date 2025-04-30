@@ -1,6 +1,6 @@
 ---
 - name: OpenVPN Installation and Configuration on CentOS 7
-  hosts: ansible-awx
+  hosts: centos7
   become: true
 
   roles:
