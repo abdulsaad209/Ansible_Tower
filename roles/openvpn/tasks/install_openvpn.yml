@@ -4,8 +4,13 @@
   yum:
     name:
       - openvpn
-      - easy-rsa
+      - wget
     state: present
+
+- name: Download Easy-RSA 2.3.3
+  get_url:
+    url: https://github.com/OpenVPN/easy-rsa-old/archive/2.3.3.tar.gz
+    dest: /tmp/easyrsa-2.3.3.tar.gz
 
 - name: Create easy-rsa directory
   file:
