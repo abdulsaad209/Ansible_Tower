@@ -62,7 +62,7 @@
     src: "/etc/openvpn/easy-rsa/keys/{{ item }}"
     dest: "/etc/openvpn/{{ item }}"
   loop:
-    - dh2048.pem
+    - 01.pem
     - ca.crt
     - server.crt
     - server.key
