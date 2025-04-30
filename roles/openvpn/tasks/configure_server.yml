@@ -2,7 +2,7 @@
 
 - name: Copy OpenVPN server config
   copy:
-    src: /usr/share/doc/openvpn-2.4.1/sample/sample-config-files/server.conf
+    src: /usr/share/doc/openvpn-2.4.12/sample/sample-config-files/server.conf
     dest: /etc/openvpn/server.conf
     remote_src: yes
 
