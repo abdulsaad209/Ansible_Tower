@@ -39,7 +39,7 @@
     chdir: /etc/openvpn/easy-rsa
 
 - name: Build server key
-  shell: source ./vars && ./build-key-server server
+  shell: source ./vars && ./build-key-server server --batch
   args:
     chdir: /etc/openvpn/easy-rsa
 
