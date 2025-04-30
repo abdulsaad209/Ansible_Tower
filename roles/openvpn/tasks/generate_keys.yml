@@ -28,6 +28,11 @@
     dest: /etc/openvpn/easy-rsa/openssl.cnf
     remote_src: yes
 
+- name: Ensure clean-all is executable
+  file:
+    path: /etc/openvpn/easy-rsa/clean-all
+    mode: '0755'
+
 - name: Clean all existing keys
   command: ./clean-all
   args:
