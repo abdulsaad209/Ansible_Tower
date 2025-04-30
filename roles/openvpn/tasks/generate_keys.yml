@@ -28,17 +28,31 @@
     dest: /etc/openvpn/easy-rsa/openssl.cnf
     remote_src: yes
 
-- name: Initialize PKI
-  shell: |
-    cd /etc/openvpn/easy-rsa && \
-    source ./vars && \
-    ./clean-all && \
-    ./build-ca --batch && \
-    ./build-key-server server --batch && \
-    ./build-key client --batch && \
-    ./build-dh
+- name: Clean all existing keys
+  command: ./clean-all
   args:
-    creates: /etc/openvpn/easy-rsa/keys/ca.crt
+    chdir: /etc/openvpn/easy-rsa
+
+- name: Build CA certificate
+  command: ./build-ca --batch
+  args:
+    chdir: /etc/openvpn/easy-rsa
+
+- name: Build server key
+  command: ./build-key-server server --batch
+  args:
+    chdir: /etc/openvpn/easy-rsa
+
+- name: Build client key
+  command: ./build-key client --batch
+  args:
+    chdir: /etc/openvpn/easy-rsa
+
+- name: Generate Diffie-Hellman parameters
+  command: ./build-dh
+  args:
+    chdir: /etc/openvpn/easy-rsa
+
 
 - name: Copy server certs and keys
   copy:
