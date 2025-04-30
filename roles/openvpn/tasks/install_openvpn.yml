@@ -31,7 +31,7 @@
     state: directory
     mode: '0755'
     recurse: yes
-          
+
 - name: Create easy-rsa directory
   file:
     path: /etc/openvpn/easy-rsa/keys
