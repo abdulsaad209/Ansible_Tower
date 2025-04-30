@@ -46,7 +46,7 @@
     chdir: /etc/openvpn/easy-rsa
 
 - name: Build client key
-  command: ./build-key client --batch
+  command: ./pkitool --batch client
   args:
     chdir: /etc/openvpn/easy-rsa
 
