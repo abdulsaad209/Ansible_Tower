@@ -9,7 +9,15 @@
     group: root
     mode: '0644'
 
-- name: Configure vars file for key generation
+- name: Comment out conflicting KEY_* values
+  lineinfile:
+    path: /etc/openvpn/easy-rsa/vars
+    regexp: '^export (KEY_COUNTRY|KEY_PROVINCE|KEY_CITY|KEY_ORG|KEY_EMAIL|KEY_OU|KEY_NAME)='
+    line: '# \g<0>'
+    backrefs: yes
+  notify: restart openvpn  # Optional, if needed
+
+- name: Insert custom OpenVPN key parameters
   blockinfile:
     path: /etc/openvpn/easy-rsa/vars
     marker: "# {mark} ANSIBLE MANAGED BLOCK"
@@ -34,7 +42,12 @@
     mode: '0755'
 
 - name: Clean all existing keys
-  command: ./clean-all
+  shell: | 
+    source /etc/openvpn/easy-rsa/vars
+    /etc/openvpn/easy-rsa/clean-all
+    /etc/openvpn/easy-rsa/build-ca
+    /etc/openvpn/easy-rsa/build-key-server server
+    /etc/openvpn/easy-rsa/build-dh
   args:
     chdir: /etc/openvpn/easy-rsa
   become: true
@@ -71,11 +84,5 @@
 - name: Copy server certs and keys
   copy:
     remote_src: yes
-    src: "/etc/openvpn/easy-rsa/keys/{{ item }}"
-    dest: "/etc/openvpn/{{ item }}"
-  loop:
-    - 01.pem
-    - ca.crt
-    - server.crt
-    - server.key
-  become: true
+    src: "/etc/openvpn/easy-rsa/keys/"
+    dest: "/etc/openvpn/"
