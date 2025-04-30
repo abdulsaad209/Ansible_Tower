@@ -7,6 +7,13 @@
       - wget
     state: present
 
+- name: Create easy-rsa directory
+  file:
+    path: /etc/openvpn/easy-rsa
+    state: directory
+    mode: 0755
+    recurse: yes
+    
 - name: Download Easy-RSA 2.3.3
   get_url:
     url: https://github.com/OpenVPN/easy-rsa-old/archive/2.3.3.tar.gz
@@ -18,13 +25,6 @@
     dest: /etc/openvpn/
     remote_src: yes
 
-- name: Create easy-rsa directory
-  file:
-    path: /etc/openvpn/easy-rsa
-    state: directory
-    mode: 0755
-    recurse: yes
-    
 - name: Copy Easy-RSA files to expected location
   copy:
     src: /etc/openvpn/easy-rsa-old-2.3.3/easy-rsa/2.0/
