@@ -15,7 +15,6 @@
     regexp: '^export (KEY_COUNTRY|KEY_PROVINCE|KEY_CITY|KEY_ORG|KEY_EMAIL|KEY_OU|KEY_NAME)='
     line: '# \g<0>'
     backrefs: yes
-  notify: restart openvpn  # Optional, if needed
 
 - name: Insert custom OpenVPN key parameters
   blockinfile:
