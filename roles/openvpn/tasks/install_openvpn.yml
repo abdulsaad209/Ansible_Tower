@@ -21,6 +21,6 @@
 
 - name: Copy easy-rsa scripts
   copy:
-    src: /usr/share/easy-rsa/3.0/
+    src: /root/easy-rsa-old-2.3.3/easy-rsa/2.0/*
     dest: /etc/openvpn/easy-rsa/
     remote_src: yes
