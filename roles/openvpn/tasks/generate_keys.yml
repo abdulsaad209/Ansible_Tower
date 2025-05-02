@@ -97,7 +97,9 @@
   become: true
 
 - name: Generate Diffie-Hellman parameters
-  command: ./build-dh
+  shell: |
+    source ./vars
+    ./build-dh
   args:
     chdir: /etc/openvpn/easy-rsa
   become: true
