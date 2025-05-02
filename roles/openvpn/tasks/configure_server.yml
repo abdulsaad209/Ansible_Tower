@@ -16,8 +16,8 @@
   loop:
     - { regex: 'dh\s+', line: 'dh dh2048.pem' }
     - { regex: 'push\s+"redirect-gateway', line: 'push "redirect-gateway def1 bypass-dhcp"' }
-    - { regex: 'push\s+"dhcp-option DNS', line: 'push "dhcp-option DNS 8.8.8.8"' }
-    - { regex: 'push\s+"dhcp-option DNS', line: 'push "dhcp-option DNS 8.8.4.4"' }
+    - { regex: 'push\s+"dhcp-option DNS 8\.8\.8\.8', line: 'push "dhcp-option DNS 8.8.8.8"' }
+    - { regex: 'push\s+"dhcp-option DNS 8\.8\.4\.4', line: 'push "dhcp-option DNS 8.8.4.4"' }
     - { regex: 'user\s+', line: 'user nobody' }
     - { regex: 'group\s+', line: 'group nobody' }
 
