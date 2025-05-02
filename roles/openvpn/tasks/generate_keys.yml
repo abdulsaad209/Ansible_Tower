@@ -12,7 +12,6 @@
     - /etc/openvpn/easy-rsa/build-ca
     - /etc/openvpn/easy-rsa/build-key-server
     - /etc/openvpn/easy-rsa/build-dh
-    - /etc/openvpn/easy-rsa/pkitool
   become: true
 
 - name: Comment out conflicting KEY_* values
@@ -79,6 +78,7 @@
     /etc/openvpn/easy-rsa/pkitool --initca
   args:
     chdir: /etc/openvpn/easy-rsa
+  become: true
 
 
 - name: Build server key
