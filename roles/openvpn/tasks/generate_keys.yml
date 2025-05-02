@@ -66,16 +66,44 @@
   shell: | 
     source ./vars
     ./clean-all --batch
-    ./build-ca --batch
-    ./build-key-server server --batch
-    ./build-key client --batch
-    ./build-dh --batch
+
   args:
     chdir: /etc/openvpn/easy-rsa
   become: true
+
+- name: Initialize the CA (create ca.crt and ca.key)
+  shell: |
+    source ./vars
+    ./pkitool --initca
+  args:
+    chdir: /etc/openvpn/easy-rsa
+  become: true
+
+
+- name: Build server key
+  shell: |
+    source ./vars
+    ./pkitool --batch --server server
+  args:
+    chdir: /etc/openvpn/easy-rsa
+  become: true
+
+- name: Build client key
+  command: ./pkitool --batch client
+  args:
+    chdir: /etc/openvpn/easy-rsa
+  become: true
+
+- name: Generate Diffie-Hellman parameters
+  command: ./build-dh
+  args:
+    chdir: /etc/openvpn/easy-rsa
+  become: true
+
 
 - name: Copy server certs and keys
   copy:
     remote_src: yes
     src: "/etc/openvpn/easy-rsa/keys/"
     dest: "/etc/openvpn/"
+    
