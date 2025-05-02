@@ -5,8 +5,8 @@
     dest: /etc/openvpn/easy-rsa/vars
     content: ""
     force: no  # Avoid overwriting if file exists
-    owner: root
-    group: root
+    owner: ansibleawx
+    group: ansibleawx
     mode: '777'
 
 - name: Comment out conflicting KEY_* values
