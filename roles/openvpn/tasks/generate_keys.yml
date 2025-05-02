@@ -76,7 +76,7 @@
 - name: Initialize the CA (create ca.crt and ca.key)
   shell: |
     source ./vars
-    ./pkitool --initca
+    /etc/openvpn/easy-rsa/pkitool --initca
   args:
     chdir: /etc/openvpn/easy-rsa
 
@@ -84,13 +84,13 @@
 - name: Build server key
   shell: |
     source ./vars
-    ./pkitool --batch --server server
+    /etc/openvpn/easy-rsa/pkitool --batch --server server
   args:
     chdir: /etc/openvpn/easy-rsa
   become: true
 
 - name: Build client key
-  command: ./pkitool --batch client
+  command: /etc/openvpn/easy-rsa/pkitool --batch client
   args:
     chdir: /etc/openvpn/easy-rsa
   become: true
