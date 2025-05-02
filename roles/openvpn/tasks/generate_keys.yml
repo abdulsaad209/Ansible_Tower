@@ -49,7 +49,7 @@
 
 - name: Ensure clean-all is executable
   file:
-    path: /etc/openvpn/easy-rsa/clean-all
+    path: /etc/openvpn/easy-rsa/
     mode: '0755'
 
 - name: Clean all existing keys
