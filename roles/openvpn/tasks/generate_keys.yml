@@ -65,10 +65,10 @@
 - name: Clean all existing keys
   shell: | 
     source /etc/openvpn/easy-rsa/vars
-    /etc/openvpn/easy-rsa/clean-all --batch
-    /etc/openvpn/easy-rsa/build-ca --batch
-    /etc/openvpn/easy-rsa/build-key-server server --batch
-    /etc/openvpn/easy-rsa/build-dh --batch
+    ./clean-all --batch
+    ./build-ca --batch
+    ./build-key-server server --batch
+    ./build-dh --batch
   args:
     chdir: /etc/openvpn/easy-rsa
   become: true
@@ -85,13 +85,13 @@
 - name: Build server key
   shell: |
     source ./vars
-    /etc/openvpn/easy-rsa/pkitool --batch --server server
+    ./pkitool --batch --server server
   args:
     chdir: /etc/openvpn/easy-rsa
   become: true
 
 - name: Build client key
-  command: /etc/openvpn/easy-rsa/pkitool --batch client
+  command: ./pkitool --batch client
   args:
     chdir: /etc/openvpn/easy-rsa
   become: true
