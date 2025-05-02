@@ -6,18 +6,18 @@
     dest: /etc/openvpn/server.conf
     remote_src: yes
 
-- name: Uncomment and set OpenVPN server config lines
+- name: Uncomment specific lines in OpenVPN config
   replace:
     path: /etc/openvpn/server.conf
-    regexp: '^;?\s*{{ item.key }}.*'
-    replace: '{{ item.line }}'
+    regexp: '^;?\s*{{ item }}'
+    replace: '{{ item }}'
   loop:
-    - { key: 'dh', line: 'dh dh2048.pem' }
-    - { key: 'push "redirect-gateway', line: 'push "redirect-gateway def1 bypass-dhcp"' }
-    - { key: 'push "dhcp-option DNS 8.8.8.8"', line: 'push "dhcp-option DNS 8.8.8.8"' }
-    - { key: 'push "dhcp-option DNS 8.8.4.4"', line: 'push "dhcp-option DNS 8.8.4.4"' }
-    - { key: 'user nobody', line: 'user nobody' }
-    - { key: 'group nobody', line: 'group nobody' }
+    - 'dh dh2048.pem'
+    - 'push "redirect-gateway def1 bypass-dhcp"'
+    - 'push "dhcp-option DNS 8.8.8.8"'
+    - 'push "dhcp-option DNS 8.8.4.4"'
+    - 'user nobody'
+    - 'group nobody'
 
 - name: Comment out tls-auth line
   replace:
