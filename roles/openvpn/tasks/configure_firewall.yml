@@ -12,15 +12,19 @@
     name: iptables-services
     state: present
 
-- name: Mask firewalld and enable iptables
+- name: Mask and stop firewalld
   systemd:
-    name: "{{ item }}"
+    name: firewalld
+    enabled: false
+    masked: true
+    state: stopped
+  ignore_errors: true  # Prevent failure if firewalld is already masked or broken
+
+- name: Enable and start iptables
+  systemd:
+    name: iptables
     enabled: true
-    masked: "{{ item == 'firewalld' }}"
-    state: "{{ 'stopped' if item == 'firewalld' else 'started' }}"
-  loop:
-    - firewalld
-    - iptables
+    state: started
 
 - name: Flush iptables
   command: iptables -F
@@ -38,6 +42,9 @@
   copy:
     content: "{{ iptables_rules.stdout }}"
     dest: /etc/sysconfig/iptables
+    owner: root
+    group: root
+    mode: '0644'
 
 - name: Restart network
   systemd:
