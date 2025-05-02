@@ -6,19 +6,18 @@
     dest: /etc/openvpn/server.conf
     remote_src: yes
 
-- name: Modify server.conf for basic config
-  lineinfile:
+- name: Uncomment and set OpenVPN server config lines
+  replace:
     path: /etc/openvpn/server.conf
-    regexp: "{{ item.regexp }}"
-    line: "{{ item.line }}"
-    state: present
+    regexp: '^;?\s*{{ item.key }}.*'
+    replace: '{{ item.line }}'
   loop:
-    - { regexp: '^;?dh ', line: 'dh dh2048.pem' }
-    - { regexp: '^;?push "redirect-gateway', line: 'push "redirect-gateway def1 bypass-dhcp"' }
-    - { regexp: '^;?push "dhcp-option DNS 8.8.8.8"', line: 'push "dhcp-option DNS 8.8.8.8"' }
-    - { regexp: '^;?push "dhcp-option DNS 8.8.4.4"', line: 'push "dhcp-option DNS 8.8.4.4"' }
-    - { regexp: '^;?user nobody', line: 'user nobody' }
-    - { regexp: '^;?group nobody', line: 'group nobody' }
+    - { key: 'dh', line: 'dh dh2048.pem' }
+    - { key: 'push "redirect-gateway', line: 'push "redirect-gateway def1 bypass-dhcp"' }
+    - { key: 'push "dhcp-option DNS 8.8.8.8"', line: 'push "dhcp-option DNS 8.8.8.8"' }
+    - { key: 'push "dhcp-option DNS 8.8.4.4"', line: 'push "dhcp-option DNS 8.8.4.4"' }
+    - { key: 'user nobody', line: 'user nobody' }
+    - { key: 'group nobody', line: 'group nobody' }
 
 - name: Comment out tls-auth line
   replace:
