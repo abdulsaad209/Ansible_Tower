@@ -7,7 +7,7 @@
     force: no  # Avoid overwriting if file exists
     owner: root
     group: root
-    mode: '0644'
+    mode: '0777'
 
 - name: Comment out conflicting KEY_* values
   lineinfile:
