@@ -1,13 +1,18 @@
 ---
 
-- name: Create empty vars file if not present
-  copy:
-    dest: /etc/openvpn/easy-rsa/vars
-    content: ""
-    force: no  # Avoid overwriting if file exists
-    owner: ansibleawx
-    group: ansibleawx
-    mode: '777'
+- name: Ensure correct permissions and executability for Easy-RSA files
+  file:
+    path: "{{ item }}"
+    mode: '0755'
+    owner: root
+    group: root
+  loop:
+    - /etc/openvpn/easy-rsa/vars
+    - /etc/openvpn/easy-rsa/clean-all
+    - /etc/openvpn/easy-rsa/build-ca
+    - /etc/openvpn/easy-rsa/build-key-server
+    - /etc/openvpn/easy-rsa/build-dh
+  become: true
 
 - name: Comment out conflicting KEY_* values
   lineinfile:
