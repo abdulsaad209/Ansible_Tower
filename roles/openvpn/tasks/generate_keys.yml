@@ -89,7 +89,9 @@
   become: true
 
 - name: Build client key
-  command: ./pkitool --batch client
+  shell: |
+    source ./vars
+    ./pkitool --batch client
   args:
     chdir: /etc/openvpn/easy-rsa
   become: true
