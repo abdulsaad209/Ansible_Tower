@@ -13,6 +13,7 @@
     - /etc/openvpn/easy-rsa/build-key-server
     - /etc/openvpn/easy-rsa/build-dh
     - /etc/openvpn/easy-rsa/pkitool
+    - /etc/openvpn/easy-rsa/whichopensslcnf
   become: true
 
 - name: Comment out conflicting KEY_* values
@@ -78,7 +79,6 @@
   args:
     chdir: /etc/openvpn/easy-rsa
   become: true
-
 
 - name: Build server key
   shell: |
