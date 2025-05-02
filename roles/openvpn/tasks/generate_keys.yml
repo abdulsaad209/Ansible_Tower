@@ -107,3 +107,13 @@
     src: "/etc/openvpn/easy-rsa/keys/"
     dest: "/etc/openvpn/"
     
+- name: Copy OpenVPN client certificates to home directory
+  copy:
+    src: "/etc/openvpn/{{ item }}"
+    dest: "/home/ansibleawx/{{ item }}"
+    remote_src: yes
+  loop:
+    - ca.crt
+    - client.crt
+    - client.key
+  become: true
