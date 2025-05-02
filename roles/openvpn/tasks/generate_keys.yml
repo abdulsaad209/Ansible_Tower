@@ -58,7 +58,7 @@
     /etc/openvpn/easy-rsa/clean-all --batch
     /etc/openvpn/easy-rsa/build-ca --batch
     /etc/openvpn/easy-rsa/build-key-server server --batch
-    /etc/openvpn/easy-rsa/build-dh
+    /etc/openvpn/easy-rsa/build-dh --batch
   args:
     chdir: /etc/openvpn/easy-rsa
   become: true
