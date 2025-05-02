@@ -1,38 +1,20 @@
----
+- name: Ensure all Easy-RSA scripts are executable
+  file:
+    path: "{{ item }}"
+    mode: '0755'
+  loop: "{{ lookup('ansible.builtin.fileglob', '/etc/openvpn/easy-rsa/*', wantlist=True) }}"
+  when: item is file
+  become: true
 
-- name: Create empty vars file if not present
+- name: Set Easy-RSA environment variables
   copy:
     dest: /etc/openvpn/easy-rsa/vars
-    content: ""
-    force: no  # Avoid overwriting if file exists
-    owner: root
-    group: root
-    mode: '0644'
-
-- name: Comment out conflicting KEY_* values
-  lineinfile:
-    path: /etc/openvpn/easy-rsa/vars
-    regexp: '^export {{ item }}='
-    line: '# export {{ item }}=<commented>'
-    backrefs: no
-    state: present
-  loop:
-    - KEY_COUNTRY
-    - KEY_PROVINCE
-    - KEY_CITY
-    - KEY_ORG
-    - KEY_EMAIL
-    - KEY_OU
-    - KEY_NAME
-    - KEY_CN
-    - PKCS11_MODULE_PATH
-    - PKCS11_PIN
-
-- name: Insert custom OpenVPN key parameters
-  blockinfile:
-    path: /etc/openvpn/easy-rsa/vars
-    marker: "# {mark} ANSIBLE MANAGED BLOCK"
-    block: |
+    content: |
+      export EASY_RSA="/etc/openvpn/easy-rsa"
+      export OPENSSL="openssl"
+      export KEY_CONFIG="$EASY_RSA/openssl.cnf"
+      export KEY_DIR="$EASY_RSA/keys"
+      export KEY_SIZE=2048
       export KEY_COUNTRY="US"
       export KEY_PROVINCE="CA"
       export KEY_CITY="SanFrancisco"
@@ -40,60 +22,38 @@
       export KEY_EMAIL="saad.zahid@zurple.com"
       export KEY_OU="server"
       export KEY_NAME="EasyRSA"
+    mode: '0644'
+    owner: root
+    group: root
 
-- name: Copy openssl.cnf
-  copy:
-    src: /etc/openvpn/easy-rsa/openssl-1.0.0.cnf
-    dest: /etc/openvpn/easy-rsa/openssl.cnf
-    remote_src: yes
-
-- name: Ensure clean-all is executable
-  file:
-    path: /etc/openvpn/easy-rsa/
-    mode: '0755'
-
-- name: Clean all existing keys
-  shell: | 
-    source /etc/openvpn/easy-rsa/vars
-    /etc/openvpn/easy-rsa/clean-all --batch
-    /etc/openvpn/easy-rsa/build-ca --batch
-    /etc/openvpn/easy-rsa/build-key-server server --batch
-    /etc/openvpn/easy-rsa/build-dh --batch
-  args:
-    chdir: /etc/openvpn/easy-rsa
-  become: true
-
-- name: Initialize the CA (create ca.crt and ca.key)
+- name: Run Easy-RSA key generation
   shell: |
-    source ./vars
-    ./pkitool --initca
-  args:
-    chdir: /etc/openvpn/easy-rsa
-
-
-- name: Build server key
-  shell: |
-    source ./vars
-    ./pkitool --batch --server server
+    bash -c "source ./vars && ./clean-all && ./build-ca --batch && ./build-key-server --batch server && ./build-dh"
   args:
     chdir: /etc/openvpn/easy-rsa
   become: true
 
-- name: Build client key
-  command: ./pkitool --batch client
+- name: Generate CA cert (initca)
+  shell: bash -c "source ./vars && ./pkitool --initca"
   args:
     chdir: /etc/openvpn/easy-rsa
   become: true
 
-- name: Generate Diffie-Hellman parameters
-  command: ./build-dh
+- name: Generate server certificate
+  shell: bash -c "source ./vars && ./pkitool --batch --server server"
   args:
     chdir: /etc/openvpn/easy-rsa
   become: true
 
+- name: Generate client certificate
+  shell: bash -c "source ./vars && ./pkitool --batch client"
+  args:
+    chdir: /etc/openvpn/easy-rsa
+  become: true
 
-- name: Copy server certs and keys
+- name: Copy generated server keys and certs
   copy:
-    remote_src: yes
     src: "/etc/openvpn/easy-rsa/keys/"
     dest: "/etc/openvpn/"
+    remote_src: yes
+  become: true
