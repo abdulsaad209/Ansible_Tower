@@ -1,0 +1,16 @@
+---
+openvpn_client:
+  dev: tun
+  proto: udp
+  remote: 192.168.209.188
+  port: 1194
+  resolv_retry: infinite
+  nobind: true
+  persist_key: true
+  persist_tun: true
+  verb: 3
+  ca: ca
+  client: devops-team
+  ovpn: devops-team
+  cipher: AES-256-CBC
+  tls_cipher: "DEFAULT:@SECLEVEL=0"

@@ -1,29 +1,7 @@
----
-
-- name: Copy OpenVPN server config
-  copy:
-    src: /usr/share/doc/openvpn-2.4.12/sample/sample-config-files/server.conf
+- name: Deploy OpenVPN server.conf from template
+  template:
+    src: server.conf.j2
     dest: /etc/openvpn/server.conf
-    remote_src: yes
-
-- name: Ensure required OpenVPN config lines are present and uncommented
-  lineinfile:
-    path: /etc/openvpn/server.conf
-    regexp: '^.*{{ item.regex }}.*$'
-    line: '{{ item.line }}'
-    state: present
-    insertafter: EOF
-  loop:
-    - { regex: 'dh\s+', line: 'dh dh2048.pem' }
-    - { regex: 'push\s+"redirect-gateway', line: 'push "redirect-gateway def1 bypass-dhcp"' }
-    - { regex: 'push\s+"dhcp-option DNS 8\.8\.8\.8', line: 'push "dhcp-option DNS 8.8.8.8"' }
-    - { regex: 'push\s+"dhcp-option DNS 8\.8\.4\.4', line: 'push "dhcp-option DNS 8.8.4.4"' }
-    - { regex: 'user\s+', line: 'user nobody' }
-    - { regex: 'group\s+', line: 'group nobody' }
-
-
-- name: Comment out tls-auth line
-  replace:
-    path: /etc/openvpn/server.conf
-    regexp: '^tls-auth ta.key 0'
-    replace: '#tls-auth ta.key 0'
+    owner: root
+    group: root
+    mode: '0644'

@@ -15,8 +15,9 @@
 - name: Configure Firewall and IP Forwarding
   include_tasks: configure_firewall.yml
 
+- name: Generate Client Configuration
+  include_tasks: generate_client_ovpn.yml
+
 - name: Start and Enable OpenVPN Service
   include_tasks: start_service.yml
 
-- name: Generate Client Configuration
-  include_tasks: generate_client_ovpn.yml

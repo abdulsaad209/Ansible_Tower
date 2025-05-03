@@ -1,13 +1,14 @@
 client
-dev tun
-proto udp
-remote 34.205.36.152 1194
-resolv-retry infinite
+dev {{ openvpn_client.dev }}
+proto {{ openvpn_client.proto }}
+remote {{ openvpn_client.remote }} {{ openvpn_client.port }}
+resolv-retry {{ openvpn_client.resolv_retry }}
 nobind
 persist-key
 persist-tun
-verb 3
-ca ca.crt
-cert client.crt
-key client.key
-cipher AES-256-CBC
+verb {{ openvpn_client.verb }}
+ca {{ openvpn_client.ca }}.crt
+cert {{ openvpn_client.client }}.crt
+key {{ openvpn_client.client }}.key
+cipher {{ openvpn_client.cipher }}
+tls-cipher "{{ openvpn_client.tls_cipher }}"

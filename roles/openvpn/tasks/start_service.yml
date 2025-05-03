@@ -1,4 +1,15 @@
 ---
+- name: Copy OpenVPN client certificates to home directory
+  copy:
+    src: "/etc/openvpn/{{ item }}"
+    dest: "/home/ansibleawx/{{ item }}"
+    remote_src: yes
+  loop:
+    - "{{ openvpn_client.ca }}.crt"
+    - "{{ openvpn_client.client }}.crt"
+    - "{{ openvpn_client.client }}.key"
+    - "{{ openvpn_client.ovpn }}.ovpn"
+  become: true
 
 - name: Enable and start OpenVPN service
   systemd:

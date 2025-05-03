@@ -1,4 +1,8 @@
 ---
+- name: Deploy Easy-RSA vars file
+  template:
+    src: vars.j2
+    dest: /etc/openvpn/easy-rsa/vars
 
 - name: Ensure correct permissions and executability for Easy-RSA files
   file:
@@ -11,42 +15,11 @@
     - /etc/openvpn/easy-rsa/clean-all
     - /etc/openvpn/easy-rsa/build-ca
     - /etc/openvpn/easy-rsa/build-key-server
+    - /etc/openvpn/easy-rsa/build-key
     - /etc/openvpn/easy-rsa/build-dh
     - /etc/openvpn/easy-rsa/pkitool
     - /etc/openvpn/easy-rsa/whichopensslcnf
   become: true
-
-- name: Comment out conflicting KEY_* values
-  lineinfile:
-    path: /etc/openvpn/easy-rsa/vars
-    regexp: '^export {{ item }}='
-    line: '# export {{ item }}=<commented>'
-    backrefs: no
-    state: present
-  loop:
-    - KEY_COUNTRY
-    - KEY_PROVINCE
-    - KEY_CITY
-    - KEY_ORG
-    - KEY_EMAIL
-    - KEY_OU
-    - KEY_NAME
-    - KEY_CN
-    - PKCS11_MODULE_PATH
-    - PKCS11_PIN
-
-- name: Insert custom OpenVPN key parameters
-  blockinfile:
-    path: /etc/openvpn/easy-rsa/vars
-    marker: "# {mark} ANSIBLE MANAGED BLOCK"
-    block: |
-      export KEY_COUNTRY="US"
-      export KEY_PROVINCE="CA"
-      export KEY_CITY="SanFrancisco"
-      export KEY_ORG="Zurple"
-      export KEY_EMAIL="it@zurple.com"
-      export KEY_OU="server"
-      export KEY_NAME="EasyRSA"
 
 - name: Copy openssl.cnf
   copy:
@@ -88,13 +61,18 @@
     chdir: /etc/openvpn/easy-rsa
   become: true
 
-- name: Build client key
+- name: Build client key with debug
   shell: |
-    source ./vars
-    ./pkitool --batch client
+    source ./vars && \
+    sed -i '/CN={{ openvpn_client.client }}/d' keys/index.txt && \
+    ./pkitool --batch {{ openvpn_client.client }}
   args:
     chdir: /etc/openvpn/easy-rsa
   become: true
+  register: client_keygen
+
+- debug:
+    var: client_keygen.stdout_lines
 
 - name: Generate Diffie-Hellman parameters
   shell: |
@@ -111,13 +89,3 @@
     src: "/etc/openvpn/easy-rsa/keys/"
     dest: "/etc/openvpn/"
     
-- name: Copy OpenVPN client certificates to home directory
-  copy:
-    src: "/etc/openvpn/{{ item }}"
-    dest: "/home/ansibleawx/{{ item }}"
-    remote_src: yes
-  loop:
-    - ca.crt
-    - client.crt
-    - client.key
-  become: true

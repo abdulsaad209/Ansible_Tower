@@ -1,15 +1,13 @@
 ---
 
-- name: Enable IP forwarding
-  sysctl:
-    name: net.ipv4.ip_forward
-    value: '1'
-    state: present
-    reload: yes
-
+- name: Deploy custom sysctl config to enable IP forwarding
+  template:
+    src: sysctl.conf.j2
+    dest: /etc/sysctl.conf
+    
 - name: Install iptables-services
   yum:
-    name: iptables-services
+    name: iptables
     state: present
 
 - name: Mask and stop firewalld

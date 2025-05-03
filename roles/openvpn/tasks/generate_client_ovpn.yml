@@ -3,4 +3,4 @@
 - name: Create client.ovpn file from template
   template:
     src: client.ovpn.j2
-    dest: /etc/openvpn/client.ovpn
+    dest: /etc/openvpn/{{ openvpn_client.ovpn }}.ovpn
