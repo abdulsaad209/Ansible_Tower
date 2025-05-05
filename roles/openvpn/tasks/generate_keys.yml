@@ -89,12 +89,12 @@
     use_regex: false
   register: openvpn_files_to_delete
 
-- name: Remove old keys from /etc/openvpn 
+- name: Remove all matching OpenVPN certs and keys
   file:
     path: "{{ item.path }}"
     state: absent
   loop: "{{ openvpn_files_to_delete.files }}"
-
+  no_log: true
 
 - name: Copy server certs and keys
   copy:
@@ -105,8 +105,6 @@
     - "{{ openvpn_client.ca }}.crt"
     - "{{ openvpn_client.client }}.crt"
     - "{{ openvpn_client.client }}.key"
-    - "{{ openvpn_client.ovpn }}.ovpn"
   become: true
 
 
-    
