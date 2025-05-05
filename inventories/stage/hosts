@@ -10,5 +10,5 @@ web01               ansible_host=192.168.100.20
 ansible-awx         ansible_host=192.168.100.32
 
 [centos]
-centos7             ansible_host=192.168.209.188
-#centos7             ansible_host=192.168.100.34
+#centos7             ansible_host=192.168.209.188
+centos7             ansible_host=192.168.100.34
