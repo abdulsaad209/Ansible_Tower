@@ -10,7 +10,7 @@ openvpn_client:
   persist_tun: true
   verb: 3
   ca: ca
-  client: qa
-  ovpn: qa
+  client: sqa
+  ovpn: sqa
   cipher: AES-256-CBC
   tls_cipher: "DEFAULT:@SECLEVEL=0"

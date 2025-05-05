@@ -3,7 +3,7 @@ openvpn_keys:
   KEY_COUNTRY: "US"
   KEY_PROVINCE: "CA"
   KEY_CITY: "SanFrancisco"
-  KEY_ORG: "Zurple"
+  KEY_ORG: "Saad"
   KEY_EMAIL: "saad.zahid@zurple.com"
   KEY_OU: "server"
   KEY_NAME: "EasyRSA"
