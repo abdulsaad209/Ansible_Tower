@@ -98,13 +98,8 @@
 
 - name: Copy server certs and keys
   copy:
-    src: "/etc/openvpn/easy-rsa/keys/{{ item }}"
-    dest: "/etc/openvpn/{{ item }}"
+    src: "/etc/openvpn/easy-rsa/keys/"
+    dest: "/etc/openvpn/"
     remote_src: yes
-  loop:
-    - "{{ openvpn_client.ca }}.crt"
-    - "{{ openvpn_client.client }}.crt"
-    - "{{ openvpn_client.client }}.key"
-  become: true
 
 
