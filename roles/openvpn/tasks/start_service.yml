@@ -1,8 +1,17 @@
 ---
-- name: Copy OpenVPN client certificates to home directory
+- name: Create directory for OpenVPN client in /home/ansibleawx/
+  file:
+    path: "/home/ansibleawx/{{ openvpn_client.client }}"
+    state: directory
+    owner: ansibleawx
+    group: ansibleawx
+    mode: '0755'
+  become: true
+
+- name: Copy OpenVPN client certificates to the client's directory
   copy:
     src: "/etc/openvpn/{{ item }}"
-    dest: "/home/ansibleawx/{{ item }}"
+    dest: "/home/ansibleawx/{{ openvpn_client.client }}/{{ item }}"
     remote_src: yes
   loop:
     - "{{ openvpn_client.ca }}.crt"

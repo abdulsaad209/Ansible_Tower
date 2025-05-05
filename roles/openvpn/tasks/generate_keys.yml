@@ -82,10 +82,27 @@
     chdir: /etc/openvpn/easy-rsa
   become: true
 
+- name: Remove old OpenVPN client certs and keys
+  file:
+    path: "/etc/openvpn/{{ item }}"
+    state: absent
+  loop:
+    - "{{ openvpn_client.ca }}.crt"
+    - "{{ openvpn_client.client }}.crt"
+    - "{{ openvpn_client.client }}.key"
+    - "{{ openvpn_client.ovpn }}.ovpn"
 
 - name: Copy server certs and keys
   copy:
+    src: "/etc/openvpn/easy-rsa/keys/{{ item }}"
+    dest: "/etc/openvpn/{{ item }}"
     remote_src: yes
-    src: "/etc/openvpn/easy-rsa/keys/"
-    dest: "/etc/openvpn/"
+  loop:
+    - "{{ openvpn_client.ca }}.crt"
+    - "{{ openvpn_client.client }}.crt"
+    - "{{ openvpn_client.client }}.key"
+    - "{{ openvpn_client.ovpn }}.ovpn"
+  become: true
+
+
     
