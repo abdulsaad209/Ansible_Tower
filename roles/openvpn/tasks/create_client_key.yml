@@ -1,3 +1,9 @@
+---
+- name: Deploy Easy-RSA vars file
+  template:
+    src: vars.j2
+    dest: /etc/openvpn/easy-rsa/vars
+    
 - name: Build client key with debug
   shell: |
     source ./vars && \
