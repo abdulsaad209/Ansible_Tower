@@ -10,7 +10,7 @@ openvpn_client:
   persist_tun: true
   verb: 3
   ca: ca
-  client: devops-team
-  ovpn: devops-team
+  client: client
+  ovpn: client
   cipher: AES-256-CBC
   tls_cipher: "DEFAULT:@SECLEVEL=0"
