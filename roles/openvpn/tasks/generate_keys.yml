@@ -82,15 +82,19 @@
     chdir: /etc/openvpn/easy-rsa
   become: true
 
-- name: Remove old OpenVPN client certs and keys
+- name: Find all .crt, .key, .ovpn files in /etc/openvpn/
+  find:
+    paths: /etc/openvpn/
+    patterns: "*.crt,*.key,*.ovpn"
+    use_regex: false
+  register: openvpn_files_to_delete
+
+- name: Remove old keys from /etc/openvpn 
   file:
-    path: "/etc/openvpn/{{ item }}"
+    path: "{{ item.path }}"
     state: absent
-  loop:
-    - "{{ openvpn_client.ca }}.crt"
-    - "{{ openvpn_client.client }}.crt"
-    - "{{ openvpn_client.client }}.key"
-    - "{{ openvpn_client.ovpn }}.ovpn"
+  loop: "{{ openvpn_files_to_delete.files }}"
+
 
 - name: Copy server certs and keys
   copy:
