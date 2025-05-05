@@ -1,0 +1,49 @@
+- name: Build client key with debug
+  shell: |
+    source ./vars && \
+    sed -i '/CN={{ openvpn_client.client }}/d' keys/index.txt && \
+    ./pkitool --batch {{ openvpn_client.client }}
+  args:
+    chdir: /etc/openvpn/easy-rsa
+  become: true
+  register: client_keygen
+
+- debug:
+    var: client_keygen.stdout_lines
+
+- name: Create client.ovpn file from template
+  template:
+    src: client.ovpn.j2
+    dest: /etc/openvpn/{{ openvpn_client.ovpn }}.ovpn
+
+- name: Create directory for OpenVPN client in /home/ansibleawx/
+  file:
+    path: "/home/ansibleawx/{{ openvpn_client.client }}"
+    state: directory
+    owner: ansibleawx
+    group: ansibleawx
+    mode: '0755'
+  become: true
+
+- name: Copy OpenVPN client certificates to the client's directory
+  copy:
+    src: "/etc/openvpn/easy-rsa/keys/{{ item }}"
+    dest: "/etc/openvpn/{{ item }}"
+    remote_src: yes
+  loop:
+    - "{{ openvpn_client.ca }}.crt"
+    - "{{ openvpn_client.client }}.crt"
+    - "{{ openvpn_client.client }}.key"
+  become: true
+
+- name: Copy OpenVPN client certificates to the client's directory
+  copy:
+    src: "/etc/openvpn/{{ item }}"
+    dest: "/home/ansibleawx/{{ openvpn_client.client }}/{{ item }}"
+    remote_src: yes
+  loop:
+    - "{{ openvpn_client.ca }}.crt"
+    - "{{ openvpn_client.client }}.crt"
+    - "{{ openvpn_client.client }}.key"
+    - "{{ openvpn_client.ovpn }}.ovpn"
+  become: true

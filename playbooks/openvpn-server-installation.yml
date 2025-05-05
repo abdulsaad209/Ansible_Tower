@@ -3,5 +3,9 @@
   hosts: centos7
   become: true
 
-  roles:
-    - openvpn
+#  roles:
+#    - openvpn
+
+  tasks:
+    - name: Create openvpn client keys 
+      import_tasks: roles/openvpn/tasks/create_client_key.yml
