@@ -2,7 +2,7 @@
 openvpn_client:
   dev: tun
   proto: udp
-  remote: 192.168.209.188
+  remote: 192.168.100.34
   port: 1194
   resolv_retry: infinite
   nobind: true
