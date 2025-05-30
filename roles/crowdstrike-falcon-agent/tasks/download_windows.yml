@@ -1,0 +1,22 @@
+---
+#- name: Set Falcon Sensor install path and command for Windows
+#  set_fact:
+#    crowdstrike_falcon_local_path: "C:\\Windows\\Temp\\FalconSensor_Windows.exe"
+#    crowdstrike_install_cmd: "{{ crowdstrike_falcon_local_path }} /passive /norestart CID={{ CUSTOMER_ID }} GROUPING_TAGS=\"{{ crowdstrike_tags }}\" /log C:\\Windows\\Temp\\crowdstrike-install.log"
+
+- name: Copy Falcon Sensor installer to Windows host
+  win_copy:
+    #src: "FalconSensor_Windows.exe"
+    #dest: C:\Users\ansibleawx\Downloads\FalconSensor_Windows.exe
+    src: "hello-world.txt"
+    dest: C:\Users\ansibleawx\Downloads\hello-world.txt
+    force: yes
+
+#- name: Install Falcon Sensor on Windows
+#  win_command: "C:\\Windows\\Temp\\FalconSensor_Windows.exe /passive /norestart CID={{ CUSTOMER_ID }} GROUPING_TAGS=\"{{ crowdstrike_tags }}\" /log C:\\Windows\\Temp\\crowdstrike-install.log"
+
+#- name: Ensure Falcon Sensor service is running
+#  ansible.windows.win_service:
+#    name: "CSFalconService"
+#    start_mode: auto
+#    state: started

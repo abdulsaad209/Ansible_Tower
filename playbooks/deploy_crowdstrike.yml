@@ -1,0 +1,8 @@
+---
+- name: Deploy CrowdStrike Falcon Agent
+  hosts: windows
+  become: true
+  
+  roles:
+    - crowdstrike-falcon-agent
+
