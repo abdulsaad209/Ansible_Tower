@@ -14,4 +14,4 @@ ansible-awx         ansible_host=192.168.100.32
 centos7             ansible_host=192.168.100.34
 
 [windows]
-win-2022               ansible_host=34.201.245.36
+win-2016               ansible_host=54.161.141.49
