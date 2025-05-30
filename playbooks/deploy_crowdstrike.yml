@@ -1,7 +1,7 @@
 ---
 - name: Deploy CrowdStrike Falcon Agent
   hosts: windows
-  #become: true
+  #become: true       # Comment this line before running on Windows Servers
   
   roles:
     - crowdstrike-falcon-agent
