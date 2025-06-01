@@ -1,5 +1,5 @@
 ---
-- name: Copy Falcon Sensor .deb from local files directory
+- name: Copy Falcon Sensor .rpm from local files directory
   copy:
     src: "falcon-sensor-7.21.0-17405.el7.x86_64.rpm"
     dest: "/tmp/falcon-sensor-7.21.0-17405.el7.x86_64.rpm"
