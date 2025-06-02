@@ -2,6 +2,7 @@
 webservers
 awx
 centos
+windows
 
 [webservers]
 web01               ansible_host=192.168.100.20
