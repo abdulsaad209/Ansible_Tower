@@ -1,18 +1,24 @@
 - name: Set Zabbix config path on Windows
   set_fact:
     win_zabbix_config_path: 'C:\Program Files\Zabbix Agent\zabbix_agentd.conf'
+    win_temp_param_file: 'C:\Users\ansibleawx\Downloads\falcon_userparameters.conf'
 
 - name: Render Falcon UserParameters to temporary file (on control node)
   template:
     src: falcon_userparameters.conf.j2
     dest: /tmp/falcon_userparameters.conf
 
-- name: Read rendered UserParameters file
-  slurp:
+- name: Copy rendered UserParameters to Windows host
+  win_copy:
     src: /tmp/falcon_userparameters.conf
+    dest: "{{ win_temp_param_file }}"
+
+- name: Read Falcon UserParameters from Windows file
+  win_slurp:
+    src: "{{ win_temp_param_file }}"
   register: slurped_userparams
 
-- name: Set fact with decoded lines
+- name: Decode UserParameters content
   set_fact:
     falcon_userparam_lines: "{{ slurped_userparams.content | b64decode | splitlines() }}"
 
