@@ -1,0 +1,43 @@
+---
+- name: Check if /etc/zabbix/zabbix_agentd.conf exists
+  stat:
+    path: /etc/zabbix/zabbix_agentd.conf
+  register: zabbix_conf1
+
+- name: Check if /etc/zabbix_agentd.conf exists
+  stat:
+    path: /etc/zabbix_agentd.conf
+  register: zabbix_conf2
+
+- name: Set Zabbix agent config path
+  set_fact:
+    zabbix_config_path: "{{ '/etc/zabbix/zabbix_agentd.conf' if zabbix_conf1.stat.exists else '/etc/zabbix_agentd.conf' }}"
+  when: zabbix_conf1.stat.exists or zabbix_conf2.stat.exists
+
+- name: Ensure script directory exists
+  file:
+    path: /etc/zabbix/scripts
+    state: directory
+    owner: zabbix
+    group: zabbix
+    mode: '0755'
+
+- name: Upload proc_metrics.sh
+  copy:
+    src: proc_metrics.sh
+    dest: /etc/zabbix/scripts/proc_metrics.sh
+    owner: zabbix
+    group: zabbix
+    mode: '0755'
+
+- name: Add UserParameter to config if not present
+  lineinfile:
+    path: "{{ zabbix_config_path }}"
+    line: 'UserParameter=proc.metric[*],/etc/zabbix/scripts/proc_metrics.sh "$1" "$2"'
+    state: present
+    insertafter: EOF
+
+- name: Restart Zabbix agent
+  service:
+    name: zabbix-agent
+    state: restarted

@@ -1,0 +1,8 @@
+---
+- name: Apply Zabbix Falcon monitoring - Linux
+  include_tasks: linux.yml
+  when: ansible_os_family != 'Windows'
+
+- name: Apply Zabbix Falcon monitoring - Windows
+  include_tasks: windows.yml
+  when: ansible_os_family == 'Windows'

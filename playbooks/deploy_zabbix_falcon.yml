@@ -1,0 +1,6 @@
+---
+- name: Deploy Zabbix Agent Falcon Process Monitoring
+  hosts: stage
+  become: true
+  roles:
+    - zabbix_agent_falcon_monitor
