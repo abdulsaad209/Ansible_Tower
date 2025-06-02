@@ -1,0 +1,8 @@
+---
+- name: Deploy Zabbix Agent 
+  hosts: stage
+  become: true
+  roles:
+    - zabbix_agent_installation
+
+

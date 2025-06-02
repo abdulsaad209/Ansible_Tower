@@ -1,0 +1,16 @@
+---
+- name: Copy Zabbix agent MSI to Windows host
+  win_copy:
+    src: zabbix_agent-5.0.46-windows-amd64-openssl.msi
+    dest: C:\Windows\Temp\zabbix_agent.msi
+
+- name: Install Zabbix agent
+  win_package:
+    path: C:\Windows\Temp\zabbix_agent.msi
+    state: present
+
+- name: Ensure Zabbix Agent service is set to start automatically and is running
+  win_service:
+    name: Zabbix Agent
+    start_mode: auto
+    state: started
