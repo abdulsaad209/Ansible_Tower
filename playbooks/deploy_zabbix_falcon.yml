@@ -1,6 +1,6 @@
 ---
 - name: Deploy Zabbix Agent Falcon Process Monitoring
   hosts: windows
-  become: true
+  #become: true
   roles:
     - zabbix_agent_falcon_monitor
