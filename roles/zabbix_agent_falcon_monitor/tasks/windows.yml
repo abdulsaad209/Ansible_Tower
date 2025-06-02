@@ -13,12 +13,11 @@
   register: falcon_userparam_output
 
 - name: Append each UserParameter line to Zabbix config
-  win_lineinfile:
-    path: "{{ win_zabbix_config_path }}"
+  ansible.windows.win_lineinfile:
+    path: "C:\\Program Files\\Zabbix Agent\\zabbix_agentd.conf"
     line: "{{ item }}"
-    insertafter: EOF
     state: present
-  loop: "{{ falcon_userparam_output.stdout_lines }}"
+  loop: "{{ lookup('file', 'rendered_userparameters.conf').splitlines() | reject('equalto', '') | list }}"
 
 - name: Restart Zabbix Agent service
   win_service:
