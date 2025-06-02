@@ -4,10 +4,17 @@
     src: zabbix_agent-5.0.46-windows-amd64-openssl.msi
     dest: C:\Windows\Temp\zabbix_agent.msi
 
-- name: Install Zabbix agent
-  win_package:
-    path: C:\Windows\Temp\zabbix_agent.msi
-    state: present
+- name: Install Zabbix agent manually using msiexec
+  win_command: >
+    msiexec.exe /i "C:\Windows\Temp\zabbix_agent.msi"
+    /qn
+    /norestart
+    /log "C:\Windows\Temp\zabbix_agent_install.log"
+    SERVER=192.168.100.20
+    HOSTNAME={{ ansible_hostname }}
+  args:
+    creates: 'C:\Program Files\Zabbix Agent\zabbix_agentd.exe'
+
 
 - name: Ensure Zabbix Agent service is set to start automatically and is running
   win_service:
