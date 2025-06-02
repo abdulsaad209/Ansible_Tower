@@ -1,17 +1,28 @@
----
 - name: Set Zabbix config path on Windows
   set_fact:
     win_zabbix_config_path: 'C:\Program Files\Zabbix Agent\zabbix_agentd.conf'
 
-- name: Read UserParameters template content
-  set_fact:
-    falcon_userparameters: "{{ lookup('template', 'falcon_userparameters.conf.j2') }}"
+- name: Render Falcon UserParameters to temporary file (on control node)
+  template:
+    src: falcon_userparameters.conf.j2
+    dest: /tmp/falcon_userparameters.conf
 
-- name: Insert Falcon UserParameters block into Zabbix config
-  win_blockinfile:
+- name: Read rendered UserParameters file
+  slurp:
+    src: /tmp/falcon_userparameters.conf
+  register: slurped_userparams
+
+- name: Set fact with decoded lines
+  set_fact:
+    falcon_userparam_lines: "{{ slurped_userparams.content | b64decode | splitlines() }}"
+
+- name: Append each UserParameter line to Zabbix config
+  win_lineinfile:
     path: "{{ win_zabbix_config_path }}"
-    block: "{{ falcon_userparameters }}"
-    marker: "; {mark} FALCON_MONITORING"
+    line: "{{ item }}"
+    insertafter: EOF
+    state: present
+  loop: "{{ falcon_userparam_lines }}"
 
 - name: Restart Zabbix Agent service
   win_service:
