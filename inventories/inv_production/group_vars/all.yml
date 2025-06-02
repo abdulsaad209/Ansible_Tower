@@ -7,3 +7,4 @@ group_name: "ops"                     # Your user's group
 admin_user: "admin"                   # Your AD admin user using which you will join the server with AD
 ou_in_zurple_corp_ad: "Prod"          # Your AD organizational Unit where you will store record of the joined servers
 bind_password: "<my-password>"        # Your AD admin user's password
+
