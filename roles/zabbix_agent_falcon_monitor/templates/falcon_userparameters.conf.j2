@@ -1,0 +1,6 @@
+# Falcon Sensor Service Status Check
+UserParameter=csfalcon.status,"C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe" -Command "if ((Get-Service -Name CSFalconService).Status -eq 'Running') { Write-Output 1 } else { Write-Output 0 }"
+
+# Real-time CPU (%) and Memory (MB) usage for CSFalconService
+UserParameter=csfalcon.cpu.percent,"C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe" -Command "$p = Get-Process CSFalconService -ErrorAction SilentlyContinue; if ($p) { (Get-Counter '\Process(CSFalconService*)\% Processor Time').CounterSamples.CookedValue / $env:NUMBER_OF_PROCESSORS } else { 0 }"
+UserParameter=csfalcon.mem.mb,"C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe" -Command "$p = Get-Process CSFalconService -ErrorAction SilentlyContinue; if ($p) { [math]::Round($p.WorkingSet64 / 1MB, 2) } else { 0 }"

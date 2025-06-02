@@ -3,23 +3,15 @@
   set_fact:
     win_zabbix_config_path: 'C:\Program Files\Zabbix Agent\zabbix_agentd.conf'
 
-- name: Add csfalcon.status UserParameter
-  win_lineinfile:
-    path: "{{ win_zabbix_config_path }}"
-    line: 'UserParameter=csfalcon.status,"C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe" -Command "if ((Get-Service -Name CSFalconService).Status -eq ''Running'') { Write-Output 1 } else { Write-Output 0 }"'
-    insertafter: EOF
+- name: Read UserParameters template content
+  set_fact:
+    falcon_userparameters: "{{ lookup('template', 'falcon_userparameters.conf.j2') }}"
 
-- name: Add csfalcon.cpu.percent UserParameter
-  win_lineinfile:
+- name: Insert Falcon UserParameters block into Zabbix config
+  win_blockinfile:
     path: "{{ win_zabbix_config_path }}"
-    line: 'UserParameter=csfalcon.cpu.percent,"C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe" -Command "$p = Get-Process CSFalconService -ErrorAction SilentlyContinue; if ($p) { (Get-Counter ''\Process(CSFalconService*)\% Processor Time'').CounterSamples.CookedValue / $env:NUMBER_OF_PROCESSORS } else { 0 }"'
-    insertafter: EOF
-
-- name: Add csfalcon.mem.mb UserParameter
-  win_lineinfile:
-    path: "{{ win_zabbix_config_path }}"
-    line: 'UserParameter=csfalcon.mem.mb,"C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe" -Command "$p = Get-Process CSFalconService -ErrorAction SilentlyContinue; if ($p) { [math]::Round($p.WorkingSet64 / 1MB, 2) } else { 0 }"'
-    insertafter: EOF
+    block: "{{ falcon_userparameters }}"
+    marker: "; {mark} FALCON_MONITORING"
 
 - name: Restart Zabbix Agent service
   win_service:
