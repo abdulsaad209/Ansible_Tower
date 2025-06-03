@@ -1,24 +1,25 @@
-- name: Set Zabbix config path and Windows temp path
+---
+- name: Set Zabbix config path on Windows
   set_fact:
     win_zabbix_config_path: 'C:\Program Files\Zabbix Agent\zabbix_agentd.conf'
-    win_temp_param_file: 'C:\Users\ansibleawx\Downloads\falcon_userparameters.conf'
 
-- name: Render Falcon UserParameters template directly on Windows host
-  win_template:
-    src: falcon_userparameters.conf.j2
-    dest: "{{ win_temp_param_file }}"
-
-- name: Read lines of Falcon UserParameters from rendered file
-  win_shell: Get-Content -Path "{{ win_temp_param_file }}"
-  register: falcon_userparam_output
-
-- name: Append each UserParameter line to Zabbix config
+- name: Add UserParameter for monitoring Falcon Service Status 
   win_lineinfile:
     path: "{{ win_zabbix_config_path }}"
-    line: "{{ item }}"
+    line: 'UserParameter=csfalcon.status,"C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe" -Command "if ((Get-Service -Name CSFalconService).Status -eq ''Running'') { Write-Output 1 } else { Write-Output 0 }"'
     insertafter: EOF
-    state: present
-  loop: "{{ falcon_userparam_output.stdout_lines }}"
+
+- name: Add UserParameter for Monitoring CPU Usage
+  win_lineinfile:
+    path: "{{ win_zabbix_config_path }}"
+    line: 'UserParameter=csfalcon.cpu.percent,"C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe" -Command "$p = Get-Process CSFalconService -ErrorAction SilentlyContinue; if ($p) { (Get-Counter ''\Process(CSFalconService*)\% Processor Time'').CounterSamples.CookedValue / $env:NUMBER_OF_PROCESSORS } else { 0 }"'
+    insertafter: EOF
+
+- name: Add UserParameter for Monitoring Memory Usage
+  win_lineinfile:
+    path: "{{ win_zabbix_config_path }}"
+    line: 'UserParameter=csfalcon.mem.mb,"C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe" -Command "$p = Get-Process CSFalconService -ErrorAction SilentlyContinue; if ($p) { [math]::Round($p.WorkingSet64 / 1MB, 2) } else { 0 }"'
+    insertafter: EOF
 
 - name: Restart Zabbix Agent service
   win_service:

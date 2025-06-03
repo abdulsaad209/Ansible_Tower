@@ -11,7 +11,7 @@
     state: present
 
 - name: Register Falcon Sensor with CrowdStrike
-  command: /opt/CrowdStrike/falconctl -s --cid="{{ CUSTOMER_ID }}" -f
+  command: /opt/CrowdStrike/falconctl -s --cid="<Paste CID Here>" -f
 
 - name: Set CrowdStrike tags
   command: /opt/CrowdStrike/falconctl -s --tags="{{ crowdstrike_tags }}" -f

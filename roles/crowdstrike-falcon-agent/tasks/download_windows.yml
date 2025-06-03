@@ -1,21 +1,15 @@
 ---
-- name: Copy Test File on Windows Host 
+- name: Copy Falcon Sensor installer to Windows host
   win_copy:
-    src: "hello-world.txt"
-    dest: C:\Users\ansibleawx\Downloads\hello-world.txt
+    src: "FalconSensor_Windows.exe"
+    dest: C:\Users\ansibleawx\Downloads\FalconSensor_Windows.exe
     force: yes
 
-#- name: Copy Falcon Sensor installer to Windows host
-#  win_copy:
-#    src: "FalconSensor_Windows.exe"
-#    dest: C:\Users\ansibleawx\Downloads\FalconSensor_Windows.exe
-#    force: yes
+- name: Install Falcon Sensor on Windows
+  win_command: C:\Users\ansibleawx\Downloads\FalconSensor_Windows.exe /install /quiet /norestart CID=<Paste CID Here> GROUPING_TAGS={{ crowdstrike_tags }} /log=C:\Logs\CrowdStrikeInstall.log
 
-#- name: Install Falcon Sensor on Windows
-#  win_command: C:\Users\ansibleawx\Downloads\FalconSensor_Windows.exe /passive /norestart CID={{ CUSTOMER_ID }} GROUPING_TAGS=\"{{ crowdstrike_tags }}\" /log C:\Logs\CrowdStrikeInstall.log
-
-#- name: Ensure Falcon Sensor service is running
-#  ansible.windows.win_service:
-#    name: "CSFalconService"
-#    start_mode: auto
-#    state: started
+- name: Ensure Falcon Sensor service is running
+  win_service:
+    name: "CSFalconService"
+    start_mode: auto
+    state: started
