@@ -1,4 +1,7 @@
 ---
+- debug:
+    msg: "OS Family is {{ ansible_os_family }}"
+
 #- name: Include RHEL 7 download and install tasks
 #  include_tasks: install_centos7.yml
 #  when: ansible_os_family == "RedHat" and ansible_distribution_major_version == "7"
