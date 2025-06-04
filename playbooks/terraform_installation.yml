@@ -1,6 +1,6 @@
 ---
 - name: Install Terraform on all platforms
-  hosts: terraform
+  hosts: terraform-server
   become: true
   roles:
     - terraform
