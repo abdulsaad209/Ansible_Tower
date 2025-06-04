@@ -2,25 +2,26 @@
 - name: Install required dependencies
   apt:
     name:
-      - gnupg
-      - software-properties-common
+      - gpg
       - wget
     state: present
     update_cache: yes
   become: true
 
-- name: Download HashiCorp GPG key
-  get_url:
-    url: https://apt.releases.hashicorp.com/gpg
-    dest: /usr/share/keyrings/hashicorp-archive-keyring.gpg
-    mode: '0644'
+- name: Download and dearmor the HashiCorp GPG key
+  shell: |
+    wget -O- https://apt.releases.hashicorp.com/gpg | gpg --dearmor > /usr/share/keyrings/hashicorp-archive-keyring.gpg
+  args:
+    creates: /usr/share/keyrings/hashicorp-archive-keyring.gpg
   become: true
 
 - name: Add HashiCorp APT repository
-  copy:
-    dest: /etc/apt/sources.list.d/hashicorp.list
-    content: |
-      deb [arch={{ ansible_architecture }} signed-by=/usr/share/keyrings/hashicorp-archive-keyring.gpg] https://apt.releases.hashicorp.com {{ ansible_distribution_release | lower }} main
+  shell: |
+    echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/hashicorp-archive-keyring.gpg] \
+    https://apt.releases.hashicorp.com $(grep -oP '(?<=UBUNTU_CODENAME=).*' /etc/os-release || lsb_release -cs) main" \
+    > /etc/apt/sources.list.d/hashicorp.list
+  args:
+    creates: /etc/apt/sources.list.d/hashicorp.list
   become: true
 
 - name: Update APT cache
