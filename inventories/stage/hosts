@@ -19,4 +19,4 @@ centos7                 ansible_host=192.168.100.34
 win-2019                ansible_host=3.83.2.84
 
 [terraform]
-terraform-server        ansible_host=192.168.100.48
+terraform-server        ansible_host=192.168.100.49
