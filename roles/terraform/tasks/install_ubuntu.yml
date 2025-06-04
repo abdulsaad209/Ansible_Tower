@@ -34,3 +34,5 @@
     name: terraform
     state: present
   become: true
+
+# https://www.hashicorp.com/en/official-packaging-guide
