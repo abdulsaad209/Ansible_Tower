@@ -1,12 +1,13 @@
 ---
-- name: Include OS-specific install task
-  include_tasks: install_ubuntu.yml
-  when: ansible_os_family == "Debian"
-
-- name: Include CentOS 7-specific install task
+- name: Include RHEL 7 download and install tasks
   include_tasks: install_centos7.yml
   when: ansible_os_family == "RedHat" and ansible_distribution_major_version == "7"
 
-- name: Include Windows-specific install task
+- name: Include Debian download and install tasks
+  include_tasks: install_ubuntu.yml
+  when: ansible_os_family == "Debian"
+
+- name: Include Windows download and install tasks
   include_tasks: install_windows.yml
   when: ansible_os_family == "Windows"
+
