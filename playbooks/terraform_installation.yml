@@ -1,6 +1,7 @@
 ---
 - name: Install Terraform on all platforms
   hosts: terraform-server
+  gather_facts: true
   become: true
   roles:
     - terraform
