@@ -5,7 +5,7 @@
 
 - name: Include Debian download and install tasks
   include_tasks: install_ubuntu.yml
-  when: ansible_os_family == "Debian"
+  when: ansible_os_family == "Ubuntu"
 
 - name: Include Windows download and install tasks
   include_tasks: install_windows.yml
