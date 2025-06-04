@@ -1,6 +1,6 @@
 ---
 - name: Install Terraform on all platforms
   hosts: stage
-  become: yes
+  become: true
   roles:
     - terraform
