@@ -1,5 +1,5 @@
 ---
-- name: Install dependencies
+- name: Install required dependencies
   apt:
     name:
       - gnupg
@@ -12,11 +12,8 @@
 - name: Download HashiCorp GPG key
   get_url:
     url: https://apt.releases.hashicorp.com/gpg
-    dest: /tmp/hashicorp.gpg
+    dest: /usr/share/keyrings/hashicorp-archive-keyring.gpg
     mode: '0644'
-
-- name: De-armor GPG key
-  command: gpg --dearmor -o /usr/share/keyrings/hashicorp-archive-keyring.gpg /tmp/hashicorp.gpg
   become: true
 
 - name: Add HashiCorp APT repository
