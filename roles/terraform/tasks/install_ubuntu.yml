@@ -1,17 +1,38 @@
 ---
 - name: Install dependencies
   apt:
-    name: 
+    name:
       - gnupg
       - software-properties-common
       - wget
     state: present
     update_cache: yes
+  become: true
 
-- name: Installing Terraform
-  ansible.builtin.shell: |
-    wget -O - https://apt.releases.hashicorp.com/gpg | sudo gpg --dearmor -o /usr/share/keyrings/hashicorp-archive-keyring.gpg -y
-    echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/hashicorp-archive-keyring.gpg] https://apt.releases.hashicorp.com $(lsb_release -cs) main" | sudo tee /etc/apt/sources.list.d/hashicorp.list
-    sudo apt update && sudo apt install terraform -y 
-    
+- name: Download HashiCorp GPG key
+  get_url:
+    url: https://apt.releases.hashicorp.com/gpg
+    dest: /tmp/hashicorp.gpg
+    mode: '0644'
 
+- name: De-armor GPG key
+  command: gpg --dearmor -o /usr/share/keyrings/hashicorp-archive-keyring.gpg /tmp/hashicorp.gpg
+  become: true
+
+- name: Add HashiCorp APT repository
+  copy:
+    dest: /etc/apt/sources.list.d/hashicorp.list
+    content: |
+      deb [arch={{ ansible_architecture }} signed-by=/usr/share/keyrings/hashicorp-archive-keyring.gpg] https://apt.releases.hashicorp.com {{ ansible_distribution_release | lower }} main
+  become: true
+
+- name: Update APT cache
+  apt:
+    update_cache: yes
+  become: true
+
+- name: Install Terraform
+  apt:
+    name: terraform
+    state: present
+  become: true
