@@ -48,9 +48,13 @@
     state: present
   when: agent2_installed.rc != 0
 
-- name: Install zabbix-agent2
+- name: Install zabbix-agent2 and plugins
   yum:
-    name: zabbix-agent2
+    name:
+      - zabbix-agent2
+      - zabbix-agent2-plugin-mongodb
+      - zabbix-agent2-plugin-mssql
+      - zabbix-agent2-plugin-postgresql
     state: present
   when: agent2_installed.rc != 0
 
