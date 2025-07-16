@@ -1,0 +1,12 @@
+---
+- name: Backup old zabbix-agent config
+  copy:
+    src: "{{ old_conf_path }}"
+    dest: "{{ old_conf_path }}.bak"
+    remote_src: yes
+
+- name: Stop and disable old zabbix-agent service
+  service:
+    name: zabbix-agent
+    state: stopped
+    enabled: no

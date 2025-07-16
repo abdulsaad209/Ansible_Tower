@@ -1,0 +1,6 @@
+old_conf_paths:
+  - /etc/zabbix_agentd.conf
+  - /etc/zabbix/zabbix_agentd.conf
+
+zabbix_repo_url: "https://repo.zabbix.com/zabbix/7.0/rhel/7/x86_64/zabbix-release-latest-7.0.el7.noarch.rpm"
+zabbix_gpg_key: "https://repo.zabbix.com/RPM-GPG-KEY-ZABBIX-A14FE591"

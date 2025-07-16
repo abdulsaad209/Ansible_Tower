@@ -1,0 +1,23 @@
+---
+- name: Check if zabbix-agent2 is already installed
+  shell: rpm -q zabbix-agent2
+  register: agent2_installed
+  ignore_errors: true
+
+- name: Debug message if zabbix-agent2 already installed
+  debug:
+    msg: "zabbix-agent2 already installed, skipping host"
+  when: agent2_installed.rc == 0
+
+- name: Find which old config exists
+  stat:
+    path: "{{ item }}"
+  loop: "{{ old_conf_paths }}"
+  register: old_conf_candidates
+  when: agent2_installed.rc != 0
+
+- name: Set old config path fact
+  set_fact:
+    old_conf_path: "{{ item.stat.path }}"
+  loop: "{{ old_conf_candidates.results }}"
+  when: item.stat.exists and agent2_installed.rc != 0

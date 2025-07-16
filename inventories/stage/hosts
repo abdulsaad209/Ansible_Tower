@@ -4,6 +4,7 @@ awx
 centos
 windows
 terraform
+proxy
 
 [webservers]
 web01                   ansible_host=192.168.100.20
@@ -20,3 +21,6 @@ win-2019                ansible_host=3.83.2.84
 
 [terraform]
 terraform-server        ansible_host=192.168.100.49
+
+[proxy]
+zabbix-proxy            ansible_host=192.168.100.49

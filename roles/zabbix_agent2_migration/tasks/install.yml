@@ -1,0 +1,15 @@
+---
+- name: Import GPG key for Zabbix
+  rpm_key:
+    state: present
+    key: "{{ zabbix_gpg_key }}"
+
+- name: Add Zabbix 7.0 repository
+  yum:
+    name: "{{ zabbix_repo_url }}"
+    state: present
+
+- name: Install zabbix-agent2
+  yum:
+    name: zabbix-agent2
+    state: present

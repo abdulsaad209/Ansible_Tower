@@ -1,0 +1,15 @@
+---
+- name: Include check tasks
+  include_tasks: check.yml
+
+- name: Include backup tasks
+  include_tasks: backup.yml
+  when: agent2_installed.rc != 0
+
+- name: Include install tasks
+  include_tasks: install.yml
+  when: agent2_installed.rc != 0
+
+- name: Include service tasks
+  include_tasks: service.yml
+  when: agent2_installed.rc != 0
