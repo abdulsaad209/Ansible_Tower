@@ -1,15 +1,16 @@
 ---
-- name: Include check tasks
-  include_tasks: check.yml
+- name: Check OS and include relevant task file
+  include_tasks: centos7.yml
+  when: ansible_facts['os_family'] == 'RedHat' and ansible_facts['distribution_major_version'] == '7'
 
-- name: Include backup tasks
-  include_tasks: backup.yml
-  when: agent2_installed.rc != 0
+- name: Check OS and include relevant task file
+  include_tasks: ubuntu22.yml
+  when: ansible_facts['os_family'] == 'Debian' and ansible_facts['distribution'] == 'Ubuntu' and ansible_facts['distribution_version'] == '22.04'
 
-- name: Include install tasks
-  include_tasks: install.yml
-  when: agent2_installed.rc != 0
-
-- name: Include service tasks
-  include_tasks: service.yml
-  when: agent2_installed.rc != 0
+- name: Skip unsupported OS
+  debug:
+    msg: "Skipping unsupported OS: {{ ansible_facts['distribution'] }} {{ ansible_facts['distribution_version'] }}"
+  when: not (
+          (ansible_facts['os_family'] == 'RedHat' and ansible_facts['distribution_major_version'] == '7') or
+          (ansible_facts['os_family'] == 'Debian' and ansible_facts['distribution_version'] == '22.04')
+        )
