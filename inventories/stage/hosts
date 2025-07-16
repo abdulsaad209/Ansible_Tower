@@ -23,4 +23,4 @@ win-2019                ansible_host=3.83.2.84
 terraform-server        ansible_host=192.168.100.49
 
 [proxy]
-zabbix-proxy            ansible_host=192.168.100.49
+zabbix-proxy            ansible_host=192.168.100.47
