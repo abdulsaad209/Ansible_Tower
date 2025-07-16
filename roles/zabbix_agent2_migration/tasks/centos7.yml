@@ -2,7 +2,8 @@
 - name: Check if zabbix-agent2 is already installed
   shell: rpm -q zabbix-agent2
   register: agent2_installed
-  ignore_errors: true
+  changed_when: false
+  failed_when: false
 
 - name: Skip upgrade if zabbix-agent2 already installed
   debug:

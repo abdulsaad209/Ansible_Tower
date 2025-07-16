@@ -2,7 +2,8 @@
 - name: Check if zabbix-agent2 is already installed
   shell: dpkg -l | grep zabbix-agent2
   register: agent2_installed
-  ignore_errors: true
+  changed_when: false
+  failed_when: false
 
 - name: Skip if zabbix-agent2 already installed
   debug:
@@ -24,11 +25,9 @@
   ignore_errors: true
   when: agent2_installed.rc != 0
 
-- name: Add Zabbix apt repository
-  apt_repository:
-    repo: "{{ ubuntu22_repo }}"
-    state: present
-    filename: zabbix
+- name: Install Zabbix release .deb to add repository
+  apt:
+    deb: "{{ ubuntu22_repo }}"
   when: agent2_installed.rc != 0
 
 - name: Add Zabbix GPG key
