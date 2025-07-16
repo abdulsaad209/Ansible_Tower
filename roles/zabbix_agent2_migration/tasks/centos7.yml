@@ -43,10 +43,10 @@
     key: "{{ zabbix_gpg_key }}"
   when: agent2_installed.rc != 0
 
-- name: Add Zabbix 7.0 repository for CentOS 7
-  yum:
-    name: "{{ centos7_repo }}"
-    state: present
+- name: Install Zabbix repo RPM for CentOS 7
+  ansible.builtin.command: "rpm -Uvh {{ centos7_repo }}"
+  args:
+    creates: /etc/yum.repos.d/zabbix.repo
   when: agent2_installed.rc != 0
 
 - name: Install zabbix-agent2 and plugins
