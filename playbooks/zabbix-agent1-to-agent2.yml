@@ -1,6 +1,6 @@
 ---
 - name: Upgrade classic zabbix-agent to zabbix-agent2
-  hosts: zabbix-proxy
+  hosts: centos7
   become: true
 
   roles:
