@@ -1,0 +1,86 @@
+- name: Check if zabbix-agent 7.0 is installed
+  shell: |
+    rpm -q --qf '%{VERSION}' zabbix-agent | grep -q '^7'
+  register: agent1_installed
+  changed_when: false
+  failed_when: false
+
+- name: Skip upgrade if zabbix-agent 7.0 already installed
+  debug:
+    msg: "zabbix-agent 7.0 already installed, skipping host"
+  when: agent1_installed.rc == 0
+
+- name: Perform Zabbix Agent 7.0 install if not present
+  block:
+
+    - name: Find existing zabbix-agent config file
+      stat:
+        path: "{{ item }}"
+      loop:
+        - /etc/zabbix/zabbix_agentd.conf
+        - /etc/zabbix/zabbix_agent.conf
+        - /etc/zabbix_agentd.conf
+      register: old_conf_candidates
+
+    - name: Set old config path fact
+      set_fact:
+        old_conf_path: "{{ item.stat.path }}"
+      loop: "{{ old_conf_candidates.results }}"
+      when: item.stat.exists
+      when: old_conf_path is not defined
+
+    - name: Backup existing zabbix-agent config
+      copy:
+        src: "{{ old_conf_path }}"
+        dest: "{{ old_conf_path }}.bak"
+        remote_src: yes
+      when: old_conf_path is defined
+
+    - name: Delete Old zabbix Repo
+      command: rpm -e zabbix-release
+      ignore_errors: true
+
+    - name: Install Zabbix 7.0 repo for CentOS 6
+      ansible.builtin.command: "rpm -Uvh {{ centos6_repo }}"
+      args:
+        creates: /etc/yum.repos.d/zabbix.repo
+
+    # - name: Clean yum cache
+    #   command: yum clean all
+    - name: Replace https with http in all baseurl lines in Zabbix repo
+      replace:
+        path: /etc/yum.repos.d/zabbix.repo
+        regexp: '^baseurl=https://'
+        replace: 'baseurl=http://'
+
+    - name: Stop and disable old zabbix-agent service
+      service:
+        name: zabbix-agent
+        state: stopped
+        enabled: no
+
+    - name: Install zabbix-agent 7.0
+      yum:
+        name: zabbix-agent
+        state: latest
+
+    - name: Backup newly installed config
+      copy:
+        src: /etc/zabbix/zabbix_agentd.conf
+        dest: /etc/zabbix/zabbix_agentd.conf.bak
+        remote_src: yes
+
+    - name: Copy old config into new zabbix-agent config
+      copy:
+        src: "{{ old_conf_path }}"
+        dest: /etc/zabbix/zabbix_agentd.conf
+        remote_src: yes
+      when: old_conf_path is defined
+
+    - name: Enable and restart zabbix-agent
+      service:
+        name: zabbix-agent
+        state: restarted
+        enabled: yes
+
+  when: agent1_installed.rc != 0

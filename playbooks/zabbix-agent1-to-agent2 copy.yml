@@ -1,0 +1,7 @@
+---
+- name: Upgrade classic zabbix-agent to zabbix-agent2
+  hosts: corp
+  become: true
+
+  roles:
+    - zabbix_agent2_migration

@@ -1,0 +1,63 @@
+- name: Check if zabbix-agent2 is already installed
+  shell: dpkg -l | grep zabbix-agent2
+  register: agent2_installed
+  changed_when: false
+  failed_when: false
+
+- name: Skip if zabbix-agent2 already installed
+  debug:
+    msg: "zabbix-agent2 already installed on Ubuntu, skipping"
+  when: agent2_installed.rc == 0
+
+- name: Perform Zabbix Agent 2 installation if not installed
+  block:
+    - name: Stop and disable zabbix-agent (if exists)
+      service:
+        name: zabbix-agent
+        state: stopped
+        enabled: no
+
+    - name: Backup old agent config if exists
+      copy:
+        src: /etc/zabbix/zabbix_agentd.conf
+        dest: /etc/zabbix/zabbix_agentd.conf.bak
+        remote_src: yes
+      ignore_errors: true
+
+    - name: Install Zabbix release .deb to add repository
+      apt:
+        deb: "{{ ubuntu22_repo }}"
+
+    - name: Update apt cache
+      apt:
+        update_cache: yes
+
+    - name: Install zabbix-agent2 and plugins
+      apt:
+        name:
+          - zabbix-agent2
+          - zabbix-agent2-plugin-mongodb
+          - zabbix-agent2-plugin-mssql
+          - zabbix-agent2-plugin-postgresql
+        state: present
+
+    - name: Backup default agent2 config
+      copy:
+        src: /etc/zabbix/zabbix_agent2.conf
+        dest: /etc/zabbix/zabbix_agent2.conf.bak
+        remote_src: yes
+
+    - name: Replace with old agent config if exists
+      copy:
+        src: /etc/zabbix/zabbix_agentd.conf.bak
+        dest: /etc/zabbix/zabbix_agent2.conf
+        remote_src: yes
+      ignore_errors: true
+
+    - name: Enable and restart zabbix-agent2
+      service:
+        name: zabbix-agent2
+        state: restarted
+        enabled: yes
+
+  when: agent2_installed.rc != 0
