@@ -1,0 +1,2 @@
+argocd_namespace: argocd
+kubeconfig_path: /tmp/kubeconfig-dev  # This will be passed by Terraform or set statically

@@ -1,0 +1,9 @@
+---
+- name: Install ArgoCD on EKS Dev Cluster
+  hosts: localhost
+  become: true
+  gather_facts: false
+  vars_files:
+    - vars/vars.yml
+  roles:
+    - argocd-installation

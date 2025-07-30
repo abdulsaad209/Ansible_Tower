@@ -1,0 +1,38 @@
+---
+- name: Create ArgoCD namespace
+  kubernetes.core.k8s:
+    state: present
+    kind: Namespace
+    name: "{{ argocd_namespace }}"
+    kubeconfig: "{{ kubeconfig_path }}"
+
+- name: Apply ArgoCD manifests
+  kubernetes.core.k8s:
+    state: present
+    namespace: "{{ argocd_namespace }}"
+    src: "https://raw.githubusercontent.com/argoproj/argo-cd/stable/manifests/install.yaml"
+    kubeconfig: "{{ kubeconfig_path }}"
+
+- name: Patch ArgoCD server to use NodePort
+  kubernetes.core.k8s_json_patch:
+    api_version: v1
+    kind: Service
+    name: argocd-server
+    namespace: "{{ argocd_namespace }}"
+    patch:
+      - op: replace
+        path: /spec/type
+        value: NodePort
+    kubeconfig: "{{ kubeconfig_path }}"
+
+- name: Get ArgoCD admin password
+  kubernetes.core.k8s_info:
+    kind: Secret
+    namespace: "{{ argocd_namespace }}"
+    name: argocd-initial-admin-secret
+    kubeconfig: "{{ kubeconfig_path }}"
+  register: admin_secret
+
+- name: Decode admin password
+  set_fact:
+    argocd_admin_password: "{{ admin_secret.resources[0].data.password | b64decode }}"
