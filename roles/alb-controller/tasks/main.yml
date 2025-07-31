@@ -1,16 +1,30 @@
 ---
-- name: Install eksctl
+- name: Ensure ~/.local/bin exists
+  file:
+    path: "{{ ansible_env.HOME }}/.local/bin"
+    state: directory
+    mode: '0755'
+
+- name: Add ~/.local/bin to PATH (for session)
+  set_fact:
+    path_with_local_bin: "{{ ansible_env.HOME }}/.local/bin:{{ ansible_env.PATH }}"
+
+- name: Install eksctl to ~/.local/bin
   shell: |
     curl --silent --location "https://github.com/weaveworks/eksctl/releases/latest/download/eksctl_$(uname -s)_amd64.tar.gz" | tar xz -C /tmp
-    mv /tmp/eksctl /usr/local/bin
+    mv /tmp/eksctl {{ ansible_env.HOME }}/.local/bin/
   args:
-    creates: /usr/local/bin/eksctl
+    creates: "{{ ansible_env.HOME }}/.local/bin/eksctl"
+  environment:
+    PATH: "{{ path_with_local_bin }}"
 
-- name: Install helm
+- name: Install helm to ~/.local/bin
   shell: |
     curl https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3 | bash
   args:
-    creates: /usr/local/bin/helm
+    creates: "{{ ansible_env.HOME }}/.local/bin/helm"
+  environment:
+    PATH: "{{ path_with_local_bin }}"
 
 - name: Ensure jq is installed
   package:
@@ -32,6 +46,8 @@
   shell: |
     eksctl utils associate-iam-oidc-provider --cluster {{ cluster_name }} --approve
   when: oidc_check.rc != 0
+  environment:
+    PATH: "{{ path_with_local_bin }}"
 
 - name: Download IAM policy
   get_url:
@@ -58,14 +74,20 @@
       --region={{ region }}
   register: create_iam_sa
   failed_when: "'ResourceInUseException' not in create_iam_sa.stderr and create_iam_sa.rc != 0"
+  environment:
+    PATH: "{{ path_with_local_bin }}"
 
 - name: Add Helm repo for ALB controller
   shell: helm repo add eks https://aws.github.io/eks-charts
   args:
-    creates: /root/.cache/helm/repository/eks-index.yaml
+    creates: "{{ ansible_env.HOME }}/.cache/helm/repository/eks-index.yaml"
+  environment:
+    PATH: "{{ path_with_local_bin }}"
 
 - name: Update Helm repos
   shell: helm repo update
+  environment:
+    PATH: "{{ path_with_local_bin }}"
 
 - name: Install AWS Load Balancer Controller via Helm
   shell: |
@@ -77,4 +99,5 @@
       --set region={{ region }} \
       --set vpcId={{ vpc_id }}
   environment:
+    PATH: "{{ path_with_local_bin }}"
     KUBECONFIG: "{{ kubeconfig_decoded_path }}"

@@ -19,14 +19,7 @@
     kubeconfig_decoded_path: /tmp/kubeconfig-dev
     kubeconfig_path: /tmp/kubeconfig-dev
 
-  pre_tasks:
-    - name: Set up ALB Controller (as root)
-      import_role:
-        name: alb-controller
-      become: true
-      become_method: sudo
-      become_user: root
-      become_flags: "-n"
-
   roles:
+    - alb-controller
     - argocd-installation
+
