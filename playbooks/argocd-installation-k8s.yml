@@ -3,7 +3,9 @@
   hosts: localhost
   become: true
   gather_facts: false
-  vars_files:
-    - vars/vars.yml
+  vars:
+    kubeconfig_decoded_path: /tmp/kubeconfig-dev  # Path to write decoded kubeconfig
+    kubeconfig_path: /tmp/kubeconfig-dev          # Used in all k8s module tasks
+
   roles:
     - argocd-installation

@@ -1,4 +1,10 @@
 ---
+- name: Write kubeconfig to file
+  copy:
+    content: "{{ kubeconfig | b64decode }}"
+    dest: "{{ kubeconfig_decoded_path }}"
+    mode: '0600'
+
 - name: Create ArgoCD namespace
   kubernetes.core.k8s:
     state: present
