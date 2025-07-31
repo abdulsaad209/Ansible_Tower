@@ -1,12 +1,17 @@
----
+# ---
 # - name: Install ArgoCD on EKS Dev Cluster
 #   hosts: localhost
-#   become: true
+#   connection: local
 #   gather_facts: false
 #   vars:
-#     kubeconfig_decoded_path: /tmp/kubeconfig-dev  # Path to write decoded kubeconfig
-#     kubeconfig_path: /tmp/kubeconfig-dev          # Used in all k8s module tasks
-- name: Install ArgoCD on EKS Dev Cluster
+#     kubeconfig_decoded_path: /tmp/kubeconfig-dev
+#     kubeconfig_path: /tmp/kubeconfig-dev
+
+#   roles:
+#     - argocd-installation
+
+---
+- name: Setup ALB Controller and Install ArgoCD on EKS Cluster
   hosts: localhost
   connection: local
   gather_facts: false
@@ -15,4 +20,5 @@
     kubeconfig_path: /tmp/kubeconfig-dev
 
   roles:
+    - alb-controller
     - argocd-installation
