@@ -20,6 +20,6 @@
     kubeconfig_path: /tmp/kubeconfig-dev
 
   roles:
-    - alb-controller
+    #- alb-controller
     - argocd-installation
 
