@@ -1,114 +1,132 @@
 ---
-- name: Ensure ~/.local/bin exists
-  file:
-    path: "{{ lookup('env', 'HOME') }}/.local/bin"
-    state: directory
-    mode: '0755'
+- name: Get OIDC ID from EKS cluster
+  command: >
+    aws eks describe-cluster
+    --name {{ cluster_name }}
+    --query "cluster.identity.oidc.issuer"
+    --output text
+  register: oidc_url
 
-- name: Add ~/.local/bin to PATH (for session)
+- name: Extract OIDC ID
   set_fact:
-    path_with_local_bin: "{{ lookup('env', 'HOME') }}/.local/bin:{{ lookup('env', 'PATH') }}"
+    oidc_id: "{{ oidc_url.stdout | regex_replace('^https://.*/', '') }}"
 
-- name: Install eksctl to ~/.local/bin
-  shell: |
-    curl --silent --location "https://github.com/weaveworks/eksctl/releases/latest/download/eksctl_$(uname -s)_amd64.tar.gz" | tar xz -C /tmp
-    mv /tmp/eksctl {{ lookup('env', 'HOME') }}/.local/bin/
-  args:
-    creates: "{{ lookup('env', 'HOME') }}/.local/bin/eksctl"
+- name: Associate IAM OIDC provider
+  command: >
+    eksctl utils associate-iam-oidc-provider
+    --cluster {{ cluster_name }}
+    --approve
   environment:
-    PATH: "{{ path_with_local_bin }}"
+    AWS_REGION: "{{ region }}"
 
-- name: Install helm to ~/.local/bin manually
-  shell: |
-    HELM_VERSION=$(curl -s https://api.github.com/repos/helm/helm/releases/latest | jq -r .tag_name)
-    curl -Lo helm.tar.gz https://get.helm.sh/helm-${HELM_VERSION}-linux-amd64.tar.gz
-    tar -xzf helm.tar.gz
-    mv linux-amd64/helm {{ lookup('env', 'HOME') }}/.local/bin/helm
-    rm -rf linux-amd64 helm.tar.gz
-  args:
-    creates: "{{ lookup('env', 'HOME') }}/.local/bin/helm"
-  environment:
-    PATH: "{{ path_with_local_bin }}"
-
-- name: Ensure jq is installed
-  package:
-    name: jq
-    state: present
-
-- name: Get OIDC ID
-  shell: |
-    aws eks describe-cluster --name {{ cluster_name }} --query "cluster.identity.oidc.issuer" --output text | cut -d '/' -f 5
-  register: oidc_id
-  environment:
-    PATH: "{{ path_with_local_bin }}"
-
-- name: Check if OIDC provider is associated
-  shell: |
-    aws iam list-open-id-connect-providers | grep {{ oidc_id.stdout }}
-  register: oidc_check
-  ignore_errors: true
-  environment:
-    PATH: "{{ path_with_local_bin }}"
-
-- name: Associate OIDC if not exists
-  shell: |
-    {{ lookup('env', 'HOME') }}/.local/bin/eksctl utils associate-iam-oidc-provider --cluster {{ cluster_name }} --approve
-  when: oidc_check.rc != 0
-  environment:
-    PATH: "{{ path_with_local_bin }}"
-
-- name: Download IAM policy
+- name: Download IAM policy for ALB controller
   get_url:
     url: https://raw.githubusercontent.com/kubernetes-sigs/aws-load-balancer-controller/v2.11.0/docs/install/iam_policy.json
     dest: /tmp/iam_policy.json
 
 - name: Create IAM Policy
-  shell: |
-    aws iam create-policy \
-      --policy-name AWSLoadBalancerControllerIAMPolicy \
-      --policy-document file:///tmp/iam_policy.json
-  register: create_policy
-  failed_when: "'EntityAlreadyExists' not in create_policy.stderr and create_policy.rc != 0"
-  environment:
-    PATH: "{{ path_with_local_bin }}"
+  command: >
+    aws iam create-policy
+    --policy-name AWSLoadBalancerControllerIAMPolicy
+    --policy-document file:///tmp/iam_policy.json
+  register: create_policy_output
+  failed_when: false
+  changed_when: "'policy' in create_policy_output.stdout"
 
-- name: Create IAM Role for ALB Controller
-  shell: |
-    {{ lookup('env', 'HOME') }}/.local/bin/eksctl create iamserviceaccount \
-      --cluster={{ cluster_name }} \
-      --namespace=kube-system \
-      --name=aws-load-balancer-controller \
-      --role-name AmazonEKSLoadBalancerControllerRole \
-      --attach-policy-arn=arn:aws:iam::{{ aws_account_id }}:policy/AWSLoadBalancerControllerIAMPolicy \
-      --approve \
-      --region={{ region }}
-  register: create_iam_sa
-  failed_when: "'ResourceInUseException' not in create_iam_sa.stderr and create_iam_sa.rc != 0"
+- name: Create IAM Service Account with eksctl
+  command: >
+    eksctl create iamserviceaccount
+    --cluster={{ cluster_name }}
+    --namespace=kube-system
+    --name=aws-load-balancer-controller
+    --role-name=AmazonEKSLoadBalancerControllerRole
+    --attach-policy-arn=arn:aws:iam::{{ aws_account_id }}:policy/AWSLoadBalancerControllerIAMPolicy
+    --approve
   environment:
-    PATH: "{{ path_with_local_bin }}"
+    AWS_REGION: "{{ region }}"
 
-- name: Add Helm repo for ALB controller
-  shell: |
-    helm repo add eks https://aws.github.io/eks-charts
-  args:
-    creates: "{{ lookup('env', 'HOME') }}/.cache/helm/repository/eks-index.yaml"
-  environment:
-    PATH: "{{ path_with_local_bin }}"
+- name: Add Helm repo for ALB Controller
+  command: helm repo add eks https://aws.github.io/eks-charts
+  register: helm_add
+  changed_when: "'has been added' in helm_add.stdout or 'already exists' not in helm_add.stdout"
 
-- name: Update Helm repos
-  shell: helm repo update
-  environment:
-    PATH: "{{ path_with_local_bin }}"
+- name: Update Helm repo
+  command: helm repo update
 
-- name: Install AWS Load Balancer Controller via Helm
-  shell: |
-    helm upgrade --install aws-load-balancer-controller eks/aws-load-balancer-controller \
-      -n kube-system \
-      --set clusterName={{ cluster_name }} \
-      --set serviceAccount.create=false \
-      --set serviceAccount.name=aws-load-balancer-controller \
-      --set region={{ region }} \
-      --set vpcId={{ vpc_id }}
-  environment:
-    KUBECONFIG: "{{ kubeconfig_decoded_path }}"
-    PATH: "{{ path_with_local_bin }}"
+- name: Install AWS ALB Load Balancer Controller
+  command: >
+    helm install aws-load-balancer-controller eks/aws-load-balancer-controller
+    -n kube-system
+    --set clusterName={{ cluster_name }}
+    --set serviceAccount.create=false
+    --set serviceAccount.name=aws-load-balancer-controller
+    --set region={{ region }}
+    --set vpcId={{ vpc_id }}
+
+- name: Wait for aws-load-balancer-controller deployment
+  kubernetes.core.k8s_info:
+    kind: Deployment
+    namespace: kube-system
+    name: aws-load-balancer-controller
+    kubeconfig: "{{ kubeconfig_path }}"
+  register: alb_deploy_status
+  retries: 10
+  delay: 15
+  until: alb_deploy_status.resources[0].status.readyReplicas > 0
+
+##################################################################
+# PATCH ARGOCD-SERVER DEPLOYMENT FOR INGRESS USE
+##################################################################
+
+- name: Patch ArgoCD server with custom args
+  kubernetes.core.k8s_json_patch:
+    api_version: apps/v1
+    kind: Deployment
+    name: argocd-server
+    namespace: argocd
+    patch:
+      - op: add
+        path: /spec/template/spec/containers/0/args
+        value:
+          - argocd-server
+          - --insecure
+    kubeconfig: "{{ kubeconfig_path }}"
+
+##################################################################
+# APPLY INGRESS MANIFEST
+##################################################################
+
+- name: Apply ArgoCD ingress resource
+  kubernetes.core.k8s:
+    state: present
+    src: "{{ lookup('env', 'CI_PROJECT_DIR') }}/kubernetes/ingress-argocd.yml"
+    kubeconfig: "{{ kubeconfig_path }}"
+
+- name: Wait for ingress to be created
+  pause:
+    seconds: 15
+
+- name: Get ArgoCD ingress
+  kubernetes.core.k8s_info:
+    kind: Ingress
+    namespace: argocd
+    name: argocd-ingress
+    kubeconfig: "{{ kubeconfig_path }}"
+  register: argocd_ingress_info
+
+- name: Extract ALB hostname from ingress
+  set_fact:
+    alb_hostname: "{{ argocd_ingress_info.resources[0].status.loadBalancer.ingress[0].hostname }}"
+
+- name: Perform nslookup to get public IP
+  command: "nslookup {{ alb_hostname }}"
+  register: nslookup_output
+
+- name: Extract public IP from nslookup
+  set_fact:
+    alb_public_ip: "{{ nslookup_output.stdout | regex_search('Address: (.*)', '\\1') | trim }}"
+
+- name: Save ALB public IP to file
+  copy:
+    content: "{{ alb_public_ip }}"
+    dest: "{{ lookup('env', 'CI_PROJECT_DIR') }}/kubernetes/alb-public-ip.txt"
