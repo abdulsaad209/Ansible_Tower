@@ -40,8 +40,6 @@
     --role-name=AmazonEKSLoadBalancerControllerRole
     --attach-policy-arn=arn:aws:iam::{{ aws_account_id }}:policy/AWSLoadBalancerControllerIAMPolicy
     --approve
-  environment:
-    AWS_REGION: "{{ region }}"
 
 - name: Add Helm repo for ALB Controller
   command: helm repo add eks https://aws.github.io/eks-charts
