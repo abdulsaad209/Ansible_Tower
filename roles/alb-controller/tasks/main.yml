@@ -55,11 +55,11 @@
 - name: Update Helm repo
   command: helm repo update
 
-- name: Uninstall Helm Chart if it exists 
-  command: helm uninstall aws-load-balancer-controller -n kube-system || true
-  environment:
-    KUBECONFIG: "{{ kubeconfig_path }}"
-  ignore_errors: true
+# - name: Uninstall Helm Chart if it exists 
+#   command: helm uninstall aws-load-balancer-controller -n kube-system || true
+#   environment:
+#     KUBECONFIG: "{{ kubeconfig_path }}"
+#   ignore_errors: true
 
 - name: Install AWS ALB Load Balancer Controller
   command: >
