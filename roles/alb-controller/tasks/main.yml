@@ -104,7 +104,7 @@
 - name: Apply ArgoCD ingress resource
   kubernetes.core.k8s:
     state: present
-    src: "{{ lookup('env', 'CI_PROJECT_DIR') }}/kubernetes/ingress-argocd.yml"
+    src: "{{ role_path }}/files/ingress-argocd.yml"
     kubeconfig: "{{ kubeconfig_path }}"
 
 - name: Wait for ingress to be created
