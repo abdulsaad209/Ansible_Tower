@@ -18,7 +18,7 @@
   gather_facts: false
   vars:
     cluster_name: ""
-    region: ""
+    region: "us-east-1"
     vpc_id: ""
     aws_account_id: ""
     kubeconfig_decoded_path: /tmp/kubeconfig-dev
