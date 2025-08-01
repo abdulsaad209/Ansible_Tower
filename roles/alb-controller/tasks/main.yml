@@ -1,11 +1,12 @@
 ---
 - name: Get OIDC ID from EKS cluster
-  command: >
+  shell: >
     aws eks describe-cluster
     --name {{ cluster_name }}
+    --region {{ region }}
     --query "cluster.identity.oidc.issuer"
-    --output text
-  register: oidc_url
+    --output text | cut -d '/' -f 5
+  register: oidc_id_output
 
 - name: Set OIDC ID fact
   set_fact:
