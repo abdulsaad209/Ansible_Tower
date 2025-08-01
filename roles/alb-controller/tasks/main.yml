@@ -139,7 +139,7 @@
   set_fact:
     alb_hostname: "{{ argocd_ingress_info.resources[0].status.loadBalancer.ingress[0].hostname }}"
 
-- name: Save ALB DNS to file
-  copy:
-    content: "{{ alb_hostname }}"
-    dest: "{{ lookup('env', 'CI_PROJECT_DIR') }}/kubernetes/alb-dns-name.txt"
+- name: Print ALB DNS name
+  debug:
+    msg: "ALB DNS: {{ alb_hostname }}"
+
