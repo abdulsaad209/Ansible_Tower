@@ -16,8 +16,6 @@
     eksctl utils associate-iam-oidc-provider
     --cluster {{ cluster_name }}
     --approve
-  environment:
-    AWS_REGION: "{{ region }}"
 
 - name: Download IAM policy for ALB controller
   get_url:
