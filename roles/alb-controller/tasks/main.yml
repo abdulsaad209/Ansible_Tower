@@ -45,7 +45,7 @@
     --approve
   environment:
     AWS_REGION: "{{ region }}"
-    
+
 - name: Add Helm repo for ALB Controller
   command: helm repo add eks https://aws.github.io/eks-charts
   register: helm_add
@@ -63,6 +63,8 @@
     --set serviceAccount.name=aws-load-balancer-controller
     --set region={{ region }}
     --set vpcId={{ vpc_id }}
+  environment:
+    KUBECONFIG: "{{ kubeconfig_path }}"
 
 - name: Wait for aws-load-balancer-controller deployment
   kubernetes.core.k8s_info:
