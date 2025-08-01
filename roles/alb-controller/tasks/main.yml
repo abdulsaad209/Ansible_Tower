@@ -42,6 +42,7 @@
     --name=aws-load-balancer-controller
     --role-name=AmazonEKSLoadBalancerControllerRole
     --attach-policy-arn=arn:aws:iam::{{ aws_account_id }}:policy/AWSLoadBalancerControllerIAMPolicy
+    --override-existing-serviceaccounts
     --approve
   environment:
     AWS_REGION: "{{ region }}"
