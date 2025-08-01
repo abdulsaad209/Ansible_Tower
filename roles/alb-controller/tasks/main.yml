@@ -7,9 +7,9 @@
     --output text
   register: oidc_url
 
-- name: Extract OIDC ID
+- name: Set OIDC ID fact
   set_fact:
-    oidc_id: "{{ oidc_url.stdout | regex_replace('^https://.*/', '') }}"
+    oidc_id: "{{ oidc_id_output.stdout }}"
 
 - name: Associate IAM OIDC provider
   command: >
