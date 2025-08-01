@@ -1,7 +1,7 @@
 ---
 - name: Configure SSSD and Join AD
   hosts: stage
-  become: yes
+  become: true
   roles:
     - sssd
 

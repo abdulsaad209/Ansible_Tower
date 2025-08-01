@@ -1,16 +1,3 @@
-# ---
-# - name: Setup ALB Controller and Install ArgoCD on EKS Cluster
-#   hosts: localhost
-#   connection: local
-#   gather_facts: false
-#   vars:
-#     kubeconfig_decoded_path: /tmp/kubeconfig-dev
-#     kubeconfig_path: /tmp/kubeconfig-dev
-
-#   roles:
-#     #- alb-controller
-#     - argocd-installation
-
 ---
 - name: Setup ALB Controller and Install ArgoCD on EKS Cluster
   hosts: localhost
