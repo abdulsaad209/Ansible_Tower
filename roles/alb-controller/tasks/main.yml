@@ -66,16 +66,16 @@
   environment:
     KUBECONFIG: "{{ kubeconfig_path }}"
 
-- name: Wait for aws-load-balancer-controller deployment
-  kubernetes.core.k8s_info:
-    kind: Deployment
-    namespace: kube-system
-    name: aws-load-balancer-controller
-    kubeconfig: "{{ kubeconfig_path }}"
-  register: alb_deploy_status
-  retries: 10
-  delay: 15
-  until: alb_deploy_status.resources[0].status.readyReplicas > 0
+# - name: Wait for aws-load-balancer-controller deployment
+#   kubernetes.core.k8s_info:
+#     kind: Deployment
+#     namespace: kube-system
+#     name: aws-load-balancer-controller
+#     kubeconfig: "{{ kubeconfig_path }}"
+#   register: alb_deploy_status
+#   retries: 10
+#   delay: 15
+#   until: alb_deploy_status.resources[0].status.readyReplicas > 0
 
 ##################################################################
 # PATCH ARGOCD-SERVER DEPLOYMENT FOR INGRESS USE
