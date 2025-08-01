@@ -60,6 +60,14 @@
 #   environment:
 #     KUBECONFIG: "{{ kubeconfig_path }}"
 #   ignore_errors: true
+- name: Uninstall existing ALB Load Balancer Controller (if any)
+  command: helm uninstall aws-load-balancer-controller -n kube-system
+  environment:
+    KUBECONFIG: "{{ kubeconfig_path }}"
+  register: uninstall_result
+  failed_when: false
+  changed_when: "'uninstalled' in uninstall_result.stdout or 'release: not found' in uninstall_result.stderr"
+  ignore_errors: true
 
 - name: Install AWS ALB Load Balancer Controller
   command: >
@@ -74,16 +82,16 @@
     KUBECONFIG: "{{ kubeconfig_path }}"
   ignore_errors: true
 
-# - name: Wait for aws-load-balancer-controller deployment
-#   kubernetes.core.k8s_info:
-#     kind: Deployment
-#     namespace: kube-system
-#     name: aws-load-balancer-controller
-#     kubeconfig: "{{ kubeconfig_path }}"
-#   register: alb_deploy_status
-#   retries: 10
-#   delay: 15
-#   until: alb_deploy_status.resources[0].status.readyReplicas > 0
+- name: Wait for aws-load-balancer-controller deployment
+  kubernetes.core.k8s_info:
+    kind: Deployment
+    namespace: kube-system
+    name: aws-load-balancer-controller
+    kubeconfig: "{{ kubeconfig_path }}"
+  register: alb_deploy_status
+  retries: 10
+  delay: 15
+  until: alb_deploy_status.resources[0].status.readyReplicas > 0
 
 ##################################################################
 # PATCH ARGOCD-SERVER DEPLOYMENT FOR INGRESS USE
