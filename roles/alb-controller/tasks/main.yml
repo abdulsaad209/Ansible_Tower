@@ -66,6 +66,7 @@
     --set vpcId={{ vpc_id }}
   environment:
     KUBECONFIG: "{{ kubeconfig_path }}"
+  ignore_errors: true
 
 # - name: Wait for aws-load-balancer-controller deployment
 #   kubernetes.core.k8s_info:
