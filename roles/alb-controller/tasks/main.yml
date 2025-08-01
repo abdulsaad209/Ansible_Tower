@@ -139,15 +139,7 @@
   set_fact:
     alb_hostname: "{{ argocd_ingress_info.resources[0].status.loadBalancer.ingress[0].hostname }}"
 
-- name: Perform nslookup to get public IP
-  command: "nslookup {{ alb_hostname }}"
-  register: nslookup_output
-
-- name: Extract public IP from nslookup
-  set_fact:
-    alb_public_ip: "{{ nslookup_output.stdout | regex_search('Address: (.*)', '\\1') | trim }}"
-
-- name: Save ALB public IP to file
+- name: Save ALB DNS to file
   copy:
-    content: "{{ alb_public_ip }}"
-    dest: "{{ lookup('env', 'CI_PROJECT_DIR') }}/kubernetes/alb-public-ip.txt"
+    content: "{{ alb_hostname }}"
+    dest: "{{ lookup('env', 'CI_PROJECT_DIR') }}/kubernetes/alb-dns-name.txt"
