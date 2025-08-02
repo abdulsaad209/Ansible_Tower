@@ -11,6 +11,7 @@
     kubeconfig_decoded_path: /tmp/kubeconfig-dev
     kubeconfig_path: /tmp/kubeconfig-dev
     argocd_namespace: ""
+    env: ""
 
   roles:
     - argocd-installation

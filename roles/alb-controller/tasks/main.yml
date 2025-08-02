@@ -116,11 +116,15 @@
 ##################################################################
 # APPLY INGRESS MANIFEST
 ##################################################################
+- name: Template environment-specific ingress
+  template:
+    src: ingress-argocd.yml.j2
+    dest: /tmp/ingress-argocd.yml
 
 - name: Apply ArgoCD ingress resource
   kubernetes.core.k8s:
     state: present
-    src: "{{ role_path }}/files/ingress-argocd.yml"
+    src: /tmp/ingress-argocd.yml
     kubeconfig: "{{ kubeconfig_path }}"
 
 - name: Wait for ingress to be created

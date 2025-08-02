@@ -9,7 +9,7 @@ metadata:
 spec:
   ingressClassName: alb
   rules:
-    - host: argocd.szcoders.com
+    - host: argocd-{{ env }}.szcoders.com
       http:
         paths: 
           - path: /
