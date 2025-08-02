@@ -28,7 +28,7 @@
 - name: Create IAM Policy
   command: >
     aws iam create-policy
-    --policy-name AWSLoadBalancerControllerIAMPolicy
+    --policy-name AWSLoadBalancerControllerIAMPolicy-{{ env }}
     --policy-document file:///tmp/iam_policy.json
   register: create_policy_output
   failed_when: false
@@ -39,9 +39,9 @@
     eksctl create iamserviceaccount
     --cluster={{ cluster_name }}
     --namespace=kube-system
-    --name=aws-load-balancer-controller
-    --role-name=AmazonEKSLoadBalancerControllerRole
-    --attach-policy-arn=arn:aws:iam::{{ aws_account_id }}:policy/AWSLoadBalancerControllerIAMPolicy
+    --name=aws-load-balancer-controller-{{ env }}
+    --role-name=AmazonEKSLoadBalancerControllerRole-{{ env }}
+    --attach-policy-arn=arn:aws:iam::{{ aws_account_id }}:policy/AWSLoadBalancerControllerIAMPolicy-{{ env }}
     --override-existing-serviceaccounts
     --approve
   environment:
@@ -75,7 +75,7 @@
     -n kube-system
     --set clusterName={{ cluster_name }}
     --set serviceAccount.create=false
-    --set serviceAccount.name=aws-load-balancer-controller
+    --set serviceAccount.name=aws-load-balancer-controller-{{ env }}
     --set region={{ region }}
     --set vpcId={{ vpc_id }}
   environment:
