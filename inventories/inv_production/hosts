@@ -1,7 +1,0 @@
-[prod:children]
-kubernetes
-
-[kubernetes]
-kubernetes-master           ansible_host=10.0.0.31
-worker01                    ansible_host=10.0.0.32
-
