@@ -1,6 +1,6 @@
 ---
 - name: Deploy Zabbix Agent 
-  hosts: windows
+  hosts: prod
   #become: true
   roles:
     - zabbix_agent_installation

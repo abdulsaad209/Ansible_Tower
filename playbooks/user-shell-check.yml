@@ -1,0 +1,19 @@
+---
+- hosts: prod
+  become: true
+  vars:
+    users:
+      - ansiblessh
+
+  tasks:
+    - name: Check user details
+      shell: "grep '{{ item }}' /etc/passwd | cut -d: -f1,7"
+      register: user_details
+      with_items: "{{ users }}"
+      ignore_errors: true
+
+    - name: Display command output
+      debug:
+        msg: "{{ user_details.results | map(attribute='stdout') | map('regex_replace', '(.+):(.+):(.+):(.+):(.+):(.+):(.+)', '\\1:x:\\3:\\4:,,,:\\6:\\7') | list }}"
+      failed_when: "user_details.results | map(attribute='rc') | max > 1"
+      ignore_errors: true
