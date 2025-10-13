@@ -4,7 +4,7 @@
   become_user: root
   become_method: sudo
   expect:
-    command: "realm join -v --user={{ admin_user }}@{{ domain_name }} --computer-ou=OU=Computers,OU={{ ENV }},DC=ms,DC=com ms.com --verbose"
+    command: "realm join -v --user={{ admin_user }}@{{ realm_name }} --computer-ou=OU=Computers,OU={{ ENV }},DC=ms,DC=com ms.com --verbose"
     responses:
       "Password for .*:": "{{ bind_password }}"  # If your password contains any symbol which is used by /bin/bash shell as a command or parameter then you need to use this expect module, otherwise you can use below command which is commented
   #command: echo '{{ bind_password }}' | realm join -v --user={{ admin_user }} {{ domain_name }}
