@@ -1,0 +1,6 @@
+---
+- name: Configure Kerberos
+  template:
+    src: krb5.conf.j2
+    dest: /etc/krb5.conf
+

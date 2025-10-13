@@ -1,0 +1,8 @@
+---
+- name: Append lines to /etc/resolv.conf
+  blockinfile:
+    path: /etc/resolv.conf
+    insertafter: '^search'
+    block: |
+      nameserver {{ DNS1_IP }}
+      nameserver {{ DNS2_IP }}

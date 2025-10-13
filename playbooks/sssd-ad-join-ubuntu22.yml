@@ -1,0 +1,7 @@
+---
+- name: Configure SSSD and Join AD
+  hosts: wazuh-indexer.ms.com
+  become: true
+  roles:
+    - sssd-ubuntu
+

@@ -1,7 +1,14 @@
 [prod:children]
 kubernetes
+wazuh 
+
+
 
 [kubernetes]
-kubernetes-master           ansible_host=10.0.0.31
-worker01                    ansible_host=10.0.0.32
+kubernetes-master.ms.com           ansible_host=10.0.0.31
+worker01.ms.com                    ansible_host=10.0.0.32
+
+[wazuh]
+wazuh-indexer.ms.com                ansible_host=10.0.0.34
+wazuh-dashboard.ms.com              ansible_host=10.0.0.35
 

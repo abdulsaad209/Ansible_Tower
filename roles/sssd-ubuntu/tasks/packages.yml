@@ -1,0 +1,39 @@
+---
+- name: Preseed Kerberos realm to avoid interactive prompt
+  debconf:
+    name: krb5-config
+    question: krb5-config/default_realm
+    value: "MS.COM"
+    vtype: string
+
+- name: Install required packages for AD join
+  apt:
+    name: "{{ item }}"
+    state: present
+    update_cache: yes
+  loop:
+    - realmd
+    - sssd
+    - sssd-tools
+    - sssd-ad
+    - sssd-krb5
+    - sssd-ldap
+    - adcli
+    - samba-common
+    - samba-common-bin
+    - samba-libs
+    - krb5-user
+    - libnss-sss
+    - libpam-sss
+    - oddjob
+    - oddjob-mkhomedir
+    - packagekit
+  register: package_installation
+
+- name: Display status of package installation
+  debug:
+    msg: "{{ item.item }} is successfully installed"
+  loop: "{{ package_installation.results }}"
+  when: item.changed
+  loop_control:
+    label: "{{ item.item }}"

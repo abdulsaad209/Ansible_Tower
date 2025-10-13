@@ -1,0 +1,13 @@
+---
+- name: Create some necessary files
+  shell: |
+    touch /etc/dhcp/dhclient.conf
+    
+- name: Append changes to /etc/dhcp/dhclient.conf
+  blockinfile:
+    path: /etc/dhcp/dhclient.conf
+    block: |
+      # Active Directory DHCP Settings
+      timeout 300;
+      retry 60;
+      supersede domain-name-servers {{ DNS1_IP }},{{ DNS2_IP }};

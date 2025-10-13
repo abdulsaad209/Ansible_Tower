@@ -1,0 +1,8 @@
+---
+- name: Append lines to /etc/hosts
+  blockinfile:
+    path: /etc/hosts
+    block: |
+      # AD Domains
+      {{ DNS1_IP }} {{ domain_short }} {{ domain_name }}
+      {{ DNS2_IP }} {{ domain_short }} {{ domain_name }}

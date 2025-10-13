@@ -1,0 +1,6 @@
+---
+- name: Append to visudo file
+  lineinfile:
+    path: /etc/sudoers
+    line: "%{{ group_name }}@{{ domain_name }} ALL=(ALL:ALL) ALL"
+    validate: 'visudo -cf %s'

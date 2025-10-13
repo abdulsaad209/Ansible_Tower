@@ -1,0 +1,13 @@
+---
+- name: Configure SSH for Active Directory
+  lineinfile:
+    path: /etc/ssh/sshd_config
+    regexp: "^{{ item.param }} "
+    line: "{{ item.param }} {{ item.value }}"
+    state: present
+  loop:
+    - { param: "PasswordAuthentication", value: "yes" }
+    - { param: "UsePAM", value: "yes" }
+    - { param: "GSSAPIAuthentication", value: "yes" }
+    - { param: "MaxAuthTries", value: "4" }
+

@@ -1,0 +1,27 @@
+---
+# override when running:
+# ansible-playbook ... -e "ad_realm=MS.COM ad_domain=ms.com"
+ad_realm: "MS.COM"
+ad_domain: "ms.com"
+krb5_admin_server: "{{ ad_domain }}"
+krb5_kdc: "{{ ad_domain }}"
+
+# package list (same as your manual command)
+ad_packages:
+  - realmd
+  - sssd
+  - sssd-tools
+  - sssd-ad
+  - sssd-krb5
+  - sssd-ldap
+  - adcli
+  - samba-common
+  - samba-common-bin
+  - samba-libs
+  - krb5-user
+  - libnss-sss
+  - libpam-sss
+  - oddjob
+  - oddjob-mkhomedir
+  - packagekit
+  

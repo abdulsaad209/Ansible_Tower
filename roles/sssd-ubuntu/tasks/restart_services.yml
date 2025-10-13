@@ -1,0 +1,12 @@
+---
+- name: Restart and Enable Necessary Services
+  systemd:
+    name: "{{ item }}"
+    enabled: yes
+    state: restarted
+  loop:
+    - sssd
+    - sshd
+    - oddjobd
+    - systemd-logind
+    
