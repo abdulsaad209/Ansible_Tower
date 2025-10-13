@@ -1,5 +1,6 @@
 ---
 - name: Removing Cache of kerberos and sssd
+  ignore_errors: true
   shell: |
     systemctl restart dbus
     systemctl restart realmd
