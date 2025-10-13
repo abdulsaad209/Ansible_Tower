@@ -1,68 +1,26 @@
 ---
-# ================================
-# Join Ubuntu Server with Active Directory
-# ================================
-
-- name: Ensure DNS and hostname are ready before join
-  block:
-    - name: Verify FQDN resolution
-      command: hostname -f
-      register: fqdn_check
-      changed_when: false
-
-    - name: Show FQDN for debugging
-      debug:
-        msg: "Server FQDN is: {{ fqdn_check.stdout }}"
-
-    - name: Wait for DNS to settle before realm join
-      pause:
-        seconds: 5
-
-# ================================
-# Verify Kerberos before join
-# ================================
-- name: Verify Kerberos authentication using kinit
-  shell: |
-    echo '{{ bind_password }}' | kinit {{ admin_user }}@{{ realm_name }}
-  register: kinit_result
-  ignore_errors: true
-  environment:
-    KRB5_CONFIG: /etc/krb5.conf
-    PATH: /usr/sbin:/usr/bin:/sbin:/bin
-
-- name: Show Kerberos verification result
-  debug:
-    var: kinit_result.stdout
-
-# ================================
-# Join the AD Domain
-# ================================
-- name: Join Ubuntu server with Active Directory
-  shell: |
-    echo '{{ bind_password }}' | realm join -v \
-      --user={{ admin_user }}@{{ domain_name }} \
-      --computer-ou="OU=Computers,OU={{ ENV }},DC=ms,DC=com" \
-      {{ domain_name }}
+- name: Joining the server with Active Directory
+  become: true
+  become_user: root
+  become_method: sudo
+  expect:
+    command: "realm join -v --user={{ admin_user }}@{{ domain_name }} --computer-ou=OU=Computers,OU={{ ENV }},DC=ms,DC=com ms.com --verbose"
+    responses:
+      "Password for .*:": "{{ bind_password }}"  # If your password contains any symbol which is used by /bin/bash shell as a command or parameter then you need to use this expect module, otherwise you can use below command which is commented
+  #command: echo '{{ bind_password }}' | realm join -v --user={{ admin_user }} {{ domain_name }}
   register: join_output
+  no_log: False
   ignore_errors: true
-  environment:
-    KRB5_CONFIG: /etc/krb5.conf
-    PATH: /usr/sbin:/usr/bin:/sbin:/bin
-  no_log: true  # switch to false for debugging
 
-- name: Show realm join output
-  debug:
-    var: join_output.stdout
-
-# ================================
-# Conditional messages
-# ================================
 - name: Display success message
   debug:
-    msg: "✅ Join successful! Machine is now part of {{ domain_name }}."
+    msg: "Join successful!"
   when: join_output.rc == 0
 
 - name: Display error message
   debug:
-    msg: "❌ Join failed or already joined. Check realm join logs or /var/log/sssd/sssd.log for details."
+    msg: "Join failed or already joined"
   when: join_output.rc != 0
+
+## If joining failes due to some error then manually join it with below command
+## realm join -v --user=admin zurple-corp-ad.zurple.com
