@@ -3,11 +3,11 @@
 - name: Include installation tasks
   include_tasks: packages.yml
 
-# - name: Configure DNS
-#   include_tasks: dns_entries.yml
+- name: Configure DNS
+  include_tasks: dns_entries.yml
 
-# - name: Configure /etc/hosts file
-#   include_tasks: hosts_entries.yml
+- name: Configure /etc/hosts file
+  include_tasks: hosts_entries.yml
 
 # - name: Configure dhclient
 #   include_tasks: dhcclient.yml

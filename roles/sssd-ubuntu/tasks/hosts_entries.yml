@@ -4,5 +4,5 @@
     path: /etc/hosts
     block: |
       # AD Domains
-      {{ DNS1_IP }} {{ domain_short }} {{ domain_name }}
-      {{ DNS2_IP }} {{ domain_short }} {{ domain_name }}
+      {{ DNS1_IP }} {{ dc_fqdn }}.ms.com {{ dc_fqdn }}
+      {{ DNS2_IP }} {{ adc_fqdn }}.ms.com {{ adc_fqdn }}

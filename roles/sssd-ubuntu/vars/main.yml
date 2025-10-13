@@ -1,27 +1,13 @@
 ---
-# override when running:
-# ansible-playbook ... -e "ad_realm=MS.COM ad_domain=ms.com"
-ad_realm: "MS.COM"
-ad_domain: "ms.com"
-krb5_admin_server: "{{ ad_domain }}"
-krb5_kdc: "{{ ad_domain }}"
+domain_name: "ms.com"  # your AD Domain
+domain_short: "ms.com"                # your AD sub domain name
+realm_name: "MS.COM"                  # Your realm name 
+DNS1_IP: "10.0.0.2"                   # Your DNS IP #1
+DNS2_IP: "10.0.0.3"                   # Your DNS IP #2
+group_name: "ops"                     # Your user's group
+admin_user: "admin"                   # Your AD admin user using which you will join the server with AD
+ou_in_zurple_corp_ad: "Prod"          # Your AD organizational Unit where you will store record of the joined servers
+bind_password: "<my-password>"        # Your AD admin user's password
 
-# package list (same as your manual command)
-ad_packages:
-  - realmd
-  - sssd
-  - sssd-tools
-  - sssd-ad
-  - sssd-krb5
-  - sssd-ldap
-  - adcli
-  - samba-common
-  - samba-common-bin
-  - samba-libs
-  - krb5-user
-  - libnss-sss
-  - libpam-sss
-  - oddjob
-  - oddjob-mkhomedir
-  - packagekit
-  
+dc_fqdn: "DESKTOP-SERVER01"
+adc_fqdn: "DESKTOP-SERVER02"
