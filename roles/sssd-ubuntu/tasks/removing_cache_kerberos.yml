@@ -1,10 +1,10 @@
 ---
 - name: Removing Cache of kerberos and sssd
-      shell: |
-        systemctl restart dbus
-        systemctl restart realmd
-        systemctl stop sssd
-        mv /etc/krb5.keytab /etc/krb5.keytab.bk
-        rm -rf /var/lib/sss/db/*
-        rm -rf /tmp/krb5*
-        realm leave
+  shell: |
+    systemctl restart dbus
+    systemctl restart realmd
+    systemctl stop sssd
+    mv /etc/krb5.keytab /etc/krb5.keytab.bk
+    rm -rf /var/lib/sss/db/*
+    rm -rf /tmp/krb5*
+    realm leave

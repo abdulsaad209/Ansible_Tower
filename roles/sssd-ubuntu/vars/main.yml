@@ -7,7 +7,8 @@ DNS2_IP: "10.0.0.3"                   # Your DNS IP #2
 group_name: "ops"                     # Your user's group
 admin_user: "admin"                   # Your AD admin user using which you will join the server with AD
 ou_in_zurple_corp_ad: "Prod"          # Your AD organizational Unit where you will store record of the joined servers
-bind_password: "<my-password>"        # Your AD admin user's password
+bind_password: "139809437037S@@di321"        # Your AD admin user's password
 
 dc_fqdn: "DESKTOP-SERVER01"
 adc_fqdn: "DESKTOP-SERVER02"
+ENV: "Prod"
