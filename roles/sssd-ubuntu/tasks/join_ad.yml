@@ -1,29 +1,68 @@
 ---
-- name: Join Ubuntu server with Active Directory
-  become: true
-  expect:
-    command: >
-      realm join -v --user={{ admin_user }}@{{ domain_name }}
-      --computer-ou="OU=Computers,OU={{ ENV }},DC=ms,DC=com" {{ domain_name }} --verbose
-    responses:
-      (?i)password.*: "{{ bind_password }}"
+# ================================
+# Join Ubuntu Server with Active Directory
+# ================================
+
+- name: Ensure DNS and hostname are ready before join
+  block:
+    - name: Verify FQDN resolution
+      command: hostname -f
+      register: fqdn_check
+      changed_when: false
+
+    - name: Show FQDN for debugging
+      debug:
+        msg: "Server FQDN is: {{ fqdn_check.stdout }}"
+
+    - name: Wait for DNS to settle before realm join
+      pause:
+        seconds: 5
+
+# ================================
+# Verify Kerberos before join
+# ================================
+- name: Verify Kerberos authentication using kinit
+  shell: |
+    echo '{{ bind_password }}' | kinit {{ admin_user }}@{{ realm_name }}
+  register: kinit_result
+  ignore_errors: true
   environment:
     KRB5_CONFIG: /etc/krb5.conf
     PATH: /usr/sbin:/usr/bin:/sbin:/bin
+
+- name: Show Kerberos verification result
+  debug:
+    var: kinit_result.stdout
+
+# ================================
+# Join the AD Domain
+# ================================
+- name: Join Ubuntu server with Active Directory
+  shell: |
+    echo '{{ bind_password }}' | realm join -v \
+      --user={{ admin_user }}@{{ domain_name }} \
+      --computer-ou="OU=Computers,OU={{ ENV }},DC=ms,DC=com" \
+      {{ domain_name }}
   register: join_output
   ignore_errors: true
-  no_log: false  # change to true after success
+  environment:
+    KRB5_CONFIG: /etc/krb5.conf
+    PATH: /usr/sbin:/usr/bin:/sbin:/bin
+  no_log: true  # switch to false for debugging
 
 - name: Show realm join output
   debug:
     var: join_output.stdout
 
+# ================================
+# Conditional messages
+# ================================
 - name: Display success message
   debug:
-    msg: "Join successful!"
+    msg: "✅ Join successful! Machine is now part of {{ domain_name }}."
   when: join_output.rc == 0
 
 - name: Display error message
   debug:
-    msg: "Join failed or already joined"
+    msg: "❌ Join failed or already joined. Check realm join logs or /var/log/sssd/sssd.log for details."
   when: join_output.rc != 0
