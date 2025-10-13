@@ -1,0 +1,12 @@
+[libdefaults]
+  default_realm = {{ realm_name }}
+  dns_lookup_realm = false
+  rdns = false
+  forwardable = true
+  default_ccache_name = KEYRING:persistent:%{uid}
+[realms]
+  {{ realm_name }} = { }
+[domain_realm]
+  .{{ domain_name }} = {{ realm_name }}
+  {{ domain_name }} = {{ realm_name }}
+

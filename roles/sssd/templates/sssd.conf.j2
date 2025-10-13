@@ -1,0 +1,18 @@
+[sssd]
+domains = {{ domain_name }}
+config_file_version = 2
+services = nss, pam
+default_domain_suffix = {{ realm_name }}
+
+[domain/{{ domain_name }}]
+default_shell = /bin/bash
+krb5_store_password_if_offline = True
+cache_credentials = True
+krb5_realm = {{ realm_name }}
+realmd_tags = manages-system joined-with-adcli
+id_provider = ad
+fallback_homedir = /home/%u@%d
+ad_domain = {{ domain_name }}
+use_fully_qualified_names = False
+ldap_id_mapping = True
+access_provider = ad
