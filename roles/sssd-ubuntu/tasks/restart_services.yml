@@ -1,22 +1,18 @@
 ---
-- name: add session in pam to auto create home directory of AD user's
-  pamd:
-    name: common-session
-    type: session
-    control: required
-    module_path: pam_mkhomedir.so
-    arguments: skel=/etc/skel/ umask=0077
-    state: present
+- name: Enable mkhomedir if not already enabled
+  shell: pam-auth-update --enable mkhomedir
+  become: true
+  args:
+    creates: /usr/share/pam-configs/mkhomedir
 
-    
+
 - name: Restart and Enable Necessary Services
   systemd:
     name: "{{ item }}"
-    enabled: yes
+    enabled: true
     state: restarted
   loop:
     - sssd
     - sshd
     - oddjobd
     - systemd-logind
-    
