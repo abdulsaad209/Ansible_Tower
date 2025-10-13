@@ -1,11 +1,11 @@
 ---
-- name: Update /etc/resolv.conf with custom DNS and search domain
-  blockinfile:
+- name: Ensure search domain and DNS servers exist in /etc/resolv.conf
+  lineinfile:
     path: /etc/resolv.conf
-    create: yes
-    block: |
-      search {{ domain_name }}
-      nameserver {{ DNS1_IP }}
-      nameserver {{ DNS2_IP }}
+    line: "{{ item }}"
+    state: present
     insertafter: BOF
-    marker: "# {mark} ANSIBLE MANAGED DNS BLOCK"
+  loop:
+    - "search {{ domain_name }}"
+    - "nameserver {{ DNS1_IP }}"
+    - "nameserver {{ DNS2_IP }}"
