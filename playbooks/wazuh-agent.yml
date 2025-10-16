@@ -1,5 +1,5 @@
 ---
-- hosts: worker01.ms.com
+- hosts: worker02.ms.com
   become: true
   become_user: root
   roles:
