@@ -9,78 +9,62 @@ Please check the ![Bash Script](https://github.com/abdulsaad209/Ansible_Tower/tr
 
 
 # Ansible_Tower
-**** Installation of Ansible Tower/AWX through Docker on CentOS/RedHat 7 *****
+### Installation of Ansible Tower/AWX 17.1.0 through Docker on CentOS/RedHat 7 ###
 
-## If you are not able to use yum package manager then add base repo in repositories directory
+If you are not able to use yum package manager then add base repo in repositories directory
+```
 sudo curl https://raw.githubusercontent.com/sdhmh/enable-centos-7-repo/main/CentOS-Base.repo --output /etc/yum.repos.d/CentOS-Base.repo
-
-echo "Installation of Necessary Packages:"
-
+```
+Installation of Necessary Packages:
+```
 yum install -y epel-release
-
 yum install -y git gcc gcc-c++ ansible nodejs gettext device-mapper-persistent-data lvm2 bzip2 python3-pip vim wget 
-
-
-echo "Adding docker repo and installing docker package"
-
+```
+Adding docker repo and installing docker package
+```
 wget https://download.docker.com/linux/centos/docker-ce.repo --directory-prefix /etc/yum.repos.d/
-
-echo "yum repolist"
-
+yum repolist
 echo "Installing Docker.............."
-
 yum install docker-ce -y
-
-
-echo "start and enable docker service"
-
+```
+Start and enable docker service
+```
 systemctl enable --now docker
-
 systemctl status docker
-
-
-echo "install docker-compose module"
-
+```
+Install docker-compose module
+```
 pip3 install -U pip setuptools 
-
-pip3 install docker-compose 
-
-
-echo "setup PATH for docker-compose"
-
+pip3 install docker-compose
+```
+Setup PATH for docker-compose
+```
 export PATH=$PATH:/usr/local/bin
-
 which docker-compose
-
 ls /usr/local/bin/docker-compose
-
-
-echo "Defining Alias for Docker Compose"
-
+```
+Defining Alias for Docker Compose
+```
 alias docker-compose=/usr/local/bin/docker-compose
+```
 
-
-echo "Take clone of ansible awx repo version 17.1.0"
-
+### Installing Ansible AWX 17.1.0
+Take clone of ansible awx repo version 17.1.0"
+```
 git clone -b 17.1.0 https://github.com/ansible/awx.git
-
-
-echo "generate random secret key"
-
+```
+Generate random secret key
+```
 cd awx
 
 openssl rand -base64 30 > key.txt
 
-
 cd installer/
-
-
-
-
-**** Do changes in inventory file as per your need ****
+```
+#### _Do changes in inventory file as per your need_
 
 vim inventory
-
+```
 localhost ansible_connection=local ansible_python_interpreter="/usr/bin/env python3"
 
 [all:vars]
@@ -118,30 +102,26 @@ secret_key=Nl9+e7jISeYj69JMpOfeHqKEZgrvClKKc2aU7S0f  # paste the key.txt key her
 awx_alternate_dns_servers="8.8.8.8,8.8.4.4"
 
 project_data_dir=/var/lib/awx/projects  ## awx project dir will mount locally
+```
 
-
-**** disable selinux before running script ****
-
-** Before running docker container make sure SELINUX should be in disabled state. **
-
+Before running docker container make sure SELINUX should be in disabled state.
 
 vim /etc/selinux/config
-
+```
 SELINUX=disabled
+```
 
-
-** Reboot the system **
+Reboot the system
 
 If you perform any changes in SELINUX then need to reboot the system to implement the changes.
-
+```
 sudo reboot
+```
 
-
-** Add rule in firewalld service **
-
+Add rule in firewalld service
 I am disabling the service for now you can perform changes as per your need
 
-
+```
 systemctl stop firewalld 
 
 export PATH=$PATH:/usr/local/bin
@@ -149,51 +129,47 @@ export PATH=$PATH:/usr/local/bin
 systemctl restart docker
 
 ansible-playbook -i ~/awx/installer/inventory ~/awx/installer/install.yaml
+```
+
+If installation got failed then run again it will solve this time, if still face issue then you did something wrong do troubleshoot it.
 
 
-Note: If installation got failed then run again it will solve this time, if still face issue then you did something wrong do troubleshoot it.
 
-
-
-************ Use of Ansible Vault ************
-
+### Use of Ansible Vault
 
 vim secrets.yaml
-
-# secrets.yml
-
+```
 pg_password: 'awxpass'
 
 admin_password: 'saad123'
 
 secret_key: 'Nl9+e7jISeYj69JMpOfeHqKEZgrvClKKc2aU7S0f'
+```
 
-
-# Now encrypt the file with ansible vault 
+Now encrypt the file with ansible vault 
+```
 
 ansible-vault encrypt secrets.yaml
+```
 
-
-# Create file to store vault password
-
+Create file to store vault password
+```
 vim vault_password.txt
+```
+Add your vault password in it
+```
+<paste your vault password in the file>
+```
 
-
-# Add your vault password in it
-
-2qZyw2aVA1W0tJsBmqe5
-
-
-## assign permissions to file
-
+Assign permissions to file
+```
 chmod 600 vault_password.txt
+```
 
-
-## Now add your secrets.yaml path in the playbook
+Now add your secrets.yaml path in the playbook
 
 vim ~/awx/installer/install.yml
-
-
+```
 ---
 
 - name: Build and deploy AWX
@@ -203,15 +179,13 @@ vim ~/awx/installer/install.yml
   vars_files:
   
     - "/root/secrets.yaml"
+```
 
-
-
-
-## Now run the playbook
-
+Now run the playbook
+```
 ansible-playbook -i ~/awx/installer/inventory ~/awx/installer/install.yml --vault-password-file /root/awx/vault_password.txt
-
-
+```
+```
 pg_password: 'awxpass'
 
 admin_password: 'saad123'
@@ -219,21 +193,22 @@ admin_password: 'saad123'
 secret_key: 'Nl9+e7jISeYj69JMpOfeHqKEZgrvClKKc2aU7S0f'
 
 vault_password = 2qZyw2aVA1W0tJsBmqe5
+```
 
 
-
-## resources
+Resources
 
 docker using vfs file system
-
+```
 https://docs.docker.com/engine/storage/drivers/overlayfs-driver/
+```
 
 
-
-## to change admin password of dashboard
-
+To change admin password of dashboard
+```
 user: admin
 
 sudo docker exec -it awx_task bash
 
 awx-manage changepassword admin
+```
