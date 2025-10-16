@@ -6,7 +6,8 @@ wazuh
 
 [kubernetes]
 kubernetes-master.ms.com           ansible_host=10.0.0.31
-worker01.ms.com                    ansible_host=10.0.0.32
+#worker01.ms.com                    ansible_host=10.0.0.32
+worker02.ms.com                    ansible_host=10.0.0.33
 
 [wazuh]
 wazuh-indexer.ms.com                ansible_host=10.0.0.34
