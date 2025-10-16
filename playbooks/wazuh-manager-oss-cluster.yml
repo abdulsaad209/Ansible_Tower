@@ -1,9 +1,9 @@
 ---
 # Wazuh cluster without Filebeat
-    - hosts: manager
+    - hosts: wazuh-dashboard.ms.com
       roles:
-        - role: "../roles/wazuh/ansible-wazuh-manager"
-      become: yes
+        - wazuh/ansible-wazuh-manager
+      become: true
       become_user: root
       vars:
         wazuh_manager_config:
@@ -29,7 +29,7 @@
     - hosts: worker01
       roles:
         - role: "../roles/wazuh/ansible-wazuh-manager"
-      become: yes
+      become: true
       become_user: root
       vars:
         wazuh_manager_config:
