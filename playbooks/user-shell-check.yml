@@ -1,5 +1,5 @@
 ---
-- hosts: prod
+- hosts: worker01.ms.com
   become: true
   vars:
     users:

@@ -1,0 +1,16 @@
+---
+- hosts: worker01.ms.com
+  become: true
+  become_user: root
+  roles:
+    - wazuh/ansible-wazuh-agent
+  vars:
+    wazuh_managers:
+      - address: 10.0.0.35
+        port: 1514
+        protocol: tcp
+        api_port: 55000
+        api_proto: 'https'
+        api_user: wazuh
+        max_retries: 5
+        retry_interval: 5
