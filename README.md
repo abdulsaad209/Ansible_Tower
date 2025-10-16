@@ -1,6 +1,7 @@
 ## You can Install Ansible Tower through Bash as well. 
-Please check the ![Bash Script](https://github.com/abdulsaad209/Ansible_Tower/tree/master/installation-through-bash).
+Please check the [Bash Script](https://github.com/abdulsaad209/Ansible_Tower/tree/master/installation-through-bash).
 
+## For Installing Latest Version of AWX 24.6.0 on Kubernetes Cluster Follow [This](https://github.com/abdulsaad209/Ansible_Tower/tree/master/installation-on-k8s-cluster) Guide
 
 ![image](https://github.com/user-attachments/assets/f2c957b9-d1cf-4fcd-a866-4947c2b12d19)
 
