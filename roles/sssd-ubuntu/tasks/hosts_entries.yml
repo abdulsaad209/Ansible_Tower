@@ -1,11 +1,8 @@
 ---
-- name: Ensure AD DNS records exist in /etc/hosts
-  lineinfile:
+- name: Append lines to /etc/hosts
+  blockinfile:
     path: /etc/hosts
-    line: "{{ item }}"
-    state: present
-  loop:
-    - "# AD Domains"
-    - "{{ DNS1_IP }} {{ dc_fqdn }}.ms.com {{ dc_fqdn }}"
-    - "{{ DNS2_IP }} {{ adc_fqdn }}.ms.com {{ adc_fqdn }}"
-  when: item | length > 0
+    block: |
+      # AD Domains
+      {{ DNS1_IP }} {{ domain_short }} {{ domain_name }}
+      {{ DNS2_IP }} {{ domain_short }} {{ domain_name }}

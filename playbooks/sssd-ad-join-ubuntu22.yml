@@ -2,6 +2,18 @@
 - name: Configure SSSD and Join AD
   hosts: wazuh
   become: true
-  roles:
-    - sssd-ubuntu
+  tasks:
+    - name: Including sssd role for Almalinux/Redhat
+      include_role: sssd
+      when:
+        - ansible_distribution == "AlmaLinux"
+        - ansible_distribution_major_version == "9"
+        - ansible_distribution_version is version('9.6', '==')
 
+    - name: Including sssd role for Ubuntu
+      include_role: sssd-ubuntu
+      when:
+        - ansible_distribution == "Ubuntu"
+        - ansible_distribution_major_version == "22"
+        - ansible_distribution_version is version('22.04', '==')
+        

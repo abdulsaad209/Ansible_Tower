@@ -1,11 +1,11 @@
 ---
-- name: Ensure custom DNS entries are at the very top of /etc/resolv.conf
+- name: Ensure DNS nameservers exist in /etc/resolv.conf
+  become: true
   blockinfile:
     path: /etc/resolv.conf
-    create: yes
-    insertafter: BOF
-    marker: "# {mark} ANSIBLE MANAGED DNS BLOCK"
+    insertafter: '^search'
     block: |
-      search {{ domain_name }}
       nameserver {{ DNS1_IP }}
       nameserver {{ DNS2_IP }}
+    create: yes
+    marker: "# {mark} ANSIBLE MANAGED BLOCK: DNS Configuration"

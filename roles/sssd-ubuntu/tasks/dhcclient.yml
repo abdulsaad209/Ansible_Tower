@@ -3,14 +3,11 @@
   shell: |
     touch /etc/dhcp/dhclient.conf
     
-- name: Overwrite /etc/dhcp/dhclient.conf with custom configuration
-  copy:
-    dest: /etc/dhcp/dhclient.conf
-    content: |
+- name: Append changes to /etc/dhcp/dhclient.conf
+  blockinfile:
+    path: /etc/dhcp/dhclient.conf
+    block: |
       # Active Directory DHCP Settings
       timeout 300;
       retry 60;
       supersede domain-name-servers {{ DNS1_IP }},{{ DNS2_IP }};
-    owner: root
-    group: root
-    mode: '0644'

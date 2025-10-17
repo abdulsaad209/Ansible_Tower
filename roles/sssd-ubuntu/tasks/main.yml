@@ -6,11 +6,11 @@
 - name: Configure DNS
   include_tasks: dns_entries.yml
 
-- name: Configure /etc/hosts file
-  include_tasks: hosts_entries.yml
-
 - name: Configure dhclient
   include_tasks: dhcclient.yml
+
+- name: Configure /etc/hosts file
+  include_tasks: hosts_entries.yml
 
 - name: Add ops group into sudoers
   include_tasks: sudoers.yml
@@ -35,4 +35,3 @@
 
 # - name: Join the server with AD Domain with Custom FQDN
 #   include_tasks: join_dc.yml
-  
