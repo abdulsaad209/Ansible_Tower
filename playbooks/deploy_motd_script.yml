@@ -1,6 +1,6 @@
 ---
 - name: Deploy Message of the Day Script
-  hosts: prod
+  hosts: kubernetes
   become: true
   
   roles:
