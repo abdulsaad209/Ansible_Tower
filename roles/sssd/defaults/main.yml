@@ -1,2 +1,13 @@
 ---
-# defaults file for sssd
+# vars file for roles/sssd
+domain_name: "ms.com"
+realm_name: "MS.COM"
+DNS1_IP: "10.0.0.2"
+DNS2_IP: "10.0.0.3"
+group_name: "ops"
+admin_user: "admin"
+ENV_OU: "Prod"
+
+
+
+

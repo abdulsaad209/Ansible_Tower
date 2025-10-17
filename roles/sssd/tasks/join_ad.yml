@@ -1,16 +1,16 @@
 ---
 - name: Joining the server with Active Directory
-  become: yes
+  become: true
   become_user: root
   become_method: sudo
   expect:
-    command: "realm join -v --user={{ admin_user }} {{ domain_name }}"
+    command: "realm join -v --user={{ admin_user }}@{{ realm_name }} --computer-ou=OU=Computers,OU={{ ENV_OU }},DC=ms,DC=com {{ domain_name }} --verbose"
     responses:
       "Password for .*:": "{{ bind_password }}"  # If your password contains any symbol which is used by /bin/bash shell as a command or parameter then you need to use this expect module, otherwise you can use below command which is commented
   #command: echo '{{ bind_password }}' | realm join -v --user={{ admin_user }} {{ domain_name }}
   register: join_output
-  no_log: True
-  ignore_errors: yes
+  no_log: true
+  ignore_errors: true
 
 - name: Display success message
   debug:
@@ -21,6 +21,3 @@
   debug:
     msg: "Join failed or already joined"
   when: join_output.rc != 0
-
-## If joining failes due to some error then manually join it with below command
-## realm join -v --user=admin zurple-corp-ad.zurple.com

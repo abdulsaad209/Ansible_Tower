@@ -1,8 +1,11 @@
 ---
-- name: Append lines to /etc/resolv.conf
+- name: Ensure DNS nameservers exist in /etc/resolv.conf
+  become: true
   blockinfile:
     path: /etc/resolv.conf
     insertafter: '^search'
     block: |
       nameserver {{ DNS1_IP }}
       nameserver {{ DNS2_IP }}
+    create: yes
+    marker: "# {mark} ANSIBLE MANAGED BLOCK: DNS Configuration"
