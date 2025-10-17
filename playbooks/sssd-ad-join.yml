@@ -5,7 +5,7 @@
   tasks:
     - name: Including sssd role for Almalinux/Redhat
       include_role: 
-        name: sssd
+        name: sssd-redhat
       when:
         - ansible_distribution == "AlmaLinux"
         - ansible_distribution_major_version == "9"
