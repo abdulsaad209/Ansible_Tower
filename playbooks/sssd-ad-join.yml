@@ -1,6 +1,6 @@
 ---
 - name: Configure SSSD and Join AD
-  hosts: wazuh
+  hosts: wazuh-indexer.ms.com
   become: true
   tasks:
     - name: Including sssd role for Almalinux/Redhat
