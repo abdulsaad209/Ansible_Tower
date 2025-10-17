@@ -1,0 +1,6 @@
+---
+motd_env: "Production"
+motd_purpose: "Kubernetes Cluster for Container Orchestration"
+motd_logs: "/var/log/messages, /var/log/kubelet.log"
+motd_docker: "kubectl logs -n kube-system <pod-name>"
+motd_applications: "Ansible Tower"

@@ -1,0 +1,60 @@
+#!/bin/bash
+
+if [ -z "$SSH_TTY" ]; then
+    return
+fi
+
+# ==============================
+# MOTD Script for SZCODERS
+# ==============================
+
+# Define custom variables
+ENV="{{ motd_env }}"
+PURPOSE="{{ motd_purpose }}"
+LOGS="{{ motd_logs }}"
+DOCKER="{{ motd_docker }}"
+APPLICATIONS="{{ motd_applications }}"
+
+# Gather system details dynamically
+HOST_KERNEL=$(uname -a)
+if [ -f /etc/os-release ]; then
+    OS=$(grep PRETTY_NAME /etc/os-release | cut -d= -f2 | tr -d '"')
+else
+    OS=$(lsb_release -d | cut -f2)
+fi
+HOSTNAME=$(hostname)
+IP_ADDR=$(hostname -I | awk '{print $1}')
+TIMEZONE=$(timedatectl show --property=Timezone --value)
+DATE=$(date)
+
+# Print MOTD
+cat <<EOF
+*********************************************
+
+Host:           $HOST_KERNEL
+ServerInfo:     $OS
+Hostname:       $HOSTNAME
+IP Addr:        $IP_ADDR
+Env:            $ENV
+Purpose:        $PURPOSE
+Logs:           $LOGS
+Container Logs: $DOCKER
+Timezone:       $TIMEZONE
+Date:           $DATE
+APPLICATIONS:   $APPLICATIONS
+*********************************************
+EOF
+
+# ASCII banner
+cat << "EOF"
+
+   __________   ______          __
+  / ___/__  /  / ____/___  ____/ /__  __________
+  \__ \  / /  / /   / __ \/ __  / _ \/ ___/ ___/
+ ___/ / / /__/ /___/ /_/ / /_/ /  __/ /  (__  )
+/____/ /____/\____/\____/\__,_/\___/_/  /____/
+
+EOF
+
+echo
+echo "Welcome to the SZCODERS DC Environment; please don't break anything!"

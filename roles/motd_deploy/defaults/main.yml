@@ -1,2 +1,6 @@
 ---
-# defaults file for motd_deploy
+motd_env: test
+motd_purpose: test
+motd_logs: test
+motd_docker: test
+motd_applications: test

@@ -1,0 +1,5 @@
+---
+motd_env: "Production"
+motd_purpose: "Wazuh Nodes for XDR and SIEM Solutions"
+motd_logs: "/var/log/wazuh-indexer/, /var/log/wazuh-dashboard/"
+motd_applications: "Wazuh Indexer, Dashboard, Manager"
