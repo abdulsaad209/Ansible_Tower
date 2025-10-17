@@ -6,7 +6,7 @@
   expect:
     command: "realm join -v --user={{ admin_user }}@{{ realm_name }} --computer-ou=OU=Computers,OU={{ ENV_OU }},DC=ms,DC=com {{ domain_name }} --verbose"
     responses:
-      "Password for .*:": "{{ lookup('env', 'AD_BIND_PASSWORD') }}"  # If your password contains any symbol which is used by /bin/bash shell as a command or parameter then you need to use this expect module, otherwise you can use below command which is commented
+      "Password for .*:": "{{ bind_password }}"  # If your password contains any symbol which is used by /bin/bash shell as a command or parameter then you need to use this expect module, otherwise you can use below command which is commented
   #command: echo '{{ bind_password }}' | realm join -v --user={{ admin_user }} {{ domain_name }}
   register: join_output
   no_log: false
