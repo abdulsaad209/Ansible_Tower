@@ -1,11 +1,9 @@
 ---
-- name: Ensure custom DNS entries are at the very top of /etc/resolv.conf
-  blockinfile:
-    path: /etc/resolv.conf
-    create: yes
-    insertafter: BOF
-    marker: "# {mark} ANSIBLE MANAGED DNS BLOCK"
-    block: |
-      search {{ domain_name }}
-      nameserver {{ DNS1_IP }}
-      nameserver {{ DNS2_IP }}
+- name: Overwrite /etc/resolv.conf with custom DNS settings
+  ansible.builtin.template:
+    src: resolv.conf.j2
+    dest: /etc/resolv.conf
+    owner: root
+    group: root
+    mode: '0644'
+    force: true
