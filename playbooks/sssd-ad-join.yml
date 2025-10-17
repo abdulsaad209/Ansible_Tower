@@ -4,14 +4,16 @@
   become: true
   tasks:
     - name: Including sssd role for Almalinux/Redhat
-      include_role: sssd
+      include_role: 
+        name: sssd
       when:
         - ansible_distribution == "AlmaLinux"
         - ansible_distribution_major_version == "9"
         - ansible_distribution_version is version('9.6', '==')
 
     - name: Including sssd role for Ubuntu
-      include_role: sssd-ubuntu
+      include_role: 
+        name: sssd-ubuntu
       when:
         - ansible_distribution == "Ubuntu"
         - ansible_distribution_major_version == "22"
