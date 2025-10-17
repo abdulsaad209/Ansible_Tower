@@ -30,31 +30,23 @@ DATE=$(date)
 # Print MOTD
 cat <<EOF
 *********************************************
-
-Host:           $HOST_KERNEL
 ServerInfo:     $OS
 Hostname:       $HOSTNAME
 IP Addr:        $IP_ADDR
 Env:            $ENV
 Purpose:        $PURPOSE
 Logs:           $LOGS
-Container Logs: $DOCKER
-Timezone:       $TIMEZONE
 Date:           $DATE
 APPLICATIONS:   $APPLICATIONS
 *********************************************
 EOF
-
 # ASCII banner
 cat << "EOF"
-
    __________   ______          __
   / ___/__  /  / ____/___  ____/ /__  __________
   \__ \  / /  / /   / __ \/ __  / _ \/ ___/ ___/
  ___/ / / /__/ /___/ /_/ / /_/ /  __/ /  (__  )
 /____/ /____/\____/\____/\__,_/\___/_/  /____/
-
 EOF
-
 echo
 echo "Welcome to the SZCODERS DC Environment; please don't break anything!"
