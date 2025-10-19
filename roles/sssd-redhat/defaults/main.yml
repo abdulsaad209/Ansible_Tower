@@ -6,7 +6,7 @@ DNS1_IP: "10.0.0.2"
 DNS2_IP: "10.0.0.3"
 group_name: "ops"
 admin_user: "admin"
-ENV_OU: "Prod"
+ENV_OU: "Corp"
 
 
 
