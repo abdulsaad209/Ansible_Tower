@@ -51,7 +51,7 @@
   lineinfile:
     path: /etc/zabbix/zabbix_agent2.conf
     regexp: '^Hostname='
-    line: "Hostname={{ ansible_hostname }}"
+    line: "Hostname={{ inventory_hostname }}"
   notify: Restart zabbix-agent2
 
 - name: Deploy custom userparameter config if defined
