@@ -1,11 +1,9 @@
 ---
-- name: Ensure DNS nameservers exist in /etc/resolv.conf
-  become: true
-  blockinfile:
-    path: /etc/resolv.conf
-    insertafter: '^search'
-    block: |
-      nameserver {{ DNS1_IP }}
-      nameserver {{ DNS2_IP }}
-    create: yes
-    marker: "# {mark} ANSIBLE MANAGED BLOCK: DNS Configuration"
+- name: Overwrite /etc/resolv.conf with custom DNS settings
+  ansible.builtin.template:
+    src: resolv.conf.j2
+    dest: /etc/resolv.conf
+    owner: root
+    group: root
+    mode: '0644'
+    force: true
