@@ -8,4 +8,8 @@
 - name: Including task to Join the server with AD
   include_tasks: join_ad.yml
 
+# - name: Including task to Install zabbix agent
+#   include_tasks: install_zabbix_agent.yml
 
+# - name: Including task to Install wazuh agent 
+#   include_tasks: install_wazuh_agent.yml
