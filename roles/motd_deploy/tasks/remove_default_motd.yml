@@ -1,6 +1,13 @@
 ---
 - name: Remove /etc/update* directories and files
-  command: rm -rf /etc/update-*
+  file:
+    path: "{{ item }}"
+    state: absent
+  loop:
+    - /etc/update-manager
+    - /etc/update-motd.d
+    - /etc/update-notifier
+    - /etc/updatedb.conf
 
 - name: Remove dynamic motd file
   file:

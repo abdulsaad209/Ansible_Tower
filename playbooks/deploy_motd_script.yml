@@ -1,6 +1,6 @@
 ---
 - name: Deploy Message of the Day Script
-  hosts: kubernetes
+  hosts: wazuh-dashboard.ms.com
   become: true
   
   roles:
