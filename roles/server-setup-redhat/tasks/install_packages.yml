@@ -20,3 +20,4 @@
       - curl
     state: present
     update_cache: yes
+    disable_gpg_check: true
