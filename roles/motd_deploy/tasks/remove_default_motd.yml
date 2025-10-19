@@ -1,5 +1,7 @@
 ---
 - name: Remove /etc/update* directories and files
+  become: true
+  ignore_errors: true
   file:
     path: "{{ item }}"
     state: absent
@@ -10,11 +12,14 @@
     - /etc/updatedb.conf
 
 - name: Remove dynamic motd file
+  become: true
+  ignore_errors: true
   file:
     path: /var/run/motd.dynamic
     state: absent
 
 - name: Restart necessary services
+  become: true
   systemd:
     name: "{{ item }}"
     state: restarted

@@ -1,0 +1,5 @@
+[corp:children]
+zabbix-master
+
+[zabbix-master]
+zabbix-master.ms.com               ansible_host=10.0.0.36 

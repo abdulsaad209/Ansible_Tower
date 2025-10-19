@@ -1,6 +1,6 @@
 ---
 - name: Deploy Message of the Day Script
-  hosts: wazuh-dashboard.ms.com
+  hosts: corp
   become: true
   
   roles:
