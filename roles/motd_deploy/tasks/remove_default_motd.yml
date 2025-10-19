@@ -25,7 +25,5 @@
     state: restarted
     enabled: yes
   loop:
-    - ssh
-    - sssd
-    - oddjobd
+    - sshd
     - systemd-logind
