@@ -3,3 +3,6 @@ zabbix-master
 
 [zabbix-master]
 zabbix-master.ms.com               ansible_host=10.0.0.36 
+
+[zabbix-proxy]
+zabbix-proxy.ms.com                ansible_host=10.0.0.37

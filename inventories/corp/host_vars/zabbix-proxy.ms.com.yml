@@ -1,0 +1,7 @@
+--- 
+zabbix_custom_userparams:
+  db_monitoring: |
+    UserParameter=db.uptime,/usr/bin/mysql -e "SHOW GLOBAL STATUS LIKE 'Uptime';"
+  nginx_status: |
+    UserParameter=nginx.active,/usr/bin/curl -s http://localhost/nginx_status | grep Active | awk '{print $3}'
+    

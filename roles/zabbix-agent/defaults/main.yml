@@ -1,2 +1,3 @@
 ---
-# defaults file for zabbix-agent
+almalinux9_repo: "https://repo.zabbix.com/zabbix/7.4/release/alma/9/noarch/zabbix-release-latest-7.4.el9.noarch.rpm"
+

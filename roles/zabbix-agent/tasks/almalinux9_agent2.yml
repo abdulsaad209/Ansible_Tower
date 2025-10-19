@@ -1,0 +1,72 @@
+---
+- name: Ensure EPEL repository file exists
+  ansible.builtin.stat:
+    path: /etc/yum.repos.d/epel.repo
+  register: epel_repo_file
+
+- name: Disable Zabbix packages from EPEL repo
+  ansible.builtin.blockinfile:
+    path: /etc/yum.repos.d/epel.repo
+    insertafter: '^\[epel\]'
+    block: |
+      excludepkgs=zabbix*
+  when: epel_repo_file.stat.exists
+
+- name: Add Zabbix repository for AlmaLinux 9
+  ansible.builtin.yum:
+    name: "{{ almalinux9_repo }}"
+    state: present
+
+- name: Clean yum cache
+  ansible.builtin.command: yum clean all
+  args:
+    warn: false
+
+- name: Install Zabbix Agent2
+  ansible.builtin.yum:
+    name:
+      - zabbix-agent2
+      - zabbix-agent2-plugin-mongodb 
+      - zabbix-agent2-plugin-mssql 
+      - zabbix-agent2-plugin-postgresql
+    state: present
+
+# Agent Configuration Start from Here
+- name: Set Zabbix server parameters
+  lineinfile:
+    path: /etc/zabbix/zabbix_agent2.conf
+    regexp: '^Server='
+    line: "Server={{ zabbix_server }}"
+  notify: Restart zabbix-agent2
+
+- name: Set active Zabbix server parameters
+  lineinfile:
+    path: /etc/zabbix/zabbix_agent2.conf
+    regexp: '^ServerActive='
+    line: "ServerActive={{ zabbix_server }}"
+  notify: Restart zabbix-agent2
+
+- name: Set agent hostname
+  lineinfile:
+    path: /etc/zabbix/zabbix_agent2.conf
+    regexp: '^Hostname='
+    line: "Hostname={{ ansible_hostname }}"
+  notify: Restart zabbix-agent2
+
+- name: Deploy custom userparameter config if defined
+  copy:
+    content: "{{ item.value }}"
+    dest: "/etc/zabbix/zabbix_agent2.d/{{ item.key }}.conf"
+    owner: root
+    group: root
+    mode: '0644'
+  loop: "{{ zabbix_custom_userparams | dict2items }}"
+  when: zabbix_custom_userparams is defined
+  notify: Restart zabbix-agent2
+
+- name: Enable and start Zabbix Agent2
+  ansible.builtin.systemd:
+    name: zabbix-agent2
+    enabled: true
+    state: started
+
