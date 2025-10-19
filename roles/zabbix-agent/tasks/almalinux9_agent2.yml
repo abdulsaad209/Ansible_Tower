@@ -11,11 +11,13 @@
     block: |
       excludepkgs=zabbix*
   when: epel_repo_file.stat.exists
+  disable_gpg_check: true
 
 - name: Add Zabbix repository for AlmaLinux 9
   ansible.builtin.yum:
     name: "{{ almalinux9_repo }}"
     state: present
+    disable_gpg_check: true
 
 - name: Clean yum cache
   ansible.builtin.command: yum clean all
@@ -28,6 +30,7 @@
       - zabbix-agent2-plugin-mssql 
       - zabbix-agent2-plugin-postgresql
     state: present
+    disable_gpg_check: true
 
 # Agent Configuration Start from Here
 - name: Set Zabbix server parameters
