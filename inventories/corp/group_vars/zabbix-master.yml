@@ -1,0 +1,5 @@
+---
+motd_env: "Corporate"
+motd_purpose: "Zabbix Master Server for Infrastructure Monitoring"
+motd_logs: "/var/log/zabbix/zabbix_server.log, /var/log/zabbix/zabbix_agent2.log"
+motd_applications: "Zabbix Server and Agent"
