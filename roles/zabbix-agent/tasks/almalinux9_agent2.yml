@@ -19,8 +19,6 @@
 
 - name: Clean yum cache
   ansible.builtin.command: yum clean all
-  args:
-    warn: false
 
 - name: Install Zabbix Agent2
   ansible.builtin.yum:
