@@ -1,8 +1,6 @@
 ---
 - name: Remove /etc/update* directories and files
-  file:
-    path: /etc/update*
-    state: absent
+  command: rm -rf /etc/update-*
 
 - name: Remove dynamic motd file
   file:
