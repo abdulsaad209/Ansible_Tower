@@ -1,0 +1,11 @@
+---
+- name: Including task to install Packages 
+  include_tasks: install_packages.yml
+
+- name: Including task to Deploy MOTD Script 
+  include_tasks: deploy_motd.yml
+
+- name: Including task to Join the server with AD
+  include_tasks: join_ad.yml
+
+
