@@ -1,4 +1,7 @@
 ---
+- name: Including task to Install and enable Repos
+  include_tasks: install_repos.yml
+
 - name: Including task to install Packages 
   include_tasks: install_packages.yml
 
