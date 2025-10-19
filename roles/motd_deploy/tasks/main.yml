@@ -1,4 +1,7 @@
 ---
+- name: Include remove default MOTD files
+  ansible.builtin.include_tasks: remove_default_motd.yml
+
 - name: Deploy custom MOTD script
   ansible.builtin.template:
     src: motd.sh.j2

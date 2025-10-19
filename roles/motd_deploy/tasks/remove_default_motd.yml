@@ -1,0 +1,21 @@
+---
+- name: Remove /etc/update* directories and files
+  file:
+    path: /etc/update*
+    state: absent
+
+- name: Remove dynamic motd file
+  file:
+    path: /var/run/motd.dynamic
+    state: absent
+
+- name: Restart necessary services
+  systemd:
+    name: "{{ item }}"
+    state: restarted
+    enabled: yes
+  loop:
+    - ssh
+    - sssd
+    - oddjobd
+    - systemd-logind
