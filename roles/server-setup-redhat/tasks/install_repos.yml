@@ -1,12 +1,20 @@
 ---
-- name: Install EPEL repository
+- name: Ensure EPEL repository is installed
   yum:
-    name: https://dl.fedoraproject.org/pub/epel/epel-release-latest-9.noarch.rpm
+    name: epel-release
     state: present
-    disable_gpg_check: true
+  ignore_errors: true
 
-- name: Install Remi repository
-  yum:
-    name: https://rpms.remirepo.net/enterprise/remi-release-9.rpm
-    state: present
-    disable_gpg_check: true
+- name: Ensure Remi repository is installed (via RPM URL if not available)
+  block:
+    - name: Install Remi repository package
+      yum:
+        name: https://rpms.remirepo.net/enterprise/remi-release-9.rpm
+        state: present
+        disable_gpg_check: true
+  rescue:
+    - name: Fallback to installing Remi repo via yum if URL fails
+      yum:
+        name: remi-release
+        state: present
+  ignore_errors: true
