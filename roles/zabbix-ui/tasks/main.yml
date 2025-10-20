@@ -1,2 +1,4 @@
 ---
-# tasks file for zabbix-ui
+- name: Including task to add host to zabbix UI
+  include_tasks: add_host.yml
+

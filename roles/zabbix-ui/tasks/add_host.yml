@@ -1,0 +1,13 @@
+---
+- name: Ensure host exists on Zabbix UI
+  community.zabbix.zabbix_host:
+    server_url: "{{ zabbix_api_url }}"
+    login_user: "{{ zabbix_api_user }}"
+    login_password: "{{ zabbix_api_password }}"
+    host_name: "{{ zabbix_host_name }}"
+    visible_name: "{{ zabbix_host_name }}"
+    groups: "{{ zabbix_host_groups }}"
+    templates: "{{ zabbix_host_templates }}"
+    interfaces: "{{ zabbix_host_interfaces }}"
+    state: present
+  delegate_to: localhost
