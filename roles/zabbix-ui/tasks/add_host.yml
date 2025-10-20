@@ -31,15 +31,46 @@
           - type: 1
             main: 1
             useip: 1
-            ip: "{{ ansible_host }}"
+            ip: "{{ ansible_host | default('127.0.0.1') }}"
             dns: ""
             port: "10050"
         groups:
-          - groupid: "{{ zabbix_hostgroup_id }}"
+          - groupid: "{{ zabbix_hostgroup_id | default('2') }}"
         templates:
-          - templateid: "{{ zabbix_template_id }}"
+          - templateid: "{{ zabbix_template_id | default('10001') }}"
       auth: "{{ login_response.json.result }}"
       id: 2
     headers:
       Content-Type: "application/json"
-  when: login_response.json.result is defined
+  when:
+    - login_response.json.result is defined
+    - ansible_host is defined
+    - zabbix_hostgroup_id is defined
+    - zabbix_template_id is defined
+
+- name: Check if host exists
+  uri:
+    url: "{{ zabbix_url }}/api_jsonrpc.php"
+    method: POST
+    body_format: json
+    return_content: yes
+    body:
+      jsonrpc: "2.0"
+      method: "host.get"
+      params:
+        filter:
+          host: ["{{ inventory_hostname }}"]
+      auth: "{{ login_response.json.result }}"
+      id: 3
+    headers:
+      Content-Type: "application/json"
+  register: host_check
+
+- name: Create host in Zabbix
+  uri:
+    ...
+  when:
+    - login_response.json.result is defined
+    - host_check.json.result | length == 0
+
+    
