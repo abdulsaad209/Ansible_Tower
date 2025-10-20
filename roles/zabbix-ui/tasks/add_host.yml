@@ -1,26 +1,23 @@
 ---
-- name: Create a new host or update an existing host's info # task that registers agent in zabbix server
+- name: Register host in Zabbix via API
   local_action:
-    module: community.zabbix.zabbix_host # using ansible module
-    server_url: "{{ zabbix_url }}" # a variable from inventory with server url
-    login_user: "{{ zabbix_api_user }}" # a variable from inventory with zabbix user
-    login_password: "{{ zabbix_api_pass }}" # a variable from inventory with zabbix user 
-    host_name: "{{ item }}" # hostname from ansible inventory
-    visible_name: "{{ hostvars[item].zabbix_visible_name | default(item) }}" # a variable from inventory with host visible name defaults to hostname
-    description: "{{   hostvars[item].zabbix_host_description | default('') }} OS: {{  hostvars[item].ansible_distribution | default('') }} {{  hostvars[item].ansible_distribution_version | default('') }}" # takes description from inventory and adds OS distribution and version from ansible system variables
-    host_groups: "{{ hostvars[item].zabbix_host_groups }}" # a variable from inventory with zabbix host group
-    link_templates: "{{ hostvars[item].zabbix_link_templates }}" # a variable from inventory with zabbix templates
-    status: "{{  hostvars[item].zabbix_host_status }}" # a variable from inventory which defines that host is Enabled or Disabled
-    state: present # tells ansible that host should be present, to delete host from zabbix server use absent
-    inventory_mode: disabled # don’t use inventory mode
-    interfaces: # interfaces to access a data, can be multiple values
-      - type: "{{ hostvars[item].zabbix_interface_type }}" # a variable from inventory with interface type, could be SNMP, Agent, JMX, IPMI
-        main: 1 # tells zabbix that interfaces is main
-        useip: "{{ hostvars[item].zabbix_interface_use_ip }}" # tells whether to use ip or dns access to host
-        ip: "{{ hostvars[item].zabbix_interface_ip }}" # if useip is chosen takes ip from inventory file
-        dns: "{{ item }}" # if useip: 0 takes hostname from inventory
-        port: "{{ hostvars[item].zabbix_interface_port }}" # defines port
-  # loop: "{{ groups['all'] }}" # loop that iterates over all hosts in inventory
-  # run_once: true # loop will run on every host in inventory, so we tell ansible to run once
-  # tags:
-  #   - add-host #  adding tags for convenience
+    module: community.zabbix.zabbix_host
+    server_url: "{{ zabbix_url }}"
+    login_user: "{{ zabbix_api_user }}"
+    login_password: "{{ zabbix_api_pass }}"
+    host_name: "{{ inventory_hostname }}"
+    visible_name: "{{ inventory_hostname }}"
+    description: "{{ zabbix_host_description }}"
+    host_groups: "{{ zabbix_host_groups }}"
+    link_templates: "{{ zabbix_link_templates }}"
+    status: "{{ zabbix_host_status }}"
+    state: present
+    inventory_mode: disabled
+    interfaces:
+      - type: "{{ zabbix_interface_type }}"
+        main: 1
+        useip: "{{ zabbix_interface_use_ip }}"
+        ip: "{{ zabbix_interface_ip | default(ansible_host) }}"
+        dns: "{{ inventory_hostname }}"
+        port: "{{ zabbix_interface_port }}"
+  run_once: false
