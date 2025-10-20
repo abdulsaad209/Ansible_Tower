@@ -1,13 +1,22 @@
 --- 
-zabbix_url: "http://192.168.12.136/zabbix"
-zabbix_user: "ansible-api"
-zabbix_password: "Ansible@1234"
+# zabbix_url: "http://192.168.12.136/zabbix"
+# zabbix_user: "ansible-api"
+# zabbix_password: "Ansible@1234"
 
-zabbix_hostgroup_id: "23"       # Default group: Linux servers
-zabbix_template_id: "10001"    # Default template: Template OS Linux
-zabbix_port: "10050"
-zabbix_api_endpoint: "{{ zabbix_url }}/api_jsonrpc.php"
-auth_token: "5fc74eb96edc97acc1488bec5347d76368f54e42716a4e6424bfca6fca7564d2"
+# zabbix_hostgroup_id: "23"       # Default group: Linux servers
+# zabbix_template_id: "10001"    # Default template: Template OS Linux
+# zabbix_port: "10050"
+# zabbix_api_endpoint: "{{ zabbix_url }}/api_jsonrpc.php"
+# auth_token: "5fc74eb96edc97acc1488bec5347d76368f54e42716a4e6424bfca6fca7564d2"
+
+ansible_connection: httpapi
+ansible_network_os: community.zabbix.zabbix
+ansible_httpapi_use_ssl: false
+ansible_httpapi_validate_certs: false
+ansible_zabbix_url_path: "zabbix"
+ansible_host: 192.168.12.136
+ansible_user: szahid
+ansible_httpapi_pass: "343802S@@di321"
 
 # # Zabbix API connection info
 # #zabbix_api_url: "http://192.168.12.136/zabbix/api_jsonrpc.php"

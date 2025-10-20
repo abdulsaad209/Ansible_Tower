@@ -1,12 +1,17 @@
 --- 
-- name: Add host to Zabbix via API call
-  uri:
-    url: http://192.168.12.136/zabbix/api_jsonrpc.php
-    method: POST
-    body: "{{ lookup('template', 'api-body.json.j2') }}"
-    body_format: json
-    headers:
-      Content-Type: application/json
-    return_content: yes
-  register: uri_output
-  delegate_to: zabbix_front
+- name: Create host
+  community.zabbix.zabbix_host:
+    host_name: "test-host"
+    visible_name: "Test Host"
+    interfaces:
+      - type: 1
+        main: 1
+        useip: 1
+        ip: "10.0.99.99"
+        dns: ""
+        port: "10050"
+    host_groups:
+      - name: "Linux servers"
+    link_templates:
+      - name: "Template OS Linux"
+    state: present
