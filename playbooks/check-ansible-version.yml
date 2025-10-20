@@ -1,0 +1,23 @@
+---
+- name: Check Ansible and Zabbix collection versions
+  hosts: zabbix-proxy.ms.com
+  gather_facts: false
+
+  tasks:
+    - name: Get Ansible version
+      ansible.builtin.command: ansible --version
+      register: ansible_version
+
+    - name: Display Ansible version
+      ansible.builtin.debug:
+        msg: "{{ ansible_version.stdout_lines[0] }}"
+
+    - name: Get list of installed collections
+      ansible.builtin.command: ansible-galaxy collection list
+      register: collection_list
+
+    - name: Show installed version of community.zabbix
+      ansible.builtin.debug:
+        msg: "{{ item }}"
+      loop: "{{ collection_list.stdout_lines }}"
+      when: "'community.zabbix' in item"
