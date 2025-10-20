@@ -7,6 +7,7 @@ zabbix_hostgroup_id: "23"       # Default group: Linux servers
 zabbix_template_id: "10001"    # Default template: Template OS Linux
 zabbix_port: "10050"
 zabbix_api_endpoint: "{{ zabbix_url }}/api_jsonrpc.php"
+auth_token: "5fc74eb96edc97acc1488bec5347d76368f54e42716a4e6424bfca6fca7564d2"
 
 # # Zabbix API connection info
 # #zabbix_api_url: "http://192.168.12.136/zabbix/api_jsonrpc.php"
