@@ -1,12 +1,12 @@
 --- 
-- name: add host to server api via API call
+- name: Add host to Zabbix via API call
   uri:
     url: http://192.168.12.136/zabbix/api_jsonrpc.php
     method: POST
-    body: "{{ lookup('template','api-body.json.j2') }}"
+    body: "{{ lookup('template', 'api-body.json.j2') }}"
     body_format: json
     headers:
-      Content-Type: application/json-rpc
+      Content-Type: application/json
     return_content: yes
   register: uri_output
   delegate_to: zabbix_front
