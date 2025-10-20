@@ -3,7 +3,7 @@
 #zabbix_api_url: "http://192.168.12.136/zabbix/api_jsonrpc.php"
 zabbix_api_user: "ansible-api"
 zabbix_api_pass: "Ansible@1234"
-zabbix_url: "http://192.168.12.136/zabbix/"
+zabbix_url: "http://192.168.12.136/zabbix"
 zabbix_host_description: "test"
 zabbix_host_status: "enabled"
 zabbix_host_groups: '["szcoders-corp","Linux servers"]'
@@ -15,4 +15,13 @@ zabbix_interface_type: agent # tells to use zabbix agent
 zabbix_interface_use_ip: "0" # defines to use ip - 0 or dns - 1 to connect to host
 zabbix_interface_ip: "{{ ansible_host }}"
 host_groups: "{{ hostvars[item].zabbix_host_groups | default(zabbix_host_groups) }}"
-  
+
+zabbix_user: "ansible-api"
+zabbix_password: "Ansible@1234"
+
+# These must match existing group/template IDs in Zabbix
+zabbix_hostgroup_id: "2"       # Example: Linux servers
+zabbix_template_id: "10001"    # Example: Template OS Linux
+
+# Optional: override per host/group
+ansible_host: "{{ hostvars[inventory_hostname]['ansible_host'] | default('192.168.12.100') }}"
