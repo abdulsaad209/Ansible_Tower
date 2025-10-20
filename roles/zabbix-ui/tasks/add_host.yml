@@ -20,7 +20,7 @@
     connection:
       url: "{{ zabbix_api_url }}"
       username: "{{ zabbix_api_user }}"
-      password: "{{ zabbix_api_pass }}"
+      password: "{{ zabbix_api_password }}"
     host_name: "{{ inventory_hostname }}"
     visible_name: "{{ inventory_hostname }}"
     status: enabled
