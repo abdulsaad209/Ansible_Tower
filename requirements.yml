@@ -1,0 +1,4 @@
+---
+collections:
+  - name: community.zabbix
+    version: "1.14.0"
