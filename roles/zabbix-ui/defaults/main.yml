@@ -1,9 +1,9 @@
 ---
 # Zabbix API connection info
-zabbix_api_url: "http://192.168.12.136/zabbix/api_jsonrpc.php"
+#zabbix_api_url: "http://192.168.12.136/zabbix/api_jsonrpc.php"
 zabbix_api_user: "ansible-api"
 zabbix_api_password: "Ansible@1234"
-
+zabbix_url: "http://192.168.12.136/zabbix/"
 # Host defaults (can be overridden in playbook)
 zabbix_host_name: "{{ inventory_hostname }}"
 zabbix_host_ip: "{{ ansible_host | default(inventory_hostname) }}"
@@ -18,3 +18,6 @@ zabbix_host_interfaces:
     ip: "{{ ansible_host | default(inventory_hostname) }}"
     dns: ""
     port: 10050
+
+
+zabbix_api_use: true
