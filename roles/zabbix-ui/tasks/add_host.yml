@@ -13,25 +13,6 @@
 #     state: present
 #   delegate_to: localhost
 
-- name: Ensure host exists on Zabbix UI
-  become: false
-  delegate_to: localhost
-  community.zabbix.zabbix_host:
-    connection:
-      url: "{{ zabbix_api_url }}"
-      username: "{{ zabbix_api_user }}"
-      password: "{{ zabbix_api_password }}"
-    host_name: "{{ inventory_hostname }}"
-    visible_name: "{{ inventory_hostname }}"
-    status: enabled
-    host_groups:
-      - "Linux servers"
-    link_templates:
-      - "Template OS Linux by Zabbix agent"
-    interfaces:
-      - type: 1
-        main: 1
-        useip: 1
-        ip: "{{ ansible_host }}"
-        dns: ""
-        port: 10050
+- name: Set API token
+  ansible.builtin.set_fact:
+    ansible_zabbix_auth_key: db26efd4cab4611c67b8d2b2eec6e4cd9a07078c3b2ec6c95776fc85ec587e45
