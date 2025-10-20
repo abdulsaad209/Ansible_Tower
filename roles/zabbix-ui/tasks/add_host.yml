@@ -1,5 +1,6 @@
 ---
 - name: Ensure host exists on Zabbix UI
+  become: false
   community.zabbix.zabbix_host:
     server_url: "{{ zabbix_api_url }}"
     login_user: "{{ zabbix_api_user }}"
