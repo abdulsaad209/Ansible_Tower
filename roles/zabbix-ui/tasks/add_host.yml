@@ -1,5 +1,6 @@
 ---
 - name: Register host in Zabbix via API
+  become: false
   local_action:
     module: community.zabbix.zabbix_host
     server_url: "{{ zabbix_url }}"
