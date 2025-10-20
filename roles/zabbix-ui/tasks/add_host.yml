@@ -16,6 +16,10 @@
       Content-Type: "application/json"
   register: zabbix_auth
 
+- name: Debug Zabbix auth response
+  debug:
+    var: zabbix_auth
+    
 - name: Check if host already exists
   uri:
     url: "{{ zabbix_api_endpoint }}"
