@@ -1,5 +1,6 @@
 --- 
 - name: Create host
+  become: false
   community.zabbix.zabbix_host:
     host_name: "test-host"
     visible_name: "Test Host"
