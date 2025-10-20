@@ -3,7 +3,7 @@
   uri:
     url: http://192.168.12.136/zabbix/api_jsonrpc.php
     method: POST
-    body: "{{ lookup('template','template/api-body.json.j2') }}"
+    body: "{{ lookup('template','api-body.json.j2') }}"
     body_format: json
     headers:
       Content-Type: application/json-rpc
