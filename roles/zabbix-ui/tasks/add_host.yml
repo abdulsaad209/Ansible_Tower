@@ -1,67 +1,12 @@
 --- 
-- name: Authenticate with Zabbix API
+- name: add host to server api via API call
   uri:
-    url: "{{ zabbix_api_endpoint }}"
+    url: http://192.168.12.136/zabbix/api_jsonrpc.php
     method: POST
+    body: "{{ lookup('template','api-body.json.j2') }}"
     body_format: json
-    return_content: yes
-    body:
-      jsonrpc: "2.0"
-      method: "user.login"
-      params:
-        user: "{{ zabbix_user }}"
-        password: "{{ zabbix_password }}"
-      id: 1
     headers:
-      Content-Type: "application/json"
-  register: zabbix_auth
-
-- name: Debug Zabbix auth response
-  debug:
-    var: zabbix_auth
-    
-- name: Check if host already exists
-  uri:
-    url: "{{ zabbix_api_endpoint }}"
-    method: POST
-    body_format: json
+      Content-Type: application/json-rpc
     return_content: yes
-    body:
-      jsonrpc: "2.0"
-      method: "host.get"
-      params:
-        filter:
-          host: ["{{ inventory_hostname }}"]
-      auth: "{{ zabbix_auth.json.result }}"
-      id: 2
-    headers:
-      Content-Type: "application/json"
-  register: zabbix_host_check
-
-- name: Create host in Zabbix if it doesn't exist
-  uri:
-    url: "{{ zabbix_api_endpoint }}"
-    method: POST
-    body_format: json
-    return_content: yes
-    body:
-      jsonrpc: "2.0"
-      method: "host.create"
-      params:
-        host: "{{ inventory_hostname }}"
-        interfaces:
-          - type: 1
-            main: 1
-            useip: 1
-            ip: "{{ ansible_host | default('127.0.0.1') }}"
-            dns: ""
-            port: "{{ zabbix_port }}"
-        groups:
-          - groupid: "{{ zabbix_hostgroup_id }}"
-        templates:
-          - templateid: "{{ zabbix_template_id }}"
-      auth: "{{ zabbix_auth.json.result }}"
-      id: 3
-    headers:
-      Content-Type: "application/json"
-  when: zabbix_host_check.json.result | length == 0
+  register: uri_output
+  delegate_to: zabbix_front
