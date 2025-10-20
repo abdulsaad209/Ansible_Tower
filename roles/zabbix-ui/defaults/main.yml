@@ -14,9 +14,11 @@ ansible_network_os: community.zabbix.zabbix
 ansible_httpapi_use_ssl: false
 ansible_httpapi_validate_certs: false
 ansible_zabbix_url_path: "zabbix"
-ansible_host: 192.168.12.136
+#ansible_host: 192.168.12.136
 ansible_user: szahid
 ansible_httpapi_pass: "343802S@@di321"
+
+
 
 # # Zabbix API connection info
 # #zabbix_api_url: "http://192.168.12.136/zabbix/api_jsonrpc.php"
