@@ -1,14 +1,37 @@
 ---
-- name: Test Zabbix host module
-  hosts: localhost
-  gather_facts: false
+- name: Create a new host
+  hosts: zabbix-proxy.ms.com
   tasks:
-    - name: Ping Zabbix API
-      community.zabbix.zabbix_api_info:
-        server_url: "http://192.168.12.136/zabbix"
-        login_user: "ansible-api"
-        login_password: "Ansible@1234"
-      register: result
+    - name: Set API token
+      ansible.builtin.set_fact:
+        ansible_zabbix_auth_key: "5fc74eb96edc97acc1488bec5347d76368f54e42716a4e6424bfca6fca7564d2"
 
-    - debug:
-        var: result
+    - name: Create a new host
+      vars:
+         ansible_network_os: community.zabbix.zabbix
+         ansible_connection: httpapi
+         ansible_httpapi_port: 80
+         ansible_httpapi_use_ssl: false
+         ansible_httpapi_validate_certs: false
+      community.zabbix.zabbix_host:
+        host_name: TestHost
+        visible_name: TestHost
+        description: My test host desc.
+        host_groups:
+          - Linux servers
+        link_templates:
+          - Linux minimal
+          - Linux filesystems by Zabbix agent
+        status: enabled
+        state: present
+        interfaces:
+          - type: 1
+            main: 1
+            useip: 1
+            ip: 10.0.33.199
+            dns: ""
+            port: 10050
+        proxy: zabbixproxy01
+        tags:
+          - tag: os
+            value: linux---
