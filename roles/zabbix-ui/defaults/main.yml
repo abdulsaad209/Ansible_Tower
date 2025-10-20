@@ -14,21 +14,3 @@ zabbix_link_templates: ["Linux by Zabbix agent"] # a list of used templates
 zabbix_interface_type: agent # tells to use zabbix agent
 zabbix_interface_use_ip: "0" # defines to use ip - 0 or dns - 1 to connect to host
 zabbix_interface_ip: "" 
-
-
-# Host defaults (can be overridden in playbook)
-#zabbix_host_name: "{{ inventory_hostname }}"
-#zabbix_host_ip: "{{ ansible_host | default(inventory_hostname) }}"
-#zabbix_host_groups:
- # - "Linux servers"
-#zabbix_host_templates:
-#  - "Template OS Linux"
-#zabbix_host_interfaces:
-#  - type: 1          # 1=agent
-#    main: 1
-#    useip: 1
-#    ip: "{{ ansible_host | default(inventory_hostname) }}"
-#    dns: ""
-#    port: 10050
-
-

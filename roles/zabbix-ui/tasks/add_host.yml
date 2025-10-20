@@ -20,7 +20,7 @@
         ip: "{{ hostvars[item].zabbix_interface_ip }}" # if useip is chosen takes ip from inventory file
         dns: "{{ item }}" # if useip: 0 takes hostname from inventory
         port: "{{ hostvars[item].zabbix_interface_port }}" # defines port
-  loop: "{{ groups['all'] }}" # loop that iterates over all hosts in inventory
-  run_once: true # loop will run on every host in inventory, so we tell ansible to run once
-  tags:
-    - add-host #  adding tags for convenience
+  # loop: "{{ groups['all'] }}" # loop that iterates over all hosts in inventory
+  # run_once: true # loop will run on every host in inventory, so we tell ansible to run once
+  # tags:
+  #   - add-host #  adding tags for convenience
