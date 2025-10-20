@@ -5,6 +5,8 @@
     method: POST
     body_format: json
     return_content: yes
+    headers:
+      Content-Type: "application/json"
     body:
       jsonrpc: "2.0"
       method: "user.login"
@@ -12,8 +14,6 @@
         user: "{{ zabbix_user }}"
         password: "{{ zabbix_password }}"
       id: 1
-    headers:
-      Content-Type: "application/json"
   register: zabbix_auth
 
 - name: Debug Zabbix auth response
