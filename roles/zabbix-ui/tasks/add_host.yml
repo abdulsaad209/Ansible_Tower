@@ -8,6 +8,7 @@
     ansible_httpapi_use_ssl: false
     ansible_httpapi_validate_certs: false
     ansible_zabbix_url_path: "zabbix"  # If Zabbix WebUI runs on non-default (zabbix) path ,e.g. http://<FQDN>/zabbixeu
+    content_sync_enabled: false
   become: false
   delegate_to: 192.168.12.136
   # community.zabbix.zabbix_host_info:
