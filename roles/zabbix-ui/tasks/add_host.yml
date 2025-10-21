@@ -10,11 +10,11 @@
     ansible_zabbix_url_path: "zabbix"  # If Zabbix WebUI runs on non-default (zabbix) path ,e.g. http://<FQDN>/zabbixeu
   become: false
   delegate_to: 192.168.12.136
-  community.zabbix.zabbix_host_info:
-    host_name: Zabbix server
-    host_ip: 127.0.0.1
-    exact_match: no
-    remove_duplicate: yes
+  # community.zabbix.zabbix_host_info:
+  #   host_name: Zabbix server
+  #   host_ip: 127.0.0.1
+  #   exact_match: no
+  #   remove_duplicate: yes
 
   community.zabbix.zabbix_host:
     host_name: "{{ inventory_hostname }}"
