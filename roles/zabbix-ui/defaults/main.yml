@@ -9,15 +9,6 @@
 # zabbix_api_endpoint: "{{ zabbix_url }}/api_jsonrpc.php"
 # auth_token: "5fc74eb96edc97acc1488bec5347d76368f54e42716a4e6424bfca6fca7564d2"
 
-ansible_connection: httpapi
-ansible_network_os: community.zabbix.zabbix
-ansible_httpapi_use_ssl: false
-ansible_httpapi_validate_certs: false
-ansible_zabbix_url_path: "zabbix"
-#ansible_host: 192.168.12.136
-ansible_user: szahid
-ansible_httpapi_pass: "343802S@@di321"
-
 
 
 # # Zabbix API connection info
