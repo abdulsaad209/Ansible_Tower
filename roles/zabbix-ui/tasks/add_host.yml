@@ -14,8 +14,9 @@
     ansible_httpapi_validate_certs: false
     ansible_zabbix_url_path: "zabbix"  # If Zabbix WebUI runs on non-default (zabbix) path ,e.g. http://<FQDN>/zabbixeu
     content_sync_enabled: false
-    ansible_user: "Admin"
-    ansible_httpapi_pass: "zabbix"
+    ansible_user: "ansible-api"
+    # ansible_httpapi_pass: "zabbix"
+    ansible_zabbix_auth_key: "a176887e52858bafa8d12a3e84428d6e63683a54671cf7a90c6630bbfd8c6b85"
 
   become: false
   delegate_to: 192.168.12.136
