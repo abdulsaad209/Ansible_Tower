@@ -33,8 +33,9 @@
       - "Virtual machines"
       - "szcoders-corp"
     link_templates:
-      - "Linux by Zabbix agent"
-      - "ICMP Ping"
+      - name: "Linux by Zabbix agent"
+      - name: "ICMP Ping"
+
     status: enabled
     state: present
     inventory_mode: automatic
