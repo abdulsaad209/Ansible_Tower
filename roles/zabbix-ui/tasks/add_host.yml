@@ -1,4 +1,9 @@
 --- 
+- name: Set credentials to access Zabbix Server API
+  ansible.builtin.set_fact:
+    ansible_user: Admin
+    ansible_httpapi_pass: zabbix
+
 - name: Add test host to Zabbix
   gather_facts: false
   vars:
@@ -7,10 +12,10 @@
     ansible_httpapi_port: 80
     ansible_httpapi_use_ssl: false
     ansible_httpapi_validate_certs: false
-    ansible_zabbix_url_path: "http://192.168.12.136/zabbix"  # Change to "zabbixeu" if needed
-    ansible_host: 10.0.0.37            # Zabbix server IP or FQDN
-    ansible_user: Admin
-    ansible_httpapi_pass: zabbix
+    ansible_zabbix_url_path: "zabbix"  # Change to "zabbixeu" if needed
+    ansible_host: 192.168.12.136            # Zabbix server IP or FQDN
+    # ansible_user: Admin
+    # ansible_httpapi_pass: zabbix
 
 - name: Create basic test host
   gather_facts: false
@@ -29,10 +34,7 @@
     link_templates:
       - name: "Template OS Linux"
     state: present
-# - name: Set credentials to access Zabbix Server API
-#   ansible.builtin.set_fact:
-#     ansible_user: Admin
-#     ansible_httpapi_pass: zabbix
+
 
 # - name: Create a new host or rewrite an existing host's info (Zabbix <= 7.0)
 # # Set task level following variables for Zabbix Server host in task
