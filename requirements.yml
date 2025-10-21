@@ -1,4 +1,4 @@
-# ---
-# collections:
-#   - name: community.zabbix
-#     version: "3.1.0"
+---
+collections:
+  - name: community.zabbix
+    
