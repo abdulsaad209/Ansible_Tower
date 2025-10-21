@@ -1,9 +1,9 @@
 --- 
 - name: Set credentials to access Zabbix Server API
   ansible.builtin.set_fact:
-    ansible_user: Admin
-    ansible_httpapi_pass: zabbix
-    
+    ansible_user: "Admin"
+    ansible_httpapi_pass: "zabbix"
+
 - name: Create a new host or rewrite an existing host's info (Zabbix <= 7.0)
 # Set task level following variables for Zabbix Server host in task
   vars:
