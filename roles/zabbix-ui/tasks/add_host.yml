@@ -1,8 +1,8 @@
 --- 
-- name: Set credentials to access Zabbix Server API
-  ansible.builtin.set_fact:
-    ansible_user: "Admin"
-    ansible_httpapi_pass: "zabbix"
+# - name: Set credentials to access Zabbix Server API
+#   ansible.builtin.set_fact:
+#     ansible_user: "Admin"
+#     ansible_httpapi_pass: "zabbix"
 
 - name: Create a new host or rewrite an existing host's info (Zabbix <= 7.0)
 # Set task level following variables for Zabbix Server host in task
@@ -14,6 +14,9 @@
     ansible_httpapi_validate_certs: false
     ansible_zabbix_url_path: "zabbix"  # If Zabbix WebUI runs on non-default (zabbix) path ,e.g. http://<FQDN>/zabbixeu
     content_sync_enabled: false
+    ansible_user: "Admin"
+    ansible_httpapi_pass: "zabbix"
+
   become: false
   delegate_to: 192.168.12.136
   # community.zabbix.zabbix_host_info:
