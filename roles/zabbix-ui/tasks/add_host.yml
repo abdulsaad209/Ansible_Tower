@@ -13,9 +13,11 @@
     ansible_httpapi_use_ssl: false
     ansible_httpapi_validate_certs: false
     ansible_zabbix_url_path: "zabbix"  # Change to "zabbixeu" if needed
-    ansible_host: 192.168.12.136            # Zabbix server IP or FQDN
+    # ansible_host: 192.168.12.136            # Zabbix server IP or FQDN
     # ansible_user: Admin
     # ansible_httpapi_pass: zabbix
+  become: false
+  delegate_to: 192.168.12.136
 
 - name: Create basic test host
   gather_facts: false
@@ -30,87 +32,8 @@
         dns: ""
         port: "10050"
     host_groups:
-      - name: "Linux servers"
+      - name: "szcoders-corp"
     link_templates:
-      - name: "Template OS Linux"
+      - name: "Linux by Zabbix agent"
     state: present
-
-
-# - name: Create a new host or rewrite an existing host's info (Zabbix <= 7.0)
-# # Set task level following variables for Zabbix Server host in task
-#   vars:
-#     ansible_network_os: community.zabbix.zabbix
-#     ansible_connection: httpapi
-#     ansible_httpapi_port: 80
-#     ansible_httpapi_use_ssl: false
-#     ansible_httpapi_validate_certs: false
-#     ansible_zabbix_url_path: "zabbixeu"  # If Zabbix WebUI runs on non-default (zabbix) path ,e.g. http://<FQDN>/zabbixeu
-#   become: false
-#   delegate_to: zabbix-example-fqdn.org# you can use delegate_to or task level ansible_host like next example
-#   community.zabbix.zabbix_host:
-#     host_name: ExampleHost
-#     visible_name: ExampleName
-#     description: My ExampleHost Description
-#     host_groups:
-#       - szcoders-corp
-#     link_templates:
-#       - Linux by Zabbix agent
-#     status: enabled
-#     state: present
-#     inventory_mode: manual
-#     # inventory_zabbix:
-#     #   tag: "{{ your_tag }}"
-#     #   alias: "{{ your_alias }}"
-#     #   notes: "Special Informations: {{ your_informations | default('None') }}"
-#     #   location: "{{ your_location }}"
-#     #   site_rack: "{{ your_site_rack }}"
-#     #   os: "{{ your_os }}"
-#     #   hardware: "{{ your_hardware }}"
-#     # ipmi_authtype: 2
-#     # ipmi_privilege: 4
-#     # ipmi_username: username
-#     # ipmi_password: password
-#     interfaces:
-#       - type: 1
-#         main: 1
-#         useip: 1
-#         ip: 10.0.0.37
-#         dns: ""
-#         port: "10050"
-#       - type: 4
-#         main: 1
-#         useip: 1
-#         ip: 10.0.0.2
-#         dns: ""
-#         port: "12345"
-#     proxy: a.zabbix.proxy
-#     macros:
-#       - macro: "{$EXAMPLEMACRO}"
-#         value: ExampleMacroValue
-#       - macro: EXAMPLEMACRO2
-#         value: ExampleMacroValue2
-#         description: Example desc that work only with Zabbix 4.4 and higher
-#     tags:
-#       - tag: ExampleHostsTag
-#       - tag: ExampleHostsTag2
-#         value: ExampleTagValue
-
-# # - name: Create host
-# #   gather_facts: false
-# #   become: true
-# #   community.zabbix.zabbix_host:
-# #     host_name: "test-host"
-# #     visible_name: "Test Host"
-# #     interfaces:
-# #       - type: 1
-# #         main: 1
-# #         useip: 1
-# #         ip: "10.0.99.99"
-# #         dns: ""
-# #         port: "10050"
-# #     host_groups:
-# #       - name: "Linux servers"
-# #     link_templates:
-# #       - name: "Template OS Linux"
-# #     state: present
 
