@@ -6,17 +6,28 @@
 
 - name: Create a new host or rewrite an existing host's info (Zabbix <= 7.0)
 # Set task level following variables for Zabbix Server host in task
+  # vars:
+  #   ansible_network_os: community.zabbix.zabbix
+  #   ansible_connection: httpapi
+  #   ansible_httpapi_port: 80
+  #   ansible_httpapi_use_ssl: false
+  #   ansible_httpapi_validate_certs: false
+  #   ansible_zabbix_url_path: "zabbix"  # If Zabbix WebUI runs on non-default (zabbix) path ,e.g. http://<FQDN>/zabbixeu
+  #   content_sync_enabled: false
+  #   ansible_user: "ansible-api"
+  #   # ansible_httpapi_pass: "zabbix"
+  #   ansible_zabbix_auth_key: "a176887e52858bafa8d12a3e84428d6e63683a54671cf7a90c6630bbfd8c6b85"
+
   vars:
-    ansible_network_os: community.zabbix.zabbix
     ansible_connection: httpapi
+    ansible_network_os: community.zabbix.zabbix
+    ansible_host: 192.168.12.136
     ansible_httpapi_port: 80
     ansible_httpapi_use_ssl: false
     ansible_httpapi_validate_certs: false
-    ansible_zabbix_url_path: "zabbix"  # If Zabbix WebUI runs on non-default (zabbix) path ,e.g. http://<FQDN>/zabbixeu
-    content_sync_enabled: false
-    ansible_user: "ansible-api"
-    # ansible_httpapi_pass: "zabbix"
+    ansible_zabbix_url_path: "zabbix"
     ansible_zabbix_auth_key: "a176887e52858bafa8d12a3e84428d6e63683a54671cf7a90c6630bbfd8c6b85"
+
 
   become: false
   delegate_to: 192.168.12.136
