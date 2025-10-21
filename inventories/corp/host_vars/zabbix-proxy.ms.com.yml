@@ -1,16 +1,24 @@
 --- 
 ### Zabbix Related Variables ###
-zabbix_host_description: "Zabbix Proxy Server"
-zabbix_host_status: "enabled"
-zabbix_host_groups: '["szcoders-corp","Linux servers"]'
-zabbix_link_templates: ["Linux by Zabbix agent"]
-zabbix_interface_type: agent
-zabbix_interface_use_ip: "0"
-zabbix_interface_ip: "{{ ansible_host }}"
+# zabbix_host_description: "Zabbix Proxy Server"
+# zabbix_host_status: "enabled"
+# zabbix_host_groups: '["szcoders-corp","Linux servers"]'
+# zabbix_link_templates: ["Linux by Zabbix agent"]
+# zabbix_interface_type: agent
+# zabbix_interface_use_ip: "0"
+# zabbix_interface_ip: "{{ ansible_host }}"
 
-zabbix_custom_userparams:
-  db_monitoring: |
-    UserParameter=db.uptime,/usr/bin/mysql -e "SHOW GLOBAL STATUS LIKE 'Uptime';"
-  nginx_status: |
-    UserParameter=nginx.active,/usr/bin/curl -s http://localhost/nginx_status | grep Active | awk '{print $3}'
+ansible_connection: httpapi
+ansible_network_os: community.zabbix.zabbix
+ansible_httpapi_use_ssl: false
+ansible_httpapi_validate_certs: false
+ansible_zabbix_url_path: "zabbix"
+ansible_user: szahid
+ansible_httpapi_pass: "343802S@@di321"
+
+# zabbix_custom_userparams:
+#   db_monitoring: |
+#     UserParameter=db.uptime,/usr/bin/mysql -e "SHOW GLOBAL STATUS LIKE 'Uptime';"
+#   nginx_status: |
+#     UserParameter=nginx.active,/usr/bin/curl -s http://localhost/nginx_status | grep Active | awk '{print $3}'
 
