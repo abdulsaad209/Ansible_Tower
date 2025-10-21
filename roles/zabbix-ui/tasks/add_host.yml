@@ -30,11 +30,11 @@
     visible_name: "{{ inventory_hostname }}"
     description: "Zabbix Proxy Server"
     host_groups:
-      - Virtual machines
-      - szcoders-corp
+      - "Virtual machines"
+      - "szcoders-corp"
     link_templates:
-      - Linux by Zabbix agent
-      - ICMP Ping
+      - "Linux by Zabbix agent"
+      - "ICMP Ping"
     status: enabled
     state: present
     inventory_mode: automatic
