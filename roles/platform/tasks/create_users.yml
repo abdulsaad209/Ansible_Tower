@@ -1,5 +1,4 @@
 ---
-
 ### Zurple
 - name: Create zurple user
   ansible.builtin.user:
@@ -31,10 +30,21 @@
     group: controller
   when: "'controller' in target_users"
 
+- name: Ensure authorized_keys exists for controller
+  ansible.builtin.file:
+    path: /home/controller/.ssh/authorized_keys
+    state: touch
+    mode: '0600'
+    owner: controller
+    group: controller
+  when: "'controller' in target_users"
+
 - name: Add public key for controller
-  ansible.builtin.copy:
-    dest: /home/controller/.ssh/authorized_keys
-    content: "{{ devmgr_controller_key }}"
+  ansible.builtin.lineinfile:
+    path: /home/controller/.ssh/authorized_keys
+    line: "{{ devmgr_controller_key }}"
+    create: yes
+    state: present
     owner: controller
     group: controller
     mode: '0600'
@@ -60,10 +70,21 @@
     group: deploy
   when: "'deploy' in target_users"
 
+- name: Ensure authorized_keys exists for deploy
+  ansible.builtin.file:
+    path: /home/deploy/.ssh/authorized_keys
+    state: touch
+    mode: '0600'
+    owner: deploy
+    group: deploy
+  when: "'deploy' in target_users"
+
 - name: Add public key for deploy
-  ansible.builtin.copy:
-    dest: /home/deploy/.ssh/authorized_keys
-    content: "{{ devmgr_deploy_key }}"
+  ansible.builtin.lineinfile:
+    path: /home/deploy/.ssh/authorized_keys
+    line: "{{ devmgr_deploy_key }}"
+    create: yes
+    state: present
     owner: deploy
     group: deploy
     mode: '0600'
