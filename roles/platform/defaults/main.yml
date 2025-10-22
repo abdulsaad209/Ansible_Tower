@@ -1,2 +1,13 @@
 ---
-# defaults file for platform
+# Users will only be created when it would be present in target_users list
+target_users:
+  # - zurple
+  # - deploy
+
+# SSH Public key of "controller" user for passwordless SSH access
+devmgr_controller_key: "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQDS8nEFO1RkF/OIHCS3a1Pbi+7yHJU4/2rylvI6BxJL1XTR6USepqiwj6X65VT5qwQH12OAfqMDXQEpiBhRc+JFWobZ18RX4Yxtgzs8Tkr2xtf4Jx4ktQwPYNDASSQ+G/uBHTNzYVGefTDVqxBHGeCboaoZE1vIdlRrb5GGJn89H9psELUt1GgZGP/YQocYbbkqIp2C2NuOjJlpg0qHa6Vu9kQ8wfGbSDn9UjDws9/gIiK/m4LvWFN1BTW6l8XNlWlfTV0vZ9BqmOXm5yEIhKtM3EZspPmX8kElWb1FQ+cDUsGwFJQh0i0QXOkhA/3bkmwKRjuM3XE8fbyMyneKfmOw4RKgAelWfDYAU4O97J9DJkddvDROnJDUR/I6wRgnxSal7JQHy7EB8vR7bjzVZCIQ5/vxg06O79Qeg7XH8SG2Y0ZxVidaeTfPaGIbF5upHBh7TmIwOqxFBKXYV+Sp1gfqNdUl8ypZAlf4LGfpE7mFMw8EzPAbEoJSnB7yramhIRM= controller@zabbix-master.ms.com"
+
+# SSH Public key of "deploy" user for passwordless SSH access
+devmgr_deploy_key: "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQCNfd2a1lcnRJYlKy1dBO6bk4KHM9sznlWuyPsZrGGXlBiZ1wHnltuNo4JL7cKunUnRI26VQhuO7Lz+Q0KcElX0yandIf9KMATQ5wyk+UOQVMUMeAc8K3WdzrrEpy4GilRjswkztnTE3GMp5DwADIxv073eoDxJjO/1Y/u1cS03kd2O/F+UGrBDhiRCGatF1oeg+YKiqmXqdShllhfReT1RhN7uiFToL+za+8LVYGxxTfC47emTxFvhiHkAfNzDfb6OwD9u2UGHy2oJFe+0FNm1C8gKG/HYRuf+cxpyTWo3Cg6Z1czZk9wGnINrdmirLmC3nw6mOSzX7ohGRiVpENFjJdptcbi87R8jZRiQSdLKdt3eE6zM/EBtV3HU4zt3MQRvSgfsKYxPNHTk5YMt1qSK8P+8imaajpl7X4GPN1eVYbV1nYzIE+XLVTvYBFHdTY+LHwpKtDX84IiDLvcWBXjz+6M+8O/DWuyEL8Onqb0oC9+bDj8RpP8VgJLB7Ob/dXc= deploy@zabbix-master.ms.com"
+
+

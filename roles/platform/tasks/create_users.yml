@@ -1,0 +1,87 @@
+---
+
+### Zurple
+- name: Create zurple user
+  ansible.builtin.user:
+    name: zurple
+    comment: "Zurple"
+    shell: /bin/bash
+    home: /home/zurple
+    state: present
+    create_home: true
+  when: "'zurple' in target_users"
+
+### Controller
+- name: Create controller user
+  ansible.builtin.user:
+    name: controller
+    comment: "Controller"
+    shell: /bin/bash
+    home: /home/controller
+    state: present
+    create_home: true
+  when: "'controller' in target_users"
+
+- name: Setup SSH for controller
+  ansible.builtin.file:
+    path: /home/controller/.ssh
+    state: directory
+    mode: '0700'
+    owner: controller
+    group: controller
+  when: "'controller' in target_users"
+
+- name: Add public key for controller
+  ansible.builtin.copy:
+    dest: /home/controller/.ssh/authorized_keys
+    content: "{{ devmgr_controller_key }}"
+    owner: controller
+    group: controller
+    mode: '0600'
+  when: "'controller' in target_users"
+
+### Deploy
+- name: Create deploy user
+  ansible.builtin.user:
+    name: deploy
+    comment: "deploy user"
+    shell: /bin/bash
+    home: /home/deploy
+    state: present
+    create_home: true
+  when: "'deploy' in target_users"
+
+- name: Setup SSH for deploy
+  ansible.builtin.file:
+    path: /home/deploy/.ssh
+    state: directory
+    mode: '0700'
+    owner: deploy
+    group: deploy
+  when: "'deploy' in target_users"
+
+- name: Add public key for deploy
+  ansible.builtin.copy:
+    dest: /home/deploy/.ssh/authorized_keys
+    content: "{{ devmgr_deploy_key }}"
+    owner: deploy
+    group: deploy
+    mode: '0600'
+  when: "'deploy' in target_users"
+
+### www-data
+- name: Create www-data user
+  ansible.builtin.user:
+    name: www-data
+    comment: "www-data"
+    shell: /bin/sh
+    state: present
+    create_home: true
+  when: "'www-data' in target_users"
+
+- name: Add www-data to zurple group
+  ansible.builtin.user:
+    name: www-data
+    groups: zurple
+    append: true
+  when: "'www-data' in target_users"
