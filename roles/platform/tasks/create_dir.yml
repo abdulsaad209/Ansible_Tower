@@ -1,0 +1,62 @@
+---
+- name: Ensure /etc/zurple directory exists
+  ansible.builtin.file:
+    path: /etc/zurple
+    state: directory
+    owner: deploy
+    group: zurple
+    mode: '2750'  # 2 = setgid, 7/5/0 = rwxr-x---
+  tags: zurple
+
+- name: Set default ACL for group on /etc/zurple
+  ansible.posix.acl:
+    path: /etc/zurple
+    default: yes
+    entity: ''
+    etype: group
+    permissions: r
+    state: present
+  tags: zurple
+
+- name: Set default ACL for others on /etc/zurple
+  ansible.posix.acl:
+    path: /etc/zurple
+    default: yes
+    entity: ''
+    etype: other
+    permissions: ''
+    state: present
+  tags: zurple
+
+- name: Create placeholder files in /etc/zurple
+  ansible.builtin.copy:
+    dest: "/etc/zurple/{{ item.name }}"
+    content: ""
+    owner: deploy
+    group: zurple
+    mode: '0640'
+    force: no
+  loop:
+    - { name: 'credentials.ini' }
+    - { name: 'credentials.key' }
+    - { name: 'platform.ini' }
+    - { name: 'platform-php.ini' }
+  tags: zurple
+
+- name: Ensure /var/www/zurple.com directory exists
+  ansible.builtin.file:
+    path: /var/www/zurple.com
+    state: directory
+    owner: deploy
+    group: deploy
+    mode: '0755'
+  tags: zurple
+
+# - name: Ensure /tmp/cache is owned by www-data
+#   ansible.builtin.file:
+#     path: /tmp/cache
+#     state: directory
+#     owner: www-data
+#     group: www-data
+#     recurse: true
+#   tags: zurple
