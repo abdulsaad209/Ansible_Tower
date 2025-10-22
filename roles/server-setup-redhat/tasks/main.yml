@@ -25,8 +25,8 @@
 - name: Including role to setup platform server for admin 
   include_role:
     name: platform
-    vars: 
-      target_users:
-        - zurple 
-        - controller 
-        - deploy 
+  vars: 
+    target_users:
+      - zurple 
+      - controller 
+      - deploy 
