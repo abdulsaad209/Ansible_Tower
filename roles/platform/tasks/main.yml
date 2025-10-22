@@ -2,3 +2,6 @@
 - name: Including task to create users on target servers
   include_tasks: create_users.yml
 
+- name: Including task to create directories on target servers
+  include_tasks: create_dir.yml
+
