@@ -52,11 +52,11 @@
     mode: '0755'
   tags: zurple
 
-- name: Ensure /tmp/cache exists and is owned by www-data
-  ansible.builtin.file:
-    path: /tmp/cache
-    state: directory
-    owner: www-data
-    group: www-data
-    mode: '0755'
-    recurse: true
+# - name: Ensure /tmp/cache exists and is owned by www-data
+#   ansible.builtin.file:
+#     path: /tmp/cache
+#     state: directory
+#     owner: www-data
+#     group: www-data
+#     mode: '0755'
+#     recurse: true
