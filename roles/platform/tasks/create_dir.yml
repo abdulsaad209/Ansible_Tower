@@ -60,4 +60,3 @@
     group: www-data
     mode: '0755'
     recurse: true
-  tags: zurple

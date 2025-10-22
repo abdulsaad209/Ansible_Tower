@@ -99,7 +99,7 @@
     state: present
     create_home: true
   when: "'www-data' in target_users"
-  tags: zurple
+
 
 - name: Add www-data to zurple group
   ansible.builtin.user:
@@ -107,4 +107,3 @@
     groups: zurple
     append: true
   when: "'www-data' in target_users"
-  tags: zurple
