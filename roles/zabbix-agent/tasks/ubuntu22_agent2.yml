@@ -1,7 +1,13 @@
 ---
-- name: Add Zabbix repository for Ubuntu 22.04
+- name: Download Zabbix repository package for Ubuntu 22.04
+  ansible.builtin.get_url:
+    url: "{{ ubuntu22_repo }}"
+    dest: /tmp/zabbix-release_latest_7.4+ubuntu22.04_all.deb
+    mode: '0644'
+
+- name: Install Zabbix repository package
   ansible.builtin.apt:
-    name: "{{ ubuntu22_repo }}"
+    deb: /tmp/zabbix-release_latest_7.4+ubuntu22.04_all.deb
     state: present
   register: zabbix_repo
 
@@ -10,39 +16,40 @@
     update_cache: yes
   when: zabbix_repo is changed
 
-- name: Install Zabbix Agent2
+- name: Install Zabbix Agent2 and plugins
   ansible.builtin.apt:
     name:
       - zabbix-agent2
-      - zabbix-agent2-plugin-mongodb 
-      - zabbix-agent2-plugin-mssql 
+      - zabbix-agent2-plugin-mongodb
+      - zabbix-agent2-plugin-mssql
       - zabbix-agent2-plugin-postgresql
     state: present
 
-# Agent Configuration Start from Here
+# ---------------- Agent Configuration ----------------
+
 - name: Set Zabbix server parameters
-  lineinfile:
+  ansible.builtin.lineinfile:
     path: /etc/zabbix/zabbix_agent2.conf
     regexp: '^Server='
     line: "Server={{ zabbix_server }}"
   notify: Restart zabbix-agent2
 
 - name: Set active Zabbix server parameters
-  lineinfile:
+  ansible.builtin.lineinfile:
     path: /etc/zabbix/zabbix_agent2.conf
     regexp: '^ServerActive='
     line: "ServerActive={{ zabbix_server }}"
   notify: Restart zabbix-agent2
 
 - name: Set agent hostname
-  lineinfile:
+  ansible.builtin.lineinfile:
     path: /etc/zabbix/zabbix_agent2.conf
     regexp: '^Hostname='
     line: "Hostname={{ inventory_hostname }}"
   notify: Restart zabbix-agent2
 
 - name: Deploy custom userparameter config if defined
-  copy:
+  ansible.builtin.copy:
     content: "{{ item.value }}"
     dest: "/etc/zabbix/zabbix_agent2.d/{{ item.key }}.conf"
     owner: root
@@ -57,4 +64,3 @@
     name: zabbix-agent2
     enabled: true
     state: started
-
