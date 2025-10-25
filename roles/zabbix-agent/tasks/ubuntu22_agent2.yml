@@ -6,6 +6,7 @@
     dest: /tmp/zabbix-release_latest_7.4.deb
 
 - name: Purge zabbix repo 
+  become: true
   apt: 
     name: zabbix-release
     state: absent
