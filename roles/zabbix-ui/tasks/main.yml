@@ -2,3 +2,5 @@
 - name: Including task to add host to zabbix UI
   include_tasks: add_host.yml
 
+- name: Including task to add Template to zabbix UI
+  include_tasks: add_template.yml
