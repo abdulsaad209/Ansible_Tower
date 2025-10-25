@@ -16,7 +16,6 @@
   apt:
     deb: /tmp/zabbix-release_latest_7.4.deb
     state: present
-    autoremove: true
 
 - name: Update apt cache
   become: true
