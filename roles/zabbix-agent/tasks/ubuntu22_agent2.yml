@@ -19,6 +19,7 @@
   when: zabbix_repo is changed
 
 - name: Install Zabbix Agent2 and plugins
+  become: true
   ansible.builtin.apt:
     name:
       - zabbix-agent2
