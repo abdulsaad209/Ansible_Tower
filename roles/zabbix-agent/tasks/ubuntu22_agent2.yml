@@ -69,7 +69,7 @@
   ansible.builtin.lineinfile:
     path: /etc/zabbix/zabbix_agent2.conf
     regexp: '^ListenIP='
-    line: "ListenIP={{ zabbix_server }}"
+    line: "ListenIP=0.0.0.0"
 
 - name: Deploy custom userparameter config if defined
   become: true
@@ -87,5 +87,5 @@
   ansible.builtin.systemd:
     name: zabbix-agent2
     enabled: true
-    state: started
+    state: restarted
 
