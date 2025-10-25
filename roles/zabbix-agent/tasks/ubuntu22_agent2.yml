@@ -1,21 +1,25 @@
 ---
-- name: Download Zabbix release package
+- name: Add Zabbix 7.4 APT repository manually
   become: true
-  get_url:
-    url: "{{ ubuntu22_repo }}"
-    dest: "/tmp/zabbix-release_7.4.deb"
+  copy:
+    dest: /etc/apt/sources.list.d/zabbix.list
+    content: |
+      deb "{{ ubuntu22.04 }}" jammy main
+      deb-src "{{ ubuntu22.04 }}" jammy main
+    owner: root
+    group: root
+    mode: '0644'
 
-- name: Install Zabbix release package
+- name: Add Zabbix GPG key
   become: true
-  apt:
-    deb: "/tmp/zabbix-release_7.4.deb"
+  apt_key:
+    url: https://repo.zabbix.com/zabbix-official-repo.key
     state: present
 
-- name: Update apt cache after adding Zabbix repo
+- name: Update apt cache
   become: true
   apt:
     update_cache: yes
-
 
 - name: Install Zabbix Agent2
   become: true
