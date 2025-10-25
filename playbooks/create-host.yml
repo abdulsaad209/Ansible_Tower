@@ -4,14 +4,14 @@
   gather_facts: false
 
   vars:
-    zabbix_url: "https://zabbix-master.ms.com/zabbix"
+    zabbix_url: "http://192.168.12.136/zabbix"
     zabbix_user: "Admin"
     zabbix_pass: "zabbix"
 
     # Host details
-    host_name: "test-host-74"
-    visible_name: "Test Host 7.4"
-    host_ip: "192.168.12.150"
+    host_name: "{{ inventory_hostname }}"
+    visible_name: "{{ inventory_hostname }}"
+    host_ip: "{{ ansible_host}}"
     group_name: "Linux servers"
     template_name: "Template OS Linux"
 
