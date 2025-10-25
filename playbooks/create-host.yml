@@ -1,18 +1,22 @@
 ---
-- name: Create host item in Zabbix 7.4 using JSON-RPC + Bearer Token
+- name: Create host in Zabbix 7.4 using JSON-RPC + Bearer Token
   hosts: zabbix-proxy.ms.com
   gather_facts: false
 
   vars:
-    zabbix_url: "http://192.168.12.136/zabbix"
+    zabbix_url: "https://zabbix-master.ms.com/zabbix"
     zabbix_user: "Admin"
     zabbix_pass: "zabbix"
-    hostid: "10084"   # example
-    item_name: "Free disk space on /home/joe/"
-    item_key: "vfs.fs.size[/home/joe/,free]"
-    interfaceid: "1"
+
+    # Host details
+    host_name: "test-host-74"
+    visible_name: "Test Host 7.4"
+    host_ip: "192.168.12.150"
+    group_name: "Linux servers"
+    template_name: "Template OS Linux"
 
   tasks:
+    # ---------------------------------------------------------
     - name: Get API token
       uri:
         url: "{{ zabbix_url }}/api_jsonrpc.php"
@@ -30,14 +34,14 @@
         validate_certs: false
       register: login_response
 
-    - name: Extract token
-      set_fact:
+    - set_fact:
         zbx_token: "{{ login_response.json.result }}"
 
     - debug:
-        msg: "Token: {{ zbx_token }}"
+        msg: "Authenticated successfully with token {{ zbx_token }}"
 
-    - name: Create item using Bearer token
+    # ---------------------------------------------------------
+    - name: Get host group ID
       uri:
         url: "{{ zabbix_url }}/api_jsonrpc.php"
         method: POST
@@ -47,18 +51,76 @@
         body_format: json
         body:
           jsonrpc: "2.0"
-          method: "item.create"
+          method: "hostgroup.get"
           params:
-            name: "{{ item_name }}"
-            key_: "{{ item_key }}"
-            hostid: "{{ hostid }}"
-            type: 0
-            value_type: 3
-            interfaceid: "{{ interfaceid }}"
-            delay: 30
-          id: 3
+            filter:
+              name: "{{ group_name }}"
+            output: ["groupid"]
+          id: 2
         validate_certs: false
-      register: item_create
+      register: group_response
+
+    - set_fact:
+        group_id: "{{ group_response.json.result[0].groupid }}"
 
     - debug:
-        var: item_create.json
+        msg: "Found group ID {{ group_id }} for {{ group_name }}"
+
+    # ---------------------------------------------------------
+    - name: Get template ID
+      uri:
+        url: "{{ zabbix_url }}/api_jsonrpc.php"
+        method: POST
+        headers:
+          Content-Type: "application/json-rpc"
+          Authorization: "Bearer {{ zbx_token }}"
+        body_format: json
+        body:
+          jsonrpc: "2.0"
+          method: "template.get"
+          params:
+            filter:
+              host: "{{ template_name }}"
+            output: ["templateid"]
+          id: 3
+        validate_certs: false
+      register: template_response
+
+    - set_fact:
+        template_id: "{{ template_response.json.result[0].templateid }}"
+
+    - debug:
+        msg: "Found template ID {{ template_id }} for {{ template_name }}"
+
+    # ---------------------------------------------------------
+    - name: Create host using Bearer token
+      uri:
+        url: "{{ zabbix_url }}/api_jsonrpc.php"
+        method: POST
+        headers:
+          Content-Type: "application/json-rpc"
+          Authorization: "Bearer {{ zbx_token }}"
+        body_format: json
+        body:
+          jsonrpc: "2.0"
+          method: "host.create"
+          params:
+            host: "{{ host_name }}"
+            name: "{{ visible_name }}"
+            interfaces:
+              - type: 1          # agent interface
+                main: 1
+                useip: 1
+                ip: "{{ host_ip }}"
+                dns: ""
+                port: "10050"
+            groups:
+              - groupid: "{{ group_id }}"
+            templates:
+              - templateid: "{{ template_id }}"
+          id: 4
+        validate_certs: false
+      register: host_create
+
+    - debug:
+        var: host_create.json
