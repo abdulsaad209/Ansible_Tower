@@ -67,6 +67,14 @@
     line: "Hostname={{ inventory_hostname }}"
   notify: Restart zabbix-agent2
 
+- name: Set Listen IP
+  become: true
+  ansible.builtin.lineinfile:
+    path: /etc/zabbix/zabbix_agent2.conf
+    regexp: '^ListenIP='
+    line: "ListenIP={{ zabbix_server }}"
+  notify: Restart zabbix-agent2
+
 - name: Deploy custom userparameter config if defined
   become: true
   ansible.builtin.copy:
