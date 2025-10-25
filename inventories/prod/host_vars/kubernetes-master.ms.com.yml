@@ -12,7 +12,6 @@ zabbix_templates:
   - "Kubernetes Scheduler by HTTP"
   - "Kubernetes Kubelet by HTTP"
   - "Kubernetes Controller manager by HTTP"
-  - "Kubernetes cluster state by HTTP"
   - "Kubernetes API server by HTTP"
 
 ### MOTD Message
