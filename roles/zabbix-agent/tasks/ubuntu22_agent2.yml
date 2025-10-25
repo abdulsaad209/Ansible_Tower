@@ -3,7 +3,6 @@
   ansible.builtin.apt:
     name: "{{ ubuntu22_repo }}"
     state: present
-    disable_gpg_check: true
     register: zabbix_repo
 
 - name: Update APT cache
@@ -19,7 +18,6 @@
       - zabbix-agent2-plugin-mssql 
       - zabbix-agent2-plugin-postgresql
     state: present
-    disable_gpg_check: true
 
 # Agent Configuration Start from Here
 - name: Set Zabbix server parameters
