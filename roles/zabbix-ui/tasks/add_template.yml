@@ -1,0 +1,15 @@
+--- 
+- name: Convert macro dictionary to list format
+  set_fact:
+    zabbix_template_macro_list: >-
+      {{ zabbix_template_macros | dict2items | map('extract', ['key', 'value']) | map('zip', ['macro', 'value']) | map('items2dict') | list }}
+
+- name: Update macros in Zabbix template
+  community.zabbix.zabbix_template:
+    server_url: "{{ zabbix_url }}"
+    login_user: "{{ zabbix_user }}"
+    login_password: "{{ zabbix_pass }}"
+    template_name: "Kubernetes Kubelet by HTTP"
+    macros: "{{ zabbix_template_macro_list }}"
+    state: present
+
