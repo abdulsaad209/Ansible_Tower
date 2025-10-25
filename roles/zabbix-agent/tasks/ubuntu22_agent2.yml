@@ -3,7 +3,7 @@
   ansible.builtin.apt:
     name: "{{ ubuntu22_repo }}"
     state: present
-    register: zabbix_repo
+  register: zabbix_repo
 
 - name: Update APT cache
   ansible.builtin.apt:

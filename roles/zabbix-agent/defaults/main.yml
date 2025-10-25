@@ -3,3 +3,10 @@ almalinux9_repo: "https://repo.zabbix.com/zabbix/7.4/release/alma/9/noarch/zabbi
 zabbix_server: "10.0.0.36"
 ubuntu22_repo: "https://repo.zabbix.com/zabbix/7.4/release/ubuntu/pool/main/z/zabbix-release/zabbix-release_latest_7.4+ubuntu22.04_all.deb"
 
+
+
+# zabbix_custom_userparams:
+#     custom_disk_check: |
+#       UserParameter=disk.free,/usr/bin/df -h / | tail -1 | awk '{print $4}'
+#     custom_nginx_status: |
+#       UserParameter=nginx.active_connections,curl -s http://127.0.0.1/nginx_status | grep 'Active' | awk '{print $3}'
