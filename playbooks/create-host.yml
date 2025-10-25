@@ -20,7 +20,7 @@
       register: zbx_info
 
     - debug:
-        msg: "Connected to Zabbix API version {{ zbx_info.version }}"
+        msg: "Connected to Zabbix API version {{ zbx_info.api_version }}"
 
     - name: Create a new host in Zabbix
       community.zabbix.zabbix_host:
