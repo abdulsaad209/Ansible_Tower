@@ -12,7 +12,6 @@
     deb: /tmp/zabbix-release_latest_7.4+ubuntu22.04_all.deb
     state: present
 
-# ✅ Use trusted=yes to bypass missing Release file issue
 - name: Ensure Zabbix APT repository file is present
   become: true
   ansible.builtin.copy:
@@ -42,7 +41,7 @@
       - zabbix-agent2-plugin-mssql
       - zabbix-agent2-plugin-postgresql
     state: present
-    
+
 # ---------------- Agent Configuration ----------------
 
 - name: Set Zabbix server parameters
