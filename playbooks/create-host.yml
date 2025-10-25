@@ -1,7 +1,7 @@
 ---
 - name: Create host in Zabbix
   hosts: localhost
-  gather_facts: no
+  gather_facts: false
   collections:
     - community.zabbix
 
@@ -11,12 +11,9 @@
     zabbix_password: "zabbix"
 
   tasks:
-    - name: Check Zabbix API version (no auth required)
+    - name: Check Zabbix API version (requires URL)
       community.zabbix.zabbix_api_info:
-        ansible_user: "{{ zabbix_user }}"
-        ansible_httpapi_pass: "{{ zabbix_password }}"
-        # http_login_user: "{{ zabbix_user }}"
-        # http_login_password: "{{ zabbix_password }}"
+        url: "{{ zabbix_api_url }}"
       register: zbx_info
 
     - debug:
