@@ -14,20 +14,10 @@
 # - name: Including task to Install zabbix agent
 #   include_tasks: install_zabbix_agent.yml
 
-# - name: Including task to add host on zabbix UI
-#   include_tasks: add_host_zabbix.yml
+- name: Including task to add host on zabbix UI
+  include_tasks: add_host_zabbix.yml
 
 
 
 # - name: Including task to Install wazuh agent 
 #   include_tasks: install_wazuh_agent.yml
-
-- name: Including role to setup platform server for admin 
-  include_role:
-    name: platform
-  vars: 
-    target_users:
-      - zurple 
-      - controller 
-      - deploy 
-      - www-data
