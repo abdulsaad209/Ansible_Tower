@@ -1,46 +1,31 @@
 ---
-- name: Download Zabbix repository package for Ubuntu 22.04
+- name: Install Zabbix Agent2 v7.4 on Ubuntu 22.04
   become: true
-  ansible.builtin.get_url:
-    url: "{{ ubuntu22_repo }}"
-    dest: /tmp/zabbix-release_latest_7.4+ubuntu22.04_all.deb
-    mode: '0644'
-
-- name: Install Zabbix repository package
-  become: true
-  ansible.builtin.apt:
-    deb: /tmp/zabbix-release_latest_7.4+ubuntu22.04_all.deb
+  apt:
+    deb: "{{ ubuntu22_repo }}"
     state: present
 
-- name: Ensure Zabbix APT repository file is present
+- name: Update apt cache
   become: true
-  ansible.builtin.copy:
-    dest: /etc/apt/sources.list.d/zabbix.list
-    content: |
-      deb [arch=amd64 trusted=yes] https://repo.zabbix.com/zabbix/7.4/ubuntu jammy main
-
-- name: Import Zabbix GPG key (optional)
-  become: true
-  ansible.builtin.apt_key:
-    url: https://repo.zabbix.com/zabbix-official-repo.key
-    state: present
-  ignore_errors: true
-
-- name: Update APT cache
-  become: true
-  ansible.builtin.apt:
+  apt:
     update_cache: yes
-    cache_valid_time: 3600
 
-- name: Install Zabbix Agent2 and plugins
+- name: Install Zabbix Agent2
   become: true
-  ansible.builtin.apt:
-    name:
-      - zabbix-agent2
-      - zabbix-agent2-plugin-mongodb
-      - zabbix-agent2-plugin-mssql
-      - zabbix-agent2-plugin-postgresql
+  apt:
+    name: 
+    - zabbix-agent2
+    - zabbix-agent2-plugin-mongodb 
+    - zabbix-agent2-plugin-mssql 
+    - zabbix-agent2-plugin-postgresql
     state: present
+
+- name: Ensure Zabbix Agent2 is running and enabled
+  become: true
+  systemd:
+    name: zabbix-agent2
+    enabled: yes
+    state: started
 
 # ---------------- Agent Configuration ----------------
 
