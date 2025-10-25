@@ -3,7 +3,7 @@
   hosts: kubernetes
   #become: true
   roles:
-    - zabbix_agent_installation
+    - zabbix_agent
     - zabbix-ui
 
 
