@@ -21,3 +21,10 @@ motd_logs: "/var/log/messages, /var/log/kubelet.log"
 motd_docker: "kubectl logs -n <namespace> <pod-name>"
 motd_applications: "Ansible Tower"
 
+### MACROS
+zabbix_macros:
+  '{$KUBE.API.SERVER.URL}': "http://{{ host_ip }}:6443/metrics"
+  '{$KUBE.KUBELET.URL}': "http://{{ host_ip }}:10250/metrics"
+  '{$ENV}': "{{ motd_env }}"
+  '{$PURPOSE}': "{{ motd_purpose }}"
+
