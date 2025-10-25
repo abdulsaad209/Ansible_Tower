@@ -7,9 +7,7 @@
 
 - name: Install Zabbix release package
   become: true
-  apt:
-    deb: /tmp/zabbix-release_latest_7.4.deb
-    state: present
+  command: dpkg -i /tmp/zabbix-release_latest_7.4.deb
 
 - name: Update apt cache
   become: true
