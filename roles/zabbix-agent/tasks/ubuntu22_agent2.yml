@@ -14,6 +14,7 @@
   register: zabbix_repo
 
 - name: Update APT cache
+  become: true
   ansible.builtin.apt:
     update_cache: yes
   when: zabbix_repo is changed
@@ -31,6 +32,7 @@
 # ---------------- Agent Configuration ----------------
 
 - name: Set Zabbix server parameters
+  become: true
   ansible.builtin.lineinfile:
     path: /etc/zabbix/zabbix_agent2.conf
     regexp: '^Server='
@@ -38,6 +40,7 @@
   notify: Restart zabbix-agent2
 
 - name: Set active Zabbix server parameters
+  become: true
   ansible.builtin.lineinfile:
     path: /etc/zabbix/zabbix_agent2.conf
     regexp: '^ServerActive='
@@ -45,6 +48,7 @@
   notify: Restart zabbix-agent2
 
 - name: Set agent hostname
+  become: true
   ansible.builtin.lineinfile:
     path: /etc/zabbix/zabbix_agent2.conf
     regexp: '^Hostname='
@@ -52,6 +56,7 @@
   notify: Restart zabbix-agent2
 
 - name: Deploy custom userparameter config if defined
+  become: true
   ansible.builtin.copy:
     content: "{{ item.value }}"
     dest: "/etc/zabbix/zabbix_agent2.d/{{ item.key }}.conf"
@@ -63,6 +68,7 @@
   notify: Restart zabbix-agent2
 
 - name: Enable and start Zabbix Agent2
+  become: true
   ansible.builtin.systemd:
     name: zabbix-agent2
     enabled: true
