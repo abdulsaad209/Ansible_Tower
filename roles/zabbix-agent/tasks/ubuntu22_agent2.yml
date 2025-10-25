@@ -5,6 +5,12 @@
     url: https://repo.zabbix.com/zabbix/7.4/release/ubuntu/pool/main/z/zabbix-release/zabbix-release_latest_7.4+ubuntu22.04_all.deb
     dest: /tmp/zabbix-release_latest_7.4.deb
 
+- name: Purge zabbix repo 
+  apt: 
+    name: zabbix-release
+    state: absent
+    purge: yes
+
 - name: Install Zabbix release package
   become: true
   apt:
