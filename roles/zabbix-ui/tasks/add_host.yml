@@ -1,71 +1,114 @@
 --- 
-# - name: Set credentials to access Zabbix Server API
-#   ansible.builtin.set_fact:
-#     ansible_user: "Admin"
-#     ansible_httpapi_pass: "zabbix"
+---
+# ==========================================================
+# Create Host in Zabbix 7.4 via JSON-RPC API
+# ==========================================================
 
-- name: Create a new host or rewrite an existing host's info (Zabbix <= 7.0)
-# Set task level following variables for Zabbix Server host in task
-  # vars:
-  #   ansible_network_os: community.zabbix.zabbix
-  #   ansible_connection: httpapi
-  #   ansible_httpapi_port: 80
-  #   ansible_httpapi_use_ssl: false
-  #   ansible_httpapi_validate_certs: false
-  #   ansible_zabbix_url_path: "zabbix"  # If Zabbix WebUI runs on non-default (zabbix) path ,e.g. http://<FQDN>/zabbixeu
-  #   content_sync_enabled: false
-  #   ansible_user: "ansible-api"
-  #   # ansible_httpapi_pass: "zabbix"
-  #   ansible_zabbix_auth_key: "a176887e52858bafa8d12a3e84428d6e63683a54671cf7a90c6630bbfd8c6b85"
+- name: Get API token
+  uri:
+    url: "{{ zabbix_url }}/api_jsonrpc.php"
+    method: POST
+    body_format: json
+    body:
+      jsonrpc: "2.0"
+      method: "user.login"
+      params:
+        username: "{{ zabbix_user }}"
+        password: "{{ zabbix_pass }}"
+      id: 1
+    headers:
+      Content-Type: "application/json-rpc"
+    validate_certs: false
+  register: login_response
 
-  vars:
-    ansible_connection: httpapi
-    ansible_network_os: community.zabbix.zabbix
-    ansible_host: 192.168.12.136
-    ansible_httpapi_port: 80
-    ansible_httpapi_use_ssl: false
-    ansible_httpapi_validate_certs: false
-    ansible_zabbix_url_path: "zabbix"
-    ansible_zabbix_auth_key: "a176887e52858bafa8d12a3e84428d6e63683a54671cf7a90c6630bbfd8c6b85"
+- set_fact:
+    zbx_token: "{{ login_response.json.result }}"
 
+- debug:
+    msg: "Authenticated successfully with token {{ zbx_token }}"
 
-  become: false
-  delegate_to: 192.168.12.136
-  # community.zabbix.zabbix_host_info:
-  #   host_name: Zabbix server
-  #   host_ip: 127.0.0.1
-  #   exact_match: no
-  #   remove_duplicate: yes
+# ---------------------------------------------------------
+# Resolve all group IDs
+- name: Get group IDs from Zabbix
+  uri:
+    url: "{{ zabbix_url }}/api_jsonrpc.php"
+    method: POST
+    headers:
+      Content-Type: "application/json-rpc"
+      Authorization: "Bearer {{ zbx_token }}"
+    body_format: json
+    body:
+      jsonrpc: "2.0"
+      method: "hostgroup.get"
+      params:
+        filter:
+          name: "{{ zabbix_groups }}"
+        output: ["groupid", "name"]
+      id: 2
+    validate_certs: false
+  register: group_response
 
-  community.zabbix.zabbix_host:
-    host_name: "{{ inventory_hostname }}"
-    visible_name: "{{ inventory_hostname }}"
-    description: "Zabbix Proxy Server"
-    host_groups:
-      - "Virtual machines"
-      - "szcoders-corp"
-    link_templates:
-      - name: "Linux by Zabbix agent"
-      - name: "ICMP Ping"
+- set_fact:
+    group_ids: "{{ group_response.json.result | map(attribute='groupid') | list }}"
 
-    status: enabled
-    state: present
-    inventory_mode: automatic
-    interfaces:
-      - type: 1
-        main: 1
-        useip: 1
-        ip: 10.0.0.37
-        dns: ""
-        port: "10050"
-    monitored_by: zabbix_server
-    macros:
-      - macro: "{$EXAMPLEMACRO}"
-        value: ExampleMacroValue
-      - macro: EXAMPLEMACRO2
-        value: ExampleMacroValue2
-        description: Example desc that work only with Zabbix 4.4 and higher
-    tags:
-      - tag: ExampleHostsTag
-      - tag: ExampleHostsTag2
-        value: ExampleTagValue
+- debug:
+    msg: "Resolved group IDs: {{ group_ids }} for groups {{ zabbix_groups }}"
+
+# ---------------------------------------------------------
+# Resolve all template IDs
+- name: Get template IDs from Zabbix
+  uri:
+    url: "{{ zabbix_url }}/api_jsonrpc.php"
+    method: POST
+    headers:
+      Content-Type: "application/json-rpc"
+      Authorization: "Bearer {{ zbx_token }}"
+    body_format: json
+    body:
+      jsonrpc: "2.0"
+      method: "template.get"
+      params:
+        filter:
+          host: "{{ zabbix_templates }}"
+        output: ["templateid", "host"]
+      id: 3
+    validate_certs: false
+  register: template_response
+
+- set_fact:
+    template_ids: "{{ template_response.json.result | map(attribute='templateid') | list }}"
+
+- debug:
+    msg: "Resolved template IDs: {{ template_ids }} for templates {{ zabbix_templates }}"
+
+# ---------------------------------------------------------
+# Create Host
+- name: Create host using Bearer token
+  uri:
+    url: "{{ zabbix_url }}/api_jsonrpc.php"
+    method: POST
+    headers:
+      Content-Type: "application/json-rpc"
+      Authorization: "Bearer {{ zbx_token }}"
+    body_format: json
+    body:
+      jsonrpc: "2.0"
+      method: "host.create"
+      params:
+        host: "{{ host_name }}"
+        name: "{{ visible_name }}"
+        interfaces:
+          - type: 1
+            main: 1
+            useip: 1
+            ip: "{{ host_ip }}"
+            dns: ""
+            port: "10050"
+        groups: "{{ group_ids | map('community.general.dict_kv', 'groupid') | list }}"
+        templates: "{{ template_ids | map('community.general.dict_kv', 'templateid') | list }}"
+      id: 4
+    validate_certs: false
+  register: host_create
+
+- debug:
+    var: host_create.json
