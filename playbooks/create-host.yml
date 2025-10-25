@@ -1,0 +1,31 @@
+---
+- name: Create host in Zabbix
+  hosts: zabbix-proxy
+  gather_facts: false
+  collections:
+    - community.zabbix
+
+  vars:
+    zabbix_api_url: "http://192.168.12.136/zabbix/api_jsonrpc.php"
+    zabbix_api_token: "224071a8f31e10573a0b622281db35d88e66f6ff5178c826c28df2e982f16337"
+
+  tasks:
+    - name: Create a Zabbix host
+      community.zabbix.zabbix_host:
+        server_url: "{{ zabbix_api_url }}"
+        api_token: "{{ zabbix_api_token }}"
+        host_name: "test-host"
+        visible_name: "Test Host"
+        description: "Host created via AWX Ansible playbook"
+        interfaces:
+          - type: 1          # Agent interface
+            main: 1
+            useip: 1
+            ip: "192.168.12.150"
+            dns: ""
+            port: "10050"
+        groups:
+          - "Linux servers"
+        templates:
+          - "Template OS Linux"
+        status: enabled
