@@ -11,13 +11,26 @@
   ansible.builtin.apt:
     deb: /tmp/zabbix-release_latest_7.4+ubuntu22.04_all.deb
     state: present
-  register: zabbix_repo
+
+# 🔑 Explicitly import the GPG key and repo file because dpkg sometimes skips it
+- name: Ensure Zabbix APT repository file is present
+  become: true
+  ansible.builtin.copy:
+    dest: /etc/apt/sources.list.d/zabbix.list
+    content: |
+      deb [arch=amd64 signed-by=/usr/share/keyrings/zabbix-official.gpg] https://repo.zabbix.com/zabbix/7.4/ubuntu jammy main
+
+- name: Import Zabbix GPG key
+  become: true
+  ansible.builtin.apt_key:
+    url: https://repo.zabbix.com/zabbix-official-repo.key
+    state: present
 
 - name: Update APT cache
   become: true
   ansible.builtin.apt:
     update_cache: yes
-  when: zabbix_repo is changed
+    cache_valid_time: 3600
 
 - name: Install Zabbix Agent2 and plugins
   become: true
