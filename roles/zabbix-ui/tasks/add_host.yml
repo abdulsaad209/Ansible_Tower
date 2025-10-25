@@ -1,3 +1,4 @@
+---
 # ==========================================================
 # Create or Update Host in Zabbix 7.4 via JSON-RPC API
 # ==========================================================
@@ -107,12 +108,6 @@
     msg: "Existing host ID (if any): {{ existing_host_id }}"
 
 # ---------------------------------------------------------
-# Convert macro dictionary to Zabbix format
-- name: Convert macro dictionary to Zabbix format
-  set_fact:
-    zabbix_macro_list: "{{ zabbix_macros | dict2items | map('community.general.dict_kv', 'macro', 'value') | list }}"
-
-# ---------------------------------------------------------
 # Create or Update Host
 - name: Create new host (if not exists)
   when: existing_host_id == ''
@@ -138,7 +133,7 @@
             port: "10050"
         groups: "{{ group_ids | map('community.general.dict_kv', 'groupid') | list }}"
         templates: "{{ template_ids | map('community.general.dict_kv', 'templateid') | list }}"
-        macros: "{{ zabbix_macro_list }}"
+
       id: 6
     validate_certs: false
   register: host_create
@@ -160,7 +155,6 @@
         name: "{{ visible_name }}"
         groups: "{{ group_ids | map('community.general.dict_kv', 'groupid') | list }}"
         templates: "{{ template_ids | map('community.general.dict_kv', 'templateid') | list }}"
-        macros: "{{ zabbix_macro_list }}"
       id: 7
     validate_certs: false
   register: host_update
@@ -173,5 +167,3 @@
       {% else %}
         Host updated successfully → {{ host_update.json }}
       {% endif %}
-
-      
