@@ -13,8 +13,10 @@
   tasks:
     - name: Check Zabbix API version (no auth required)
       community.zabbix.zabbix_api_info:
-        http_login_user: "{{ zabbix_user }}"
-        http_login_password: "{{ zabbix_password }}"
+        ansible_user: "{{ zabbix_user }}"
+        ansible_httpapi_pass: "{{ zabbix_password }}"
+        # http_login_user: "{{ zabbix_user }}"
+        # http_login_password: "{{ zabbix_password }}"
       register: zbx_info
 
     - debug:
