@@ -1,65 +1,64 @@
 ---
-- name: Manage Zabbix 7.4 hosts using REST API
-  hosts: "zabbix-proxy.ms.com"
+- name: Create host item in Zabbix 7.4 using JSON-RPC + Bearer Token
+  hosts: zabbix-proxy.ms.com
   gather_facts: false
+
   vars:
-    zabbix_url: "http://192.168.12.136"
+    zabbix_url: "http://192.168.12.136/zabbix"
     zabbix_user: "Admin"
     zabbix_pass: "zabbix"
-    host_name: "zabbix-proxy.ms.com"
-    host_ip: "10.0.0.37"
+    hostid: "10084"   # example
+    item_name: "Free disk space on /home/joe/"
+    item_key: "vfs.fs.size[/home/joe/,free]"
+    interfaceid: "1"
 
   tasks:
     - name: Get API token
       uri:
-        url: "{{ zabbix_url }}/api/v1/session"
+        url: "{{ zabbix_url }}/api_jsonrpc.php"
         method: POST
         body_format: json
         body:
-          username: "{{ zabbix_user }}"
-          password: "{{ zabbix_pass }}"
+          jsonrpc: "2.0"
+          method: "user.login"
+          params:
+            username: "{{ zabbix_user }}"
+            password: "{{ zabbix_pass }}"
+          id: 1
+        headers:
+          Content-Type: "application/json-rpc"
         validate_certs: false
       register: login_response
 
-    - name: Show token
-      debug:
-        var: login_response.json.token
-
-    - name: Get templates
-      uri:
-        url: "{{ zabbix_url }}/api/v1/template"
-        method: GET
-        headers:
-          Authorization: "Bearer {{ login_response.json.token }}"
-        validate_certs: false
-      register: templates
+    - name: Extract token
+      set_fact:
+        zbx_token: "{{ login_response.json.result }}"
 
     - debug:
-        msg: "Available templates: {{ templates.json | map(attribute='host') | list }}"
+        msg: "Token: {{ zbx_token }}"
 
-    - name: Create host
+    - name: Create item using Bearer token
       uri:
-        url: "{{ zabbix_url }}/api/v1/host"
+        url: "{{ zabbix_url }}/api_jsonrpc.php"
         method: POST
         headers:
-          Authorization: "Bearer {{ login_response.json.token }}"
+          Content-Type: "application/json-rpc"
+          Authorization: "Bearer {{ zbx_token }}"
         body_format: json
         body:
-          host: "{{ host_name }}"
-          interfaces:
-            - type: 1
-              main: 1
-              useip: true
-              ip: "{{ host_ip }}"
-              dns: ""
-              port: "10050"
-          groups:
-            - name: "Linux servers"
-          templates:
-            - name: "Template OS Linux"
-        status_code: [200, 201, 409]
+          jsonrpc: "2.0"
+          method: "item.create"
+          params:
+            name: "{{ item_name }}"
+            key_: "{{ item_key }}"
+            hostid: "{{ hostid }}"
+            type: 0
+            value_type: 3
+            interfaceid: "{{ interfaceid }}"
+            delay: 30
+          id: 3
         validate_certs: false
-      register: create_host
+      register: item_create
 
     - debug:
-        var: create_host.json
+        var: item_create.json
