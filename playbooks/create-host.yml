@@ -1,7 +1,7 @@
 ---
 - name: Create host in Zabbix
-  hosts: zabbix-proxy
-  gather_facts: false
+  hosts: localhost
+  gather_facts: no
   collections:
     - community.zabbix
 
@@ -10,22 +10,32 @@
     zabbix_api_token: "224071a8f31e10573a0b622281db35d88e66f6ff5178c826c28df2e982f16337"
 
   tasks:
-    - name: Create a Zabbix host
+    - name: Check Zabbix API version
+      community.zabbix.zabbix_api_info:
+        url: "{{ zabbix_api_url }}"
+        login_token: "{{ zabbix_api_token }}"
+      register: zbx_info
+
+    - debug:
+        msg: "Connected to Zabbix API version {{ zbx_info.version }}"
+
+    - name: Create or update a Zabbix host
       community.zabbix.zabbix_host:
-        server_url: "{{ zabbix_api_url }}"
-        api_token: "{{ zabbix_api_token }}"
+        url: "{{ zabbix_api_url }}"
+        login_token: "{{ zabbix_api_token }}"
         host_name: "test-host"
         visible_name: "Test Host"
-        description: "Host created via AWX Ansible playbook"
+        description: "Host created via AWX playbook using community.zabbix 3.1.0"
         interfaces:
-          - type: 1          # Agent interface
+          - type: 1          # Agent
             main: 1
             useip: 1
             ip: "192.168.12.150"
             dns: ""
             port: "10050"
-        groups:
+        host_groups:
           - "Linux servers"
-        templates:
+        link_templates:
           - "Template OS Linux"
         status: enabled
+        state: present
