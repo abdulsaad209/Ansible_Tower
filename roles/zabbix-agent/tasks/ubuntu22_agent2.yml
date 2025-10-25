@@ -1,14 +1,21 @@
 ---
-- name: Install Zabbix Agent2 v7.4 on Ubuntu 22.04
+- name: Download Zabbix release package
+  become: true
+  get_url:
+    url: "{{ ubuntu22_repo }}"
+    dest: "/tmp/zabbix-release_7.4.deb"
+
+- name: Install Zabbix release package
   become: true
   apt:
-    deb: "{{ ubuntu22_repo }}"
+    deb: "/tmp/zabbix-release_7.4.deb"
     state: present
 
-- name: Update apt cache
+- name: Update apt cache after adding Zabbix repo
   become: true
   apt:
     update_cache: yes
+
 
 - name: Install Zabbix Agent2
   become: true
