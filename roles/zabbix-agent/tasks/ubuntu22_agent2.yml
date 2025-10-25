@@ -49,7 +49,6 @@
     path: /etc/zabbix/zabbix_agent2.conf
     regexp: '^Server='
     line: "Server={{ zabbix_server }}"
-  notify: Restart zabbix-agent2
 
 - name: Set active Zabbix server parameters
   become: true
@@ -57,7 +56,6 @@
     path: /etc/zabbix/zabbix_agent2.conf
     regexp: '^ServerActive='
     line: "ServerActive={{ zabbix_server }}"
-  notify: Restart zabbix-agent2
 
 - name: Set agent hostname
   become: true
@@ -65,7 +63,6 @@
     path: /etc/zabbix/zabbix_agent2.conf
     regexp: '^Hostname='
     line: "Hostname={{ inventory_hostname }}"
-  notify: Restart zabbix-agent2
 
 - name: Set Listen IP
   become: true
@@ -73,7 +70,6 @@
     path: /etc/zabbix/zabbix_agent2.conf
     regexp: '^ListenIP='
     line: "ListenIP={{ zabbix_server }}"
-  notify: Restart zabbix-agent2
 
 - name: Deploy custom userparameter config if defined
   become: true
