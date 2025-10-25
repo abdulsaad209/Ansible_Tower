@@ -1,11 +1,13 @@
 ---
 - name: Download Zabbix repository package for Ubuntu 22.04
+  become: true
   ansible.builtin.get_url:
     url: "{{ ubuntu22_repo }}"
     dest: /tmp/zabbix-release_latest_7.4+ubuntu22.04_all.deb
     mode: '0644'
 
 - name: Install Zabbix repository package
+  become: true
   ansible.builtin.apt:
     deb: /tmp/zabbix-release_latest_7.4+ubuntu22.04_all.deb
     state: present
