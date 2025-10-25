@@ -1,19 +1,22 @@
 ---
 - name: Create host in Zabbix
   hosts: localhost
-  gather_facts: no
+  gather_facts: false
   collections:
     - community.zabbix
 
   vars:
+    # Zabbix connection
     zabbix_api_url: "http://192.168.12.136/zabbix/api_jsonrpc.php"
-    zabbix_api_token: "224071a8f31e10573a0b622281db35d88e66f6ff5178c826c28df2e982f16337"
+    zabbix_user: "Admin"           # or a dedicated API user
+    zabbix_password: "zabbix"      # replace with your actual password
 
   tasks:
     - name: Check Zabbix API version
       community.zabbix.zabbix_api_info:
-        url: "{{ zabbix_api_url }}"
-        login_token: "{{ zabbix_api_token }}"
+        server_url: "{{ zabbix_api_url }}"
+        login_user: "{{ zabbix_user }}"
+        login_password: "{{ zabbix_password }}"
       register: zbx_info
 
     - debug:
@@ -22,12 +25,13 @@
     - name: Create or update a Zabbix host
       community.zabbix.zabbix_host:
         url: "{{ zabbix_api_url }}"
-        login_token: "{{ zabbix_api_token }}"
+        login_user: "{{ zabbix_user }}"
+        login_password: "{{ zabbix_password }}"
         host_name: "test-host"
         visible_name: "Test Host"
         description: "Host created via AWX playbook using community.zabbix 3.1.0"
         interfaces:
-          - type: 1          # Agent
+          - type: 1
             main: 1
             useip: 1
             ip: "192.168.12.150"
