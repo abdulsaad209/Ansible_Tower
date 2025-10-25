@@ -77,7 +77,6 @@
     mode: '0644'
   loop: "{{ zabbix_custom_userparams | dict2items }}"
   when: zabbix_custom_userparams is defined
-  notify: Restart zabbix-agent2
 
 - name: Enable and start Zabbix Agent2
   become: true
@@ -85,3 +84,4 @@
     name: zabbix-agent2
     enabled: true
     state: started
+
