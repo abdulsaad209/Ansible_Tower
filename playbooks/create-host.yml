@@ -13,7 +13,7 @@
     visible_name: "{{ inventory_hostname }}"
     host_ip: "{{ ansible_host}}"
     group_name: "Linux servers"
-    template_name: "Template OS Linux"
+    template_name: "Linux by Zabbix agent"
 
   tasks:
     # ---------------------------------------------------------
