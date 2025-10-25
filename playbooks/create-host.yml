@@ -1,38 +1,40 @@
 ---
-- name: Create host in Zabbix using HTTPAPI (for community.zabbix 3.1.0)
+- name: Create host in Zabbix using community.zabbix 4.0.0
   hosts: zabbix-proxy.ms.com
   gather_facts: false
   connection: httpapi
+
   vars:
+    # Zabbix connection parameters
     ansible_network_os: community.zabbix.zabbix
     ansible_httpapi_port: 80
     ansible_httpapi_use_ssl: false
     ansible_httpapi_validate_certs: false
-    ansible_host: 192.168.12.136  # your Zabbix frontend host (no /zabbix path)
-    ansible_zabbix_url_path: "zabbix"  # adjust if your frontend runs at /zabbix
-
+    ansible_host: 192.168.12.136           # Zabbix frontend (no /zabbix)
+    ansible_zabbix_url_path: "zabbix"      # frontend path
     ansible_user: Admin
     ansible_httpapi_pass: zabbix
 
   tasks:
-    - name: Verify Zabbix API version
+    - name: Check Zabbix API connection
       community.zabbix.zabbix_api_info:
-      register: zbx_info
+      register: api_info
 
-    - debug:
-        msg: "Connected to Zabbix API version {{ zbx_info.api.version }}"
+    - name: Display API version
+      debug:
+        msg: "Connected to Zabbix API version {{ api_info.api.version }}"
 
-    - name: Create a new host in Zabbix
+    - name: Create or update host in Zabbix
       community.zabbix.zabbix_host:
         host_name: test-host
         visible_name: "Test Host"
-        description: "Created via AWX with Zabbix API"
+        description: "Created via AWX and Zabbix 4.0.0 collection"
         host_groups:
           - Linux servers
         link_templates:
           - Template OS Linux
         interfaces:
-          - type: 1
+          - type: agent
             main: 1
             useip: 1
             ip: 192.168.12.150
