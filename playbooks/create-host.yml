@@ -1,44 +1,65 @@
 ---
-- name: Create host in Zabbix using community.zabbix 4.0.0
-  hosts: zabbix-proxy.ms.com
+- name: Manage Zabbix 7.4 hosts using REST API
+  hosts: "zabbix-proxy.ms.com"
   gather_facts: false
-  connection: httpapi
-
   vars:
-    # Zabbix connection parameters
-    ansible_network_os: community.zabbix.zabbix
-    ansible_httpapi_port: 80
-    ansible_httpapi_use_ssl: false
-    ansible_httpapi_validate_certs: false
-    ansible_host: 192.168.12.136           # Zabbix frontend (no /zabbix)
-    ansible_zabbix_url_path: "zabbix"      # frontend path
-    ansible_user: Admin
-    ansible_httpapi_pass: zabbix
+    zabbix_url: "http://192.168.12.136"
+    zabbix_user: "Admin"
+    zabbix_pass: "zabbix"
+    host_name: "zabbix-proxy.ms.com"
+    host_ip: "10.0.0.37"
 
   tasks:
-    - name: Check Zabbix API connection
-      community.zabbix.zabbix_api_info:
-      register: api_info
+    - name: Get API token
+      uri:
+        url: "{{ zabbix_url }}/api/v1/session"
+        method: POST
+        body_format: json
+        body:
+          username: "{{ zabbix_user }}"
+          password: "{{ zabbix_pass }}"
+        validate_certs: false
+      register: login_response
 
-    - name: Display API version
+    - name: Show token
       debug:
-        msg: "Connected to Zabbix API version {{ api_info.api.version }}"
+        var: login_response.json.token
 
-    - name: Create or update host in Zabbix
-      community.zabbix.zabbix_host:
-        host_name: test-host
-        visible_name: "Test Host"
-        description: "Created via AWX and Zabbix 4.0.0 collection"
-        host_groups:
-          - Linux servers
-        link_templates:
-          - Template OS Linux
-        interfaces:
-          - type: agent
-            main: 1
-            useip: 1
-            ip: 192.168.12.150
-            dns: ""
-            port: "10050"
-        status: enabled
-        state: present
+    - name: Get templates
+      uri:
+        url: "{{ zabbix_url }}/api/v1/template"
+        method: GET
+        headers:
+          Authorization: "Bearer {{ login_response.json.token }}"
+        validate_certs: false
+      register: templates
+
+    - debug:
+        msg: "Available templates: {{ templates.json | map(attribute='host') | list }}"
+
+    - name: Create host
+      uri:
+        url: "{{ zabbix_url }}/api/v1/host"
+        method: POST
+        headers:
+          Authorization: "Bearer {{ login_response.json.token }}"
+        body_format: json
+        body:
+          host: "{{ host_name }}"
+          interfaces:
+            - type: 1
+              main: 1
+              useip: true
+              ip: "{{ host_ip }}"
+              dns: ""
+              port: "10050"
+          groups:
+            - name: "Linux servers"
+          templates:
+            - name: "Template OS Linux"
+        status_code: [200, 201, 409]
+        validate_certs: false
+      register: create_host
+
+    - debug:
+        var: create_host.json
