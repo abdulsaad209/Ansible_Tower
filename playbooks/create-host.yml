@@ -1,22 +1,20 @@
 ---
 - name: Create host in Zabbix
   hosts: localhost
-  gather_facts: false
+  gather_facts: no
   collections:
     - community.zabbix
 
   vars:
-    # Zabbix connection
     zabbix_api_url: "http://192.168.12.136/zabbix/api_jsonrpc.php"
-    zabbix_user: "Admin"           # or a dedicated API user
-    zabbix_password: "zabbix"      # replace with your actual password
+    zabbix_user: "Admin"
+    zabbix_password: "zabbix"
 
   tasks:
-    - name: Check Zabbix API version
+    - name: Check Zabbix API version (no auth required)
       community.zabbix.zabbix_api_info:
-        server_url: "{{ zabbix_api_url }}"
-        login_user: "{{ zabbix_user }}"
-        login_password: "{{ zabbix_password }}"
+        http_login_user: "{{ zabbix_user }}"
+        http_login_password: "{{ zabbix_password }}"
       register: zbx_info
 
     - debug:
