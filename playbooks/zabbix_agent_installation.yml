@@ -1,8 +1,9 @@
 ---
 - name: Deploy Zabbix Agent 
-  hosts: prod
+  hosts: kubernetes
   #become: true
   roles:
     - zabbix_agent_installation
+    - zabbix-ui
 
 

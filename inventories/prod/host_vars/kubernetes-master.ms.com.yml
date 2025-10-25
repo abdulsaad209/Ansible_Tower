@@ -1,0 +1,18 @@
+--- 
+### Zabbix UI
+zabbix_groups:
+  - "szcoders-prod"
+  - "Linux servers"
+  - "Proxy Servers"
+
+zabbix_templates:
+  - "Linux by Zabbix agent"
+  - "ICMP Ping"
+
+### MOTD Message
+motd_env: "Production"
+motd_purpose: "Kubernetes Master Node "
+motd_logs: "/var/log/messages, /var/log/kubelet.log"
+motd_docker: "kubectl logs -n <namespace> <pod-name>"
+motd_applications: "Ansible Tower"
+
