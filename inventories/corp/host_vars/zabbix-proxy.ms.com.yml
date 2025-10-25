@@ -1,4 +1,5 @@
 --- 
+### Zabbix UI
 zabbix_groups:
   - "szcoders-corp"
   - "Linux servers"
@@ -7,3 +8,10 @@ zabbix_groups:
 zabbix_templates:
   - "Linux by Zabbix agent"
   - "ICMP Ping"
+
+### MOTD Message
+motd_env: "Corporate"
+motd_purpose: "Zabbix Proxy Server for proxying monitoring data to Zabbix Master"
+motd_logs: "/var/log/zabbix/zabbix_proxy.log, /var/log/zabbix/zabbix_agent2.log"
+motd_applications: "Zabbix Proxy Server"
+

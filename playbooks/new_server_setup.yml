@@ -1,6 +1,6 @@
 ---
 - name: Setup new server by installing basic utilities and joining with AD
-  hosts: zabbix-proxy.ms.com
+  hosts: corp
   become: true
   roles:
     - server-setup-redhat
