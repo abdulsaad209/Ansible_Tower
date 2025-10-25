@@ -1,0 +1,62 @@
+---
+- name: Add Zabbix repository for Ubuntu 22.04
+  ansible.builtin.apt:
+    name: "{{ ubuntu22_repo }}"
+    state: present
+    disable_gpg_check: true
+    register: zabbix_repo
+
+- name: Update APT cache
+  ansible.builtin.apt:
+    update_cache: yes
+  when: zabbix_repo is changed
+
+- name: Install Zabbix Agent2
+  ansible.builtin.apt:
+    name:
+      - zabbix-agent2
+      - zabbix-agent2-plugin-mongodb 
+      - zabbix-agent2-plugin-mssql 
+      - zabbix-agent2-plugin-postgresql
+    state: present
+    disable_gpg_check: true
+
+# Agent Configuration Start from Here
+- name: Set Zabbix server parameters
+  lineinfile:
+    path: /etc/zabbix/zabbix_agent2.conf
+    regexp: '^Server='
+    line: "Server={{ zabbix_server }}"
+  notify: Restart zabbix-agent2
+
+- name: Set active Zabbix server parameters
+  lineinfile:
+    path: /etc/zabbix/zabbix_agent2.conf
+    regexp: '^ServerActive='
+    line: "ServerActive={{ zabbix_server }}"
+  notify: Restart zabbix-agent2
+
+- name: Set agent hostname
+  lineinfile:
+    path: /etc/zabbix/zabbix_agent2.conf
+    regexp: '^Hostname='
+    line: "Hostname={{ inventory_hostname }}"
+  notify: Restart zabbix-agent2
+
+- name: Deploy custom userparameter config if defined
+  copy:
+    content: "{{ item.value }}"
+    dest: "/etc/zabbix/zabbix_agent2.d/{{ item.key }}.conf"
+    owner: root
+    group: root
+    mode: '0644'
+  loop: "{{ zabbix_custom_userparams | dict2items }}"
+  when: zabbix_custom_userparams is defined
+  notify: Restart zabbix-agent2
+
+- name: Enable and start Zabbix Agent2
+  ansible.builtin.systemd:
+    name: zabbix-agent2
+    enabled: true
+    state: started
+
