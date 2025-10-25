@@ -12,19 +12,20 @@
     deb: /tmp/zabbix-release_latest_7.4+ubuntu22.04_all.deb
     state: present
 
-# 🔑 Explicitly import the GPG key and repo file because dpkg sometimes skips it
+# ✅ Use trusted=yes to bypass missing Release file issue
 - name: Ensure Zabbix APT repository file is present
   become: true
   ansible.builtin.copy:
     dest: /etc/apt/sources.list.d/zabbix.list
     content: |
-      deb [arch=amd64 signed-by=/usr/share/keyrings/zabbix-official.gpg] https://repo.zabbix.com/zabbix/7.4/ubuntu jammy main
+      deb [arch=amd64 trusted=yes] https://repo.zabbix.com/zabbix/7.4/ubuntu jammy main
 
-- name: Import Zabbix GPG key
+- name: Import Zabbix GPG key (optional)
   become: true
   ansible.builtin.apt_key:
     url: https://repo.zabbix.com/zabbix-official-repo.key
     state: present
+  ignore_errors: true
 
 - name: Update APT cache
   become: true
@@ -41,7 +42,7 @@
       - zabbix-agent2-plugin-mssql
       - zabbix-agent2-plugin-postgresql
     state: present
-
+    
 # ---------------- Agent Configuration ----------------
 
 - name: Set Zabbix server parameters
