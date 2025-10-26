@@ -105,12 +105,12 @@
     existing_host_id: "{{ host_check.json.result[0].hostid | default('') }}"
 
 - debug:
-    msg: "Existing host ID (if any): {{ existing_host_id }}"
+    msg: "Existing host ID (if any): {{ existing_host_id | default('none') }}"
 
 # ---------------------------------------------------------
 # Create or Update Host
 - name: Create new host (if not exists)
-  when: existing_host_id == ''
+  when: existing_host_id | trim == ''
   uri:
     url: "{{ zabbix_url }}/api_jsonrpc.php"
     method: POST
