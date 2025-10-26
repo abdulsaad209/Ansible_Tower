@@ -133,10 +133,13 @@
             port: "10050"
         groups: "{{ group_ids | map('community.general.dict_kv', 'groupid') | list }}"
         templates: "{{ template_ids | map('community.general.dict_kv', 'templateid') | list }}"
-
-      id: 6
     validate_certs: false
   register: host_create
+
+- name: Show Zabbix raw response
+  debug:
+    var: host_create.json
+  when: existing_host_id == ''
 
 - name: Update existing host (if already exists)
   when: existing_host_id != ''
