@@ -10,4 +10,3 @@
   loop: "{{ zabbix_template_macros }}"
   loop_control:
     label: "{{ item.template_name }}"
-    want_list: true
