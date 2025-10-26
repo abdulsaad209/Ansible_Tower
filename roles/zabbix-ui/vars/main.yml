@@ -15,8 +15,6 @@ zabbix_template_macros:
         value: "https://10.0.0.31:10257/metrics"
       - macro: "{$KUBE.SCHEDULER.SERVER.URL}"
         value: "https://10.0.0.31:10259/metrics"
-      - macro: "{$KUBE.STATE.METRICS.URL}"
-        value: "https://10.0.0.31:8080/metrics"
       - macro: "{$KUBE.STATE.ENDPOINT.NAME}"
         value: "zabbix-kube-state-metrics"
       - macro: "{$KUBE.NAMESPACE}"
