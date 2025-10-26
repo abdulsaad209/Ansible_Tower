@@ -8,7 +8,6 @@ zabbix_groups:
 zabbix_templates:
   - "Linux by Zabbix agent"
   - "ICMP Ping"
-  - "Kubernetes nodes by HTTP"
   - "Kubernetes cluster state by HTTP"
 
 ### MOTD Message
