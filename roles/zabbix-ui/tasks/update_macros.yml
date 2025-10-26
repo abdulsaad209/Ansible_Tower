@@ -1,35 +1,5 @@
 --- 
-
-# ==========================================================
-# Update a single macro for an existing host in Zabbix
-# ==========================================================
-
-- name: Get host ID for {{ inventory_hostname }}
-  uri:
-    url: "{{ zabbix_url }}/api_jsonrpc.php"
-    method: POST
-    headers:
-      Content-Type: "application/json-rpc"
-      Authorization: "Bearer {{ zbx_token }}"
-    body_format: json
-    body:
-      jsonrpc: "2.0"
-      method: "host.get"
-      params:
-        filter:
-          host: "{{ inventory_hostname }}"
-        output: ["hostid"]
-      id: 20
-    validate_certs: false
-  register: host_id_response
-
-- set_fact:
-    host_id: "{{ host_id_response.json.result[0].hostid }}"
-
-- debug:
-    msg: "Resolved host ID: {{ host_id }}"
-
-- name: Update single macro for host {{ inventory_hostname }}
+- name: Update existing host macro
   uri:
     url: "{{ zabbix_url }}/api_jsonrpc.php"
     method: POST
@@ -41,12 +11,60 @@
       jsonrpc: "2.0"
       method: "usermacro.update"
       params:
-        hostid: "{{ host_id }}"
-        macro: "{$KUBE.KUBELET.URL}"
+        hostmacroid: "{{ existing_macro_id }}"  # ID of the macro you want to update
         value: "http://{{ host_ip }}:10250/metrics"
       id: 21
     validate_certs: false
   register: macro_update_response
 
+
+- name: Ensure host macro exists
+  uri:
+    url: "{{ zabbix_url }}/api_jsonrpc.php"
+    method: POST
+    headers:
+      Content-Type: "application/json-rpc"
+      Authorization: "Bearer {{ zbx_token }}"
+    body_format: json
+    body:
+      jsonrpc: "2.0"
+      method: "usermacro.get"
+      params:
+        host: "{{ inventory_hostname }}"
+        filter:
+          macro: "{$KUBE.KUBELET.URL}"
+        output: ["hostmacroid", "macro", "value"]
+      id: 22
+    validate_certs: false
+  register: get_macro_response
+
+- name: Set existing macro ID if present
+  set_fact:
+    existing_macro_id: "{{ get_macro_response.json.result[0].hostmacroid | default('') }}"
+
+- name: Create or update host macro
+  uri:
+    url: "{{ zabbix_url }}/api_jsonrpc.php"
+    method: POST
+    headers:
+      Content-Type: "application/json-rpc"
+      Authorization: "Bearer {{ zbx_token }}"
+    body_format: json
+    body: >-
+      {{
+        {
+          "jsonrpc": "2.0",
+          "method": "usermacro." + ("update" if existing_macro_id else "create"),
+          "params": (
+            {"hostmacroid": existing_macro_id, "value": "http://{{ host_ip }}:10250/metrics"} 
+            if existing_macro_id 
+            else {"host": inventory_hostname, "macro": "{$KUBE.KUBELET.URL}", "value": "http://{{ host_ip }}:10250/metrics"}
+          ),
+          "id": 23
+        }
+      }}
+    validate_certs: false
+  register: macro_update_response
+
 - debug:
-    msg: "Macro updated → {{ macro_update_response.json }}"
+    msg: "Macro operation result → {{ macro_update_response.json }}"
