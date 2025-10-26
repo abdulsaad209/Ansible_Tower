@@ -23,6 +23,9 @@ motd_applications: "Ansible Tower"
 
 ### MACROS
 zabbix_template_macros:
-  '{$KUBE.KUBELET.URL}': "http://{{ host_ip }}:10250/metrics"
+  - template_name: "Kubernetes Kubelet by HTTP"
+    macros:
+      - macro: "{$KUBE.KUBELET.URL}"
+        value: "http://{{ host_ip }}:10250/metrics"
   
 
