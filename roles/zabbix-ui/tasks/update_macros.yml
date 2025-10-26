@@ -95,4 +95,4 @@
   register: template_macro_update_response
 
 - debug:
-    msg: "Template macro update result → {{ template_macro_update_response.json }}"
+    msg: "Template macro update result → {{ template_macro_update_response }}"
