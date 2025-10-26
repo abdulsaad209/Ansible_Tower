@@ -1,5 +1,6 @@
 ---
 - name: Including task for Almalinux9/Redhat9
+  become: true
   include_tasks: almalinux9_agent2.yml
   when:
     - ansible_distribution == "AlmaLinux"
