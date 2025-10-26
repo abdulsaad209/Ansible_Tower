@@ -1,12 +1,58 @@
 ---
 - name: Update Zabbix template macros
-  community.zabbix.zabbix_template:
-    server_url: "{{ zabbix_url }}"
-    login_user: "{{ zabbix_user }}"
-    login_password: "{{ zabbix_pass }}"
-    template_name: "{{ item.template_name }}"
-    macros: "{{ item.macros }}"
-    state: present
+  vars:
+    zabbix_template_macros:
+      - template_name: "Kubernetes Kubelet by HTTP"
+        macros:
+          - macro: "{$KUBE.KUBELET.URL}"
+            value: "http://{{ host_ip }}:10250/metrics"
+      - template_name: "Kubernetes Scheduler by HTTP"
+        macros:
+          - macro: "{$KUBE.SCHEDULER.URL}"
+            value: "http://{{ host_ip }}:10251/metrics"
   loop: "{{ zabbix_template_macros }}"
   loop_control:
     label: "{{ item.template_name }}"
+  block:
+    - name: Get template ID
+      uri:
+        url: "{{ zabbix_url }}/api_jsonrpc.php"
+        method: POST
+        headers:
+          Content-Type: "application/json-rpc"
+          Authorization: "Bearer {{ zbx_token }}"
+        body_format: json
+        body:
+          jsonrpc: "2.0"
+          method: "template.get"
+          params:
+            filter:
+              host: "{{ item.template_name }}"
+            output: ["templateid"]
+          id: 10
+        validate_certs: false
+      register: template_id_response
+
+    - set_fact:
+        template_id: "{{ template_id_response.json.result[0].templateid }}"
+
+    - name: Update macros for the template
+      uri:
+        url: "{{ zabbix_url }}/api_jsonrpc.php"
+        method: POST
+        headers:
+          Content-Type: "application/json-rpc"
+          Authorization: "Bearer {{ zbx_token }}"
+        body_format: json
+        body:
+          jsonrpc: "2.0"
+          method: "template.update"
+          params:
+            templateid: "{{ template_id }}"
+            macros: "{{ item.macros }}"
+          id: 11
+        validate_certs: false
+      register: update_macro_response
+
+    - debug:
+        msg: "Template {{ item.template_name }} macros updated → {{ update_macro_response.json }}"
