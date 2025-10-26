@@ -1,0 +1,45 @@
+---
+- name: Get template ID for {{ template_item.template_name }}
+  uri:
+    url: "{{ zabbix_url }}/api_jsonrpc.php"
+    method: POST
+    headers:
+      Content-Type: "application/json-rpc"
+      Authorization: "Bearer {{ zbx_token }}"
+    body_format: json
+    body:
+      jsonrpc: "2.0"
+      method: "template.get"
+      params:
+        filter:
+          host: "{{ template_item.template_name }}"
+        output: ["templateid", "name"]
+      id: 10
+    validate_certs: false
+  register: template_response
+
+- set_fact:
+    template_id: "{{ template_response.json.result[0].templateid }}"
+
+- debug:
+    msg: "Resolved template ID for {{ template_item.template_name }} → {{ template_id }}"
+
+- name: Update macros for {{ template_item.template_name }}
+  uri:
+    url: "{{ zabbix_url }}/api_jsonrpc.php"
+    method: POST
+    headers:
+      Content-Type: "application/json-rpc"
+      Authorization: "Bearer {{ zbx_token }}"
+    body_format: json
+    body:
+      jsonrpc: "2.0"
+      method: "template.update"
+      params:
+        templateid: "{{ template_id }}"
+        macros: "{{ template_item.macros }}"
+    validate_certs: false
+  register: template_macro_update_response
+
+- debug:
+    msg: "Macros updated for {{ template_item.template_name }} → {{ template_macro_update_response }}"
