@@ -1,6 +1,6 @@
 ---
 - name: Update Zabbix template macros
-  community.zabbix.zabbix_macro:
+  community.zabbix.zabbix_template:
     server_url: "{{ zabbix_url }}"
     login_user: "{{ zabbix_user }}"
     login_password: "{{ zabbix_password }}"
