@@ -1,9 +1,9 @@
 ---
 - name: Deploy Zabbix Agent 
-  hosts: kubernetes-master.ms.com
+  hosts: kubernetes
   #become: true
   roles:
-    #- zabbix-agent
+    - zabbix-agent
     - zabbix-ui
 
 
