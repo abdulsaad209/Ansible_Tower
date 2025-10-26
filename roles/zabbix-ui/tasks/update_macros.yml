@@ -1,24 +1,6 @@
---- 
-- name: Update existing host macro
-  uri:
-    url: "{{ zabbix_url }}/api_jsonrpc.php"
-    method: POST
-    headers:
-      Content-Type: "application/json-rpc"
-      Authorization: "Bearer {{ zbx_token }}"
-    body_format: json
-    body:
-      jsonrpc: "2.0"
-      method: "usermacro.update"
-      params:
-        hostmacroid: "{{ existing_macro_id }}"  # ID of the macro you want to update
-        value: "http://{{ host_ip }}:10250/metrics"
-      id: 21
-    validate_certs: false
-  register: macro_update_response
-
-
-- name: Ensure host macro exists
+# ---------------------------------------------------------
+# 1️⃣ Get existing host macro ID
+- name: Get existing host macro
   uri:
     url: "{{ zabbix_url }}/api_jsonrpc.php"
     method: POST
@@ -34,15 +16,22 @@
         filter:
           macro: "{$KUBE.KUBELET.URL}"
         output: ["hostmacroid", "macro", "value"]
-      id: 22
+      id: 1
     validate_certs: false
-  register: get_macro_response
+  register: macro_query_response
 
-- name: Set existing macro ID if present
+# ---------------------------------------------------------
+# 2️⃣ Extract macro ID
+- name: Set macro ID fact
   set_fact:
-    existing_macro_id: "{{ get_macro_response.json.result[0].hostmacroid | default('') }}"
+    existing_macro_id: "{{ macro_query_response.json.result[0].hostmacroid | default('') }}"
 
-- name: Create or update host macro
+- debug:
+    msg: "Resolved macro ID: {{ existing_macro_id }}"
+
+# ---------------------------------------------------------
+# 3️⃣ Update or create macro
+- name: Update host macro if it exists, else create it
   uri:
     url: "{{ zabbix_url }}/api_jsonrpc.php"
     method: POST
@@ -50,19 +39,23 @@
       Content-Type: "application/json-rpc"
       Authorization: "Bearer {{ zbx_token }}"
     body_format: json
-    body: >-
-      {{
+    body:
+      jsonrpc: "2.0"
+      method: "{{ 'usermacro.update' if existing_macro_id != '' else 'usermacro.create' }}"
+      params: >-
+        {% if existing_macro_id != '' %}
         {
-          "jsonrpc": "2.0",
-          "method": "usermacro." + ("update" if existing_macro_id else "create"),
-          "params": (
-            {"hostmacroid": existing_macro_id, "value": "http://{{ host_ip }}:10250/metrics"} 
-            if existing_macro_id 
-            else {"host": inventory_hostname, "macro": "{$KUBE.KUBELET.URL}", "value": "http://{{ host_ip }}:10250/metrics"}
-          ),
-          "id": 23
+          "hostmacroid": "{{ existing_macro_id }}",
+          "value": "http://{{ host_ip }}:10250/metrics"
         }
-      }}
+        {% else %}
+        {
+          "hostid": "{{ existing_host_id }}",
+          "macro": "{$KUBE.KUBELET.URL}",
+          "value": "http://{{ host_ip }}:10250/metrics"
+        }
+        {% endif %}
+      id: 2
     validate_certs: false
   register: macro_update_response
 

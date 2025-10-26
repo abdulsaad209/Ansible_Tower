@@ -23,4 +23,3 @@ zabbix_template_macros:
     macros:
       - macro: "{$KUBE.KUBELET.URL}"
         value: "http://{{ host_ip }}:10250/metrics"
-
