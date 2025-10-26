@@ -3,10 +3,10 @@
   community.zabbix.zabbix_template:
     server_url: "{{ zabbix_url }}"
     login_user: "{{ zabbix_user }}"
-    login_password: "{{ zabbix_pass }}"
-    template_name: "{{ item.template }}"
+    login_password: "{{ zabbix_password }}"
+    template_name: "{{ item.template_name }}"
     macros: "{{ item.macros }}"
     state: present
   loop: "{{ zabbix_template_macros }}"
   loop_control:
-    label: "{{ item.template }}"
+    label: "{{ item.template_name }}"
