@@ -15,7 +15,12 @@ zabbix_template_macros:
         value: "https://10.0.0.31:10257/metrics"
       - macro: "{$KUBE.SCHEDULER.SERVER.URL}"
         value: "https://10.0.0.31:10259/metrics"
-      
+      - macro: "{$KUBE.STATE.METRICS.URL}"
+        value: "https://10.0.0.31:8080/metrics"
+      - macro: "{$KUBE.STATE.METRICS.SERVICE}"
+        value: "zabbix-kube-state-metrics"
+      - macro: "{$KUBE.STATE.METRICS.NAMESPACE}"
+        value: "monitoring"
 
   - template_name: "Kubernetes nodes by HTTP" 
     macros:
