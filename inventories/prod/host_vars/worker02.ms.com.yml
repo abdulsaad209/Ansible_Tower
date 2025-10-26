@@ -22,7 +22,7 @@ zabbix_template_macros:
   - template: "Kubernetes Kubelet by HTTP"
     macros:
       - macro: "{$KUBE.KUBELET.URL}"
-        value: "http://{{ host_ip }}:10250/metrics"
+        value: "http://10.0.0.33:10250/metrics"
   # - template: "Template App Nginx"
   #   macros:
   #     - macro: "{$NGINX_WORKERS}"
