@@ -1,8 +1,12 @@
---- 
+---
 - name: Convert macro dictionary to list format
   set_fact:
     zabbix_template_macro_list: >-
-      {{ zabbix_template_macros | dict2items | map('extract', ['key', 'value']) | map('zip', ['macro', 'value']) | map('items2dict') | list }}
+      {% set macros = [] %}
+      {% for key, value in zabbix_template_macros.items() %}
+        {% set _ = macros.append({'macro': key, 'value': value}) %}
+      {% endfor %}
+      {{ macros }}
 
 - name: Update macros in Zabbix template
   community.zabbix.zabbix_template:
@@ -13,4 +17,3 @@
     macros: "{{ zabbix_template_macro_list }}"
     state: present
   when: zabbix_template_macros is defined
-
