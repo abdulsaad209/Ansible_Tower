@@ -8,5 +8,5 @@ zabbix-master.ms.com               ansible_host=10.0.0.36
 zabbix-proxy.ms.com                ansible_host=10.0.0.37
 
 [kubernetes-monitoring]
-kubernetes-cluster-state           ansible_host=10.0.0.37
+kubernetes-cluster-state           ansible_host=10.0.0.31
 
