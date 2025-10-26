@@ -1,4 +1,7 @@
 ---
+- name: Including task to update server time 
+  include_tasks: update_time.yml
+  
 - name: Including task to Install and enable Repos
   include_tasks: install_repos.yml
 

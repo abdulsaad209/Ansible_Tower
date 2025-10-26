@@ -1,0 +1,17 @@
+--- 
+### Zabbix UI
+zabbix_groups:
+  - "szcoders-prod"
+  - "Linux servers"
+  - "Proxy Servers"
+
+zabbix_templates:
+  - "Linux by Zabbix agent"
+  - "ICMP Ping"
+
+### MOTD Message
+motd_env: "Production"
+motd_purpose: "Wazuh Indexer Server"
+motd_logs: "/var/log/wazuh-indexer/wazuh-indexer-cluster.log, /var/log/wazuh-indexer/gc.log"
+motd_docker: "kubectl logs -n <namespace> <pod-name>"
+motd_applications: "Wazuh"

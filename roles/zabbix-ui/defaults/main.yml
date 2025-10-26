@@ -8,5 +8,5 @@ host_name: "{{ inventory_hostname }}"
 visible_name: "{{ inventory_hostname }}"
 host_ip: "{{ ansible_host }}"
 group_name: "Linux servers"
-# template_name: "Kubernetes Kubelet by HTTP"
+template_name: "Kubernetes Kubelet by HTTP"
 

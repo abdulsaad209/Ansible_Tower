@@ -1,0 +1,4 @@
+---
+- name: Set timezone to Asia/Karachi
+  ansible.builtin.timezone:
+    name: Asia/Karachi
