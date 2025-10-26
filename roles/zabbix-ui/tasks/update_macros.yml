@@ -1,37 +1,27 @@
-# ---------------------------------------------------------
-# 1️⃣ Get existing host macro ID
-- name: Get existing host macro
+--- 
+- name: Get API token
   uri:
     url: "{{ zabbix_url }}/api_jsonrpc.php"
     method: POST
-    headers:
-      Content-Type: "application/json-rpc"
-      Authorization: "Bearer {{ zbx_token }}"
     body_format: json
     body:
       jsonrpc: "2.0"
-      method: "usermacro.get"
+      method: "user.login"
       params:
-        host: "{{ inventory_hostname }}"
-        filter:
-          macro: "{$KUBE.KUBELET.URL}"
-        output: ["hostmacroid", "macro", "value"]
+        username: "{{ zabbix_user }}"
+        password: "{{ zabbix_pass }}"
       id: 1
+    headers:
+      Content-Type: "application/json-rpc"
     validate_certs: false
-  register: macro_query_response
+  register: login_response
+
+- set_fact:
+    zbx_token: "{{ login_response.json.result }}"
 
 # ---------------------------------------------------------
-# 2️⃣ Extract macro ID
-- name: Set macro ID fact
-  set_fact:
-    existing_macro_id: "{{ macro_query_response.json.result[0].hostmacroid | default('') }}"
-
-- debug:
-    msg: "Resolved macro ID: {{ existing_macro_id }}"
-
-# ---------------------------------------------------------
-# 3️⃣ Update or create macro
-- name: Update host macro if it exists, else create it
+# Get template ID
+- name: Get template ID
   uri:
     url: "{{ zabbix_url }}/api_jsonrpc.php"
     method: POST
@@ -41,23 +31,68 @@
     body_format: json
     body:
       jsonrpc: "2.0"
-      method: "{{ 'usermacro.update' if existing_macro_id != '' else 'usermacro.create' }}"
-      params: >-
-        {% if existing_macro_id != '' %}
-        {
-          "hostmacroid": "{{ existing_macro_id }}",
-          "value": "http://{{ host_ip }}:10250/metrics"
-        }
-        {% else %}
-        {
-          "hostid": "{{ existing_host_id }}",
-          "macro": "{$KUBE.KUBELET.URL}",
-          "value": "http://{{ host_ip }}:10250/metrics"
-        }
-        {% endif %}
+      method: "template.get"
+      params:
+        filter:
+          host: "{{ template_name }}"
+        output: ["templateid", "name"]
       id: 2
     validate_certs: false
-  register: macro_update_response
+  register: template_response
+
+- set_fact:
+    template_id: "{{ template_response.json.result[0].templateid }}"
 
 - debug:
-    msg: "Macro operation result → {{ macro_update_response.json }}"
+    msg: "Resolved template ID: {{ template_id }}"
+
+# ---------------------------------------------------------
+# 3️⃣ Get existing template macros
+- name: Get existing macros for template
+  uri:
+    url: "{{ zabbix_url }}/api_jsonrpc.php"
+    method: POST
+    headers:
+      Content-Type: "application/json-rpc"
+      Authorization: "Bearer {{ zbx_token }}"
+    body_format: json
+    body:
+      jsonrpc: "2.0"
+      method: "template.get"
+      params:
+        templateids: ["{{ template_id }}"]
+        selectMacros: ["macro", "value"]
+      id: 3
+    validate_certs: false
+  register: template_macros_response
+
+- set_fact:
+    existing_template_macro: >-
+      {{ (template_macros_response.json.result[0].macros | selectattr('macro', 'equalto', '{$KUBE.KUBELET.URL}') | list)[0] | default({}) }}
+
+- debug:
+    msg: "Existing template macro → {{ existing_template_macro }}"
+
+# ---------------------------------------------------------
+# 4️⃣ Update template macro (if exists) or add it
+- name: Update or add macro in template
+  uri:
+    url: "{{ zabbix_url }}/api_jsonrpc.php"
+    method: POST
+    headers:
+      Content-Type: "application/json-rpc"
+      Authorization: "Bearer {{ zbx_token }}"
+    body_format: json
+    body:
+      jsonrpc: "2.0"
+      method: "template.update"
+      params:
+        templateid: "{{ template_id }}"
+        macros:
+          - macro: "{$KUBE.KUBELET.URL}"
+            value: "http://{{ host_ip }}:10250/metrics"
+    validate_certs: false
+  register: template_macro_update_response
+
+- debug:
+    msg: "Template macro update result → {{ template_macro_update_response.json }}"

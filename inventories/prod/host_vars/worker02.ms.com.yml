@@ -18,8 +18,8 @@ motd_docker: "kubectl logs -n <namespace> <pod-name>"
 motd_applications: "Ansible Tower"
 
 ### MACROS
-zabbix_template_macros:
-  - template_name: "Kubernetes Kubelet by HTTP"
-    macros:
-      - macro: "{$KUBE.KUBELET.URL}"
-        value: "http://{{ host_ip }}:10250/metrics"
+# zabbix_template_macros:
+#   - template_name: "Kubernetes Kubelet by HTTP"
+#     macros:
+#       - macro: "{$KUBE.KUBELET.URL}"
+#         value: "http://{{ host_ip }}:10250/metrics"
