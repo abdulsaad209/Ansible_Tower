@@ -1,7 +1,7 @@
 --- 
 zabbix_url: "http://192.168.12.136/zabbix"
-zabbix_user: "Admin"
-zabbix_pass: "zabbix"
+zabbix_user: "{{ zabbix_username }}"
+zabbix_pass: "{{ zabbix_password }}"
 
 # Host details
 host_name: "{{ inventory_hostname }}"
