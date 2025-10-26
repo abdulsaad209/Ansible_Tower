@@ -4,6 +4,7 @@
 # ==========================================================
 
 - name: Get API token
+  become: false
   uri:
     url: "{{ zabbix_url }}/api_jsonrpc.php"
     method: POST
