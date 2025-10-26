@@ -1,4 +1,8 @@
 ---
+### Zabbix UI
+zabbix_groups:
+  - "kubernetes"
+
 host_name: "kubernetes cluster state"
 visible_name: "kubernetes cluster state"
 host_ip: ""
@@ -8,3 +12,4 @@ zabbix_templates:
 
 ip_use: 0
 proxy_id: "1"
+
