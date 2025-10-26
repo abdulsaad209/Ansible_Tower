@@ -12,4 +12,5 @@
     template_name: "Kubernetes Kubelet by HTTP"
     macros: "{{ zabbix_template_macro_list }}"
     state: present
+  when: zabbix_template_macros is defined
 
