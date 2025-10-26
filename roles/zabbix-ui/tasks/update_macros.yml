@@ -1,8 +1,52 @@
 --- 
-- name: Update Macros in Zabbix UI 
-  community.zabbix.zabbix_hostmacro:
-    host_name: "{{ inventory_hostname }}"
-    macro_name: "{$KUBE.KUBELET.URL}"
-    macro_value: "http://{{ host_ip }}:10250/metrics"
-    macro_description: ""
-    state: present
+
+# ==========================================================
+# Update a single macro for an existing host in Zabbix
+# ==========================================================
+
+- name: Get host ID for {{ inventory_hostname }}
+  uri:
+    url: "{{ zabbix_url }}/api_jsonrpc.php"
+    method: POST
+    headers:
+      Content-Type: "application/json-rpc"
+      Authorization: "Bearer {{ zbx_token }}"
+    body_format: json
+    body:
+      jsonrpc: "2.0"
+      method: "host.get"
+      params:
+        filter:
+          host: "{{ inventory_hostname }}"
+        output: ["hostid"]
+      id: 20
+    validate_certs: false
+  register: host_id_response
+
+- set_fact:
+    host_id: "{{ host_id_response.json.result[0].hostid }}"
+
+- debug:
+    msg: "Resolved host ID: {{ host_id }}"
+
+- name: Update single macro for host {{ inventory_hostname }}
+  uri:
+    url: "{{ zabbix_url }}/api_jsonrpc.php"
+    method: POST
+    headers:
+      Content-Type: "application/json-rpc"
+      Authorization: "Bearer {{ zbx_token }}"
+    body_format: json
+    body:
+      jsonrpc: "2.0"
+      method: "usermacro.update"
+      params:
+        hostid: "{{ host_id }}"
+        macro: "{$KUBE.KUBELET.URL}"
+        value: "http://{{ host_ip }}:10250/metrics"
+      id: 21
+    validate_certs: false
+  register: macro_update_response
+
+- debug:
+    msg: "Macro updated → {{ macro_update_response.json }}"
