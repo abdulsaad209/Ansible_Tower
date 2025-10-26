@@ -11,6 +11,11 @@ zabbix_template_macros:
         value: "https://10.0.0.31:6443"
       - macro: "{$KUBE.KUBELET.URL}"
         value: "https://10.0.0.31:10250"
+      - macro: "{$KUBE.CONTROLLER.SERVER.URL}"
+        value: "https://10.0.0.31:10257/metrics"
+      - macro: "{$KUBE.SCHEDULER.SERVER.URL}"
+        value: "https://10.0.0.31:10259/metrics"
+      
 
   - template_name: "Kubernetes nodes by HTTP" 
     macros:
