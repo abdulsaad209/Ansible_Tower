@@ -17,10 +17,12 @@ zabbix_template_macros:
         value: "https://10.0.0.31:10259/metrics"
       - macro: "{$KUBE.STATE.METRICS.URL}"
         value: "https://10.0.0.31:8080/metrics"
-      - macro: "{$KUBE.STATE.METRICS.SERVICE}"
+      - macro: "{$KUBE.STATE.ENDPOINT.NAME}"
         value: "zabbix-kube-state-metrics"
-      - macro: "{$KUBE.STATE.METRICS.NAMESPACE}"
+      - macro: "{$KUBE.NAMESPACE}"
         value: "monitoring"
+      - macro: "{$KUBE.STATE.ENDPOINT.PORT}"
+        value: "8080"
 
   - template_name: "Kubernetes nodes by HTTP" 
     macros:
