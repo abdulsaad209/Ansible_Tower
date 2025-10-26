@@ -124,11 +124,11 @@
       params:
         host: "{{ host_name }}"
         name: "{{ visible_name }}"
-        proxy_hostid: "{{ proxy_id }}"
+        #proxy_hostid: "{{ proxy_id }}"
         interfaces:
           - type: 1
             main: 1
-            useip: "{{ ip_use | default(1) }}"
+            useip: 1
             ip: "{{ host_ip }}"
             dns: ""
             port: "10050"
