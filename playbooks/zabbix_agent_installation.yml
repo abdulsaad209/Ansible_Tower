@@ -1,6 +1,6 @@
 ---
 - name: Deploy Zabbix Agent 
-  hosts: zabbix-proxy
+  hosts: kubernetes-monitoring
   #become: true
   roles:
     #- zabbix-agent
