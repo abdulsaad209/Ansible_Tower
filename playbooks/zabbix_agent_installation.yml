@@ -1,6 +1,6 @@
 ---
 - name: Deploy Zabbix Agent 
-  hosts: zabbix-proxy
+  hosts: wazuh-indexer.ms.com
   become: true
   roles:
     - zabbix-agent
