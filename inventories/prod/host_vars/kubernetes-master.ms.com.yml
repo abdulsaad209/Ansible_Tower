@@ -22,5 +22,7 @@ motd_docker: "kubectl logs -n <namespace> <pod-name>"
 motd_applications: "Ansible Tower"
 
 ### MACROS
-
+zabbix_template_macros:
+  '{$KUBE.KUBELET.URL}': "http://{{ host_ip }}:10250/metrics"
+  
 
