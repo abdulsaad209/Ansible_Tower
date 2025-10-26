@@ -1,11 +1,24 @@
 ---
 ### MACROS
 zabbix_template_macros:
-  - template_name: "Kubernetes Kubelet by HTTP"
-    macros:
-      - macro: "{$KUBE.KUBELET.URL}"
-        value: "http://127.0.0.1:10250/metrics"
-  - template_name: "Kubernetes API server by HTTP"
+  - template_name: "Kubernetes cluster state by HTTP"
     macros:
       - macro: "{$KUBE.API.SERVER.URL}"
-        value: "http://10.0.0.31:6443/metrics"
+        value: "https://10.0.0.31:6443"
+      - macro: "{$KUBE.API.TOKEN}"
+        value: "{{ kube_api_token }}"
+      - macro: "{$KUBE.API.URL}"
+        value: "https://10.0.0.31:6443"
+      - macro: "{$KUBE.KUBELET.URL}"
+        value: "https://10.0.0.31:10250"
+
+  - template_name: "Kubernetes nodes by HTTP" 
+    macros:
+      - macro: "{$KUBE.API.SERVER.URL}"
+        value: "https://10.0.0.31:6443"
+      - macro: "{$KUBE.API.TOKEN}"
+        value: "{{ kube_api_token }}"
+      - macro: "{$KUBE.API.URL}"
+        value: "https://10.0.0.31:6443"
+      - macro: "{$KUBE.KUBELET.URL}"
+        value: "https://10.0.0.31:10250"

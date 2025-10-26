@@ -9,10 +9,7 @@ zabbix_templates:
   - "Linux by Zabbix agent"
   - "ICMP Ping"
   - "Kubernetes nodes by HTTP"
-  - "Kubernetes Scheduler by HTTP"
-  - "Kubernetes Kubelet by HTTP"
-  - "Kubernetes Controller manager by HTTP"
-  - "Kubernetes API server by HTTP"
+  - "Kubernetes cluster state by HTTP"
 
 ### MOTD Message
 motd_env: "Production"
