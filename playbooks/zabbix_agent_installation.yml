@@ -1,7 +1,7 @@
 ---
 - name: Deploy Zabbix Agent 
   hosts: zabbix-proxy
-  #become: true
+  become: true
   roles:
     - zabbix-agent
     - zabbix-ui
