@@ -1,0 +1,12 @@
+---
+- name: Update Zabbix template macros
+  community.zabbix.zabbix_macro:
+    server_url: "{{ zabbix_url }}"
+    login_user: "{{ zabbix_user }}"
+    login_password: "{{ zabbix_password }}"
+    template: "{{ item.template }}"
+    macros: "{{ item.macros }}"
+    state: present
+  loop: "{{ zabbix_template_macros }}"
+  loop_control:
+    label: "{{ item.template }}"
