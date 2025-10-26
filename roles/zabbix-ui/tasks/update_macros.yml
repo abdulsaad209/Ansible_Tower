@@ -4,7 +4,7 @@
     server_url: "{{ zabbix_url }}"
     login_user: "{{ zabbix_user }}"
     login_password: "{{ zabbix_pass }}"
-    template: "{{ item.template }}"
+    template_name: "{{ item.template }}"
     macros: "{{ item.macros }}"
     state: present
   loop: "{{ zabbix_template_macros }}"
