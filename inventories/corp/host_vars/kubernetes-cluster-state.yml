@@ -1,0 +1,10 @@
+---
+host_name: "kubernetes cluster state"
+visible_name: "kubernetes cluster state"
+host_ip: ""
+group_name: "kubernetes"
+zabbix_templates:
+  - "Kubernetes cluster state by HTTP"
+
+ip_use: 0
+proxy_id: "1"
