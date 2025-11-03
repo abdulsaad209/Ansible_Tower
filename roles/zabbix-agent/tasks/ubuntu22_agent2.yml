@@ -24,14 +24,16 @@
   apt:
     update_cache: yes
 
-- name: Install Zabbix Agent2
+- name: Install Zabbix Agent2 and plugins
   become: true
+  environment:
+    DEBIAN_FRONTEND: noninteractive
   apt:
-    name: 
-    - zabbix-agent2
-    - zabbix-agent2-plugin-mongodb 
-    - zabbix-agent2-plugin-mssql 
-    - zabbix-agent2-plugin-postgresql
+    name:
+      - zabbix-agent2
+      - zabbix-agent2-plugin-mongodb
+      - zabbix-agent2-plugin-mssql
+      - zabbix-agent2-plugin-postgresql
     state: present
 
 - name: Ensure Zabbix Agent2 is running and enabled
