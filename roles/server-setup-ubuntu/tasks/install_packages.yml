@@ -1,8 +1,17 @@
 ---
 - name: Ensure firewalld is stopped and disabled
+  ignore_errors: true
   become: true
   systemd:
-    name: firewalld
+    name: ufw
+    state: stopped
+    enabled: no
+
+- name: Ensure firewalld is stopped and disabled
+  ignore_errors: true
+  become: true
+  systemd:
+    name: iptables
     state: stopped
     enabled: no
 
