@@ -30,6 +30,9 @@
 - name: Join Active Directory
   include_tasks: join_ad.yml
 
+- name: Ensure AD users' home directories are auto-created
+  include_tasks: modify_pam.yml
+
 - name: Restart Required Services
   include_tasks: restart_services.yml
 

@@ -1,0 +1,7 @@
+- name: Ensure AD users' home directories are auto-created
+  become: true
+  lineinfile:
+    path: /etc/pam.d/common-session
+    line: 'session    required     pam_mkhomedir.so skel=/etc/skel/ umask=0077'
+    state: present
+    insertafter: EOF
