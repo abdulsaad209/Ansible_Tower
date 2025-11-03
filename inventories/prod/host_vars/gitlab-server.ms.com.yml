@@ -1,0 +1,16 @@
+--- 
+### Zabbix UI
+zabbix_groups:
+  - "szcoders-prod"
+  - "Linux servers"
+
+zabbix_templates:
+  - "Linux by Zabbix agent"
+  - "ICMP Ping"
+
+### MOTD Message
+motd_env: "Production"
+motd_purpose: "GitLab Server for CICD"
+motd_applications: "GitLab"
+
+

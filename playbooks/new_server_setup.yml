@@ -1,6 +1,6 @@
 ---
 - name: Setup new server by installing basic utilities and joining with AD
-  hosts: wazuh-indexer.ms.com
+  hosts: gitlab
   become: true
   roles:
     - server-setup-redhat

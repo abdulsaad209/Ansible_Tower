@@ -13,3 +13,6 @@ worker02.ms.com                     ansible_host=10.0.0.33
 wazuh-indexer.ms.com                ansible_host=10.0.0.34
 wazuh-dashboard.ms.com              ansible_host=10.0.0.35
 
+[gitlab]
+gitlab-server.ms.com                ansible_host=10.0.0.38
+
