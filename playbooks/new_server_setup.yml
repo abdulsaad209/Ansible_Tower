@@ -2,5 +2,19 @@
 - name: Setup new server by installing basic utilities and joining with AD
   hosts: gitlab
   become: true
-  roles:
-    - server-setup-redhat
+  tasks:
+    - name: Including role for Almalinux/Redhat
+      include_role: 
+        name: server-setup-redhat
+      when:
+        - ansible_distribution == "AlmaLinux"
+        - ansible_distribution_major_version == "9"
+        - ansible_distribution_version is version('9.6', '==')
+
+    - name: Including role for Ubuntu
+      include_role: 
+        name: server-setup-ubuntu
+      when:
+        - ansible_distribution == "Ubuntu"
+        - ansible_distribution_major_version == "22"
+        - ansible_distribution_version is version('22.04', '==')
