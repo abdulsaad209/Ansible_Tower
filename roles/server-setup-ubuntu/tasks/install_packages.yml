@@ -15,9 +15,9 @@
     state: stopped
     enabled: no
 
-- name: Install basic utility packages using yum
+- name: Install basic utility packages using apt
   become: true
-  yum:
+  apt:
     name:
       - net-tools
       - vim
@@ -28,4 +28,4 @@
       - curl
     state: present
     update_cache: yes
-    disable_gpg_check: true
+
