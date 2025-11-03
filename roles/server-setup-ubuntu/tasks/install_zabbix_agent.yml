@@ -1,0 +1,5 @@
+---
+- name: Including zabbix-agent role for installing zabbix-agent 
+  include_role: 
+    name: zabbix-agent 
+

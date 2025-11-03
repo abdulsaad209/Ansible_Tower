@@ -1,0 +1,22 @@
+---
+- name: Ensure firewalld is stopped and disabled
+  become: true
+  systemd:
+    name: firewalld
+    state: stopped
+    enabled: no
+
+- name: Install basic utility packages using yum
+  become: true
+  yum:
+    name:
+      - net-tools
+      - vim
+      - nano
+      - ssh
+      - telnet
+      - htop
+      - curl
+    state: present
+    update_cache: yes
+    disable_gpg_check: true

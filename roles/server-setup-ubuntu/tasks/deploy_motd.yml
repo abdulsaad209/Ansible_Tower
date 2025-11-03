@@ -1,0 +1,5 @@
+---
+- name: Including role to deploy MOTD Script
+  include_role:
+    name: motd_deploy
+

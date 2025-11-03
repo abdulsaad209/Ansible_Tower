@@ -1,0 +1,4 @@
+---
+- name: Include role to add host to zabbix UI
+  include_role:
+    name: zabbix-ui
