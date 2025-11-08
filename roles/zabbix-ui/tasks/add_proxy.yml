@@ -52,8 +52,7 @@
 ###########################################################
 # 3. Create Proxy if NOT exists
 ###########################################################
-- name: Create new Zabbix Proxy
-  when: existing_proxy_id == ""
+- name: Create Zabbix proxy
   uri:
     url: "{{ zabbix_url }}/api_jsonrpc.php"
     method: POST
@@ -66,15 +65,15 @@
       method: "proxy.create"
       params:
         name: "{{ proxy_name }}"
-        mode: "{{ proxy_mode }}"   # 1=Active, 2=Passive
-        interfaces:
-          - ip: "{{ proxy_ip }}"
-            dns: ""
-            port: "10051"
-            useip: 1
-      id: 3
+        operating_mode: "{{ proxy_mode }}"   # "0"=Active, "1"=Passive
+        address: "{{ proxy_ip | default(omit) }}"  # only for passive
+        port: "{{ proxy_port | default(omit) }}"   # only for passive
+        hosts: "{{ proxy_hosts | default([]) }}"   # list of dicts with hostid
+        proxy_groupid: "{{ proxy_groupid | default(omit) }}"
+      id: 1
     validate_certs: false
   register: proxy_create
+
 
 - name: Update existing Zabbix Proxy
   when: existing_proxy_id != ""
