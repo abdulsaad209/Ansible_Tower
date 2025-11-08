@@ -39,7 +39,7 @@
       - zabbix-sql-scripts 
       - zabbix-selinux-policy
     state: present
-    # disable_gpg_check: true
+    disable_gpg_check: true
 
 # Agent Configuration Start from Here
 # - name: Set Zabbix server parameters
