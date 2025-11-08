@@ -99,3 +99,27 @@
       id: 4
     validate_certs: false
   register: proxy_update
+
+- name: Update existing Zabbix Proxy
+  when: existing_proxy_id != ""
+  uri:
+    url: "{{ zabbix_url }}/api_jsonrpc.php"
+    method: POST
+    headers:
+      Content-Type: "application/json-rpc"
+      Authorization: "Bearer {{ zbx_token }}"
+    body_format: json
+    body:
+      jsonrpc: "2.0"
+      method: "proxy.update"
+      params:
+        proxyid: "{{ existing_proxy_id }}"
+        name: "{{ proxy_name }}"
+        operating_mode: "{{ proxy_mode }}"  # "0"=Active, "1"=Passive
+        address: "{{ proxy_ip | default(omit) }}"  # only for passive
+        port: "{{ proxy_port | default(omit) }}"   # only for passive
+        hosts: "{{ proxy_hosts | default(omit) }}"  # optional list of hostids
+        proxy_groupid: "{{ proxy_groupid | default(omit) }}"  # optional
+      id: 4
+    validate_certs: false
+  register: proxy_update
