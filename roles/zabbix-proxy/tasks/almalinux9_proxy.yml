@@ -49,7 +49,6 @@
     CREATE USER IF NOT EXISTS '{{ zabbix_proxy_db_user }}'@'localhost' IDENTIFIED BY '{{ zabbix_proxy_db_password }}';
     GRANT ALL PRIVILEGES ON {{ zabbix_proxy_db }}.* TO '{{ zabbix_proxy_db_user }}'@'localhost';
     FLUSH PRIVILEGES;
-    EXIT;
     EOF
   args:
     executable: /bin/bash
