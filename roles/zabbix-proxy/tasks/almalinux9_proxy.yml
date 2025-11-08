@@ -1,4 +1,87 @@
 ---
+############################################### Zabbix Proxy #####################################################
+
+- name: Ensure EPEL repository file exists
+  ansible.builtin.stat:
+    path: /etc/yum.repos.d/epel.repo
+  register: epel_repo_file
+
+- name: Disable Zabbix packages from EPEL repo
+  ansible.builtin.blockinfile:
+    path: /etc/yum.repos.d/epel.repo
+    insertafter: '^\[epel\]'
+    block: |
+      excludepkgs=zabbix*
+  when: epel_repo_file.stat.exists
+
+- name: Remove old Zabbix repository file if present
+  ansible.builtin.file:
+    path: /etc/yum.repos.d/zabbix.repo
+    state: absent
+
+- name: Remove old Zabbix release package if installed
+  ansible.builtin.yum:
+    name: zabbix-release
+    state: absent
+    disable_gpg_check: true
+
+- name: Add Zabbix repository for AlmaLinux 9
+  ansible.builtin.yum:
+    name: "{{ almalinux9_repo }}"
+    state: present
+    disable_gpg_check: true
+
+# - name: Clean yum cache
+#   ansible.builtin.command: yum clean all
+
+- name: Install Zabbix Proxy
+  ansible.builtin.yum:
+    name:
+      - zabbix-proxy-mysql 
+      - zabbix-sql-scripts 
+      - zabbix-selinux-policy
+    state: present
+    disable_gpg_check: true
+
+# Proxy Configuration Start from Here
+- name: Set Zabbix server parameters
+  lineinfile:
+    path: /etc/zabbix/zabbix_proxy.conf
+    regexp: '^Server='
+    line: "Server={{ zabbix_server }}"
+
+- name: Set Zabbix Proxy Hostname parameters
+  lineinfile:
+    path: /etc/zabbix/zabbix_proxy.conf
+    regexp: '^Hostname='
+    line: "Hostname={{ inventory_hostname }}"
+
+- name: Set Proxy DB Name parameters
+  lineinfile:
+    path: /etc/zabbix/zabbix_proxy.conf
+    regexp: '^DBName='
+    line: "DBName={{ zabbix_proxy_db }}"
+
+- name: Set Proxy DB User parameters
+  lineinfile:
+    path: /etc/zabbix/zabbix_proxy.conf
+    regexp: '^DBUser='
+    line: "DBUser={{ zabbix_proxy_db_user }}"
+
+- name: Set Proxy DB Password parameters
+  lineinfile:
+    path: /etc/zabbix/zabbix_proxy.conf
+    regexp: '^DBPassword='
+    line: "DBPassword={{ zabbix_proxy_db_password }}"
+
+- name: Enable and start Zabbix Proxy
+  ansible.builtin.systemd:
+    name: zabbix-proxy
+    enabled: true
+    state: started
+
+############################################### Zabbix Proxy Database Setup #####################################################
+
 - name: Install MySQL Server and Client
   ansible.builtin.yum:
     name: 
@@ -71,87 +154,8 @@
     name: zabbix-proxy
     state: restarted
 
-
-
-# - name: Ensure EPEL repository file exists
-#   ansible.builtin.stat:
-#     path: /etc/yum.repos.d/epel.repo
-#   register: epel_repo_file
-
-# - name: Disable Zabbix packages from EPEL repo
-#   ansible.builtin.blockinfile:
-#     path: /etc/yum.repos.d/epel.repo
-#     insertafter: '^\[epel\]'
-#     block: |
-#       excludepkgs=zabbix*
-#   when: epel_repo_file.stat.exists
-
-# - name: Remove old Zabbix repository file if present
-#   ansible.builtin.file:
-#     path: /etc/yum.repos.d/zabbix.repo
-#     state: absent
-
-# - name: Remove old Zabbix release package if installed
-#   ansible.builtin.yum:
-#     name: zabbix-release
-#     state: absent
-#     disable_gpg_check: true
-
-# - name: Add Zabbix repository for AlmaLinux 9
-#   ansible.builtin.yum:
-#     name: "{{ almalinux9_repo }}"
-#     state: present
-#     disable_gpg_check: true
-
-# # - name: Clean yum cache
-# #   ansible.builtin.command: yum clean all
-
-# - name: Install Zabbix Proxy
-#   ansible.builtin.yum:
-#     name:
-#       - zabbix-proxy-mysql 
-#       - zabbix-sql-scripts 
-#       - zabbix-selinux-policy
-#     state: present
-#     disable_gpg_check: true
-
-# # Agent Configuration Start from Here
-# # - name: Set Zabbix server parameters
-# #   lineinfile:
-# #     path: /etc/zabbix/zabbix_agent2.conf
-# #     regexp: '^Server='
-# #     line: "Server={{ zabbix_server }}"
-# #   notify: Restart zabbix-agent2
-
-# # - name: Set active Zabbix server parameters
-# #   lineinfile:
-# #     path: /etc/zabbix/zabbix_agent2.conf
-# #     regexp: '^ServerActive='
-# #     line: "ServerActive={{ zabbix_server }}"
-# #   notify: Restart zabbix-agent2
-
-# # - name: Set agent hostname
-# #   lineinfile:
-# #     path: /etc/zabbix/zabbix_agent2.conf
-# #     regexp: '^Hostname='
-# #     line: "Hostname={{ inventory_hostname }}"
-# #   notify: Restart zabbix-agent2
-
-# # - name: Deploy custom userparameter config if defined
-# #   copy:
-# #     content: "{{ item.value }}"
-# #     dest: "/etc/zabbix/zabbix_agent2.d/{{ item.key }}.conf"
-# #     owner: root
-# #     group: root
-# #     mode: '0644'
-# #   loop: "{{ zabbix_custom_userparams | dict2items }}"
-# #   when: zabbix_custom_userparams is defined
-# #   notify: Restart zabbix-agent2
-
-# - name: Enable and start Zabbix Proxy
-#   ansible.builtin.systemd:
-#     name: zabbix-proxy
-#     enabled: true
-#     state: started
-
-
+# Restart MySQL Service
+- name: Restart MySQL service
+  ansible.builtin.systemd:
+    name: mysqld
+    state: restarted
