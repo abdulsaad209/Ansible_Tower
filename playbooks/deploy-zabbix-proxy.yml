@@ -1,0 +1,8 @@
+---
+- name: Deploy Zabbix Proxy 7.4
+  hosts: zabbix-proxy
+  become: true
+  roles:
+    - zabbix-proxy
+
+
