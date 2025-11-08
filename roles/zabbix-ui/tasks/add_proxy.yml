@@ -50,6 +50,32 @@
     existing_proxy_id: "{{ proxy_check.json.result[0].proxyid | default('') }}"
 
 ###########################################################
+# 0. Resolve Proxy Group ID from name
+###########################################################
+- name: Get Proxy Group ID by name
+  uri:
+    url: "{{ zabbix_url }}/api_jsonrpc.php"
+    method: POST
+    headers:
+      Content-Type: "application/json-rpc"
+      Authorization: "Bearer {{ zbx_token }}"
+    body_format: json
+    body:
+      jsonrpc: "2.0"
+      method: "proxygroup.get"
+      params:
+        filter:
+          name: "{{ proxy_group_name }}"
+        output: ["proxygroupid", "name"]
+      id: 0
+    validate_certs: false
+  register: proxy_group_lookup
+
+- name: Set proxy_groupid fact
+  set_fact:
+    proxy_groupid: "{{ proxy_group_lookup.json.result[0].proxygroupid | default(omit) }}"
+
+###########################################################
 # 3. Create Proxy if NOT exists
 ###########################################################
 - name: Create or update Zabbix Proxy
@@ -65,6 +91,7 @@
       method: "{{ 'proxy.create' if existing_proxy_id == '' else 'proxy.update' }}"
       params: >-
         {{
+
           {
             'name': proxy_name,
             'operating_mode': proxy_mode,

@@ -15,3 +15,6 @@ template_name: "Kubernetes Kubelet by HTTP"
 proxy_name: "{{ inventory_hostname }}"
 proxy_ip: "{{ ansible_host }}"
 proxy_mode: 0
+proxy_port: "10051"
+proxy_group_name: "szcoders-dc"
+proxy_hosts: []          # optional, list of host IDs to assign
