@@ -12,6 +12,17 @@
       excludepkgs=zabbix*
   when: epel_repo_file.stat.exists
 
+- name: Remove old Zabbix repository file if present
+  ansible.builtin.file:
+    path: /etc/yum.repos.d/zabbix.repo
+    state: absent
+
+- name: Remove old Zabbix release package if installed
+  ansible.builtin.yum:
+    name: zabbix-release
+    state: absent
+    disable_gpg_check: true
+
 - name: Add Zabbix repository for AlmaLinux 9
   ansible.builtin.yum:
     name: "{{ almalinux9_repo }}"
