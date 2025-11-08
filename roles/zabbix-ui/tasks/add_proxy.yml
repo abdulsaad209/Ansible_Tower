@@ -45,6 +45,10 @@
     validate_certs: false
   register: proxy_check
 
+- name: Set existing proxy ID (safe)
+  set_fact:
+    existing_proxy_id: "{{ proxy_check.json.result[0].proxyid | default('') }}"
+
 ###########################################################
 # 3. Create Proxy if NOT exists
 ###########################################################
@@ -99,4 +103,3 @@
       id: 4
     validate_certs: false
   register: proxy_update
-  
