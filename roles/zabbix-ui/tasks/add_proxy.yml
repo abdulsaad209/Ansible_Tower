@@ -50,35 +50,6 @@
     existing_proxy_id: "{{ proxy_check.json.result[0].proxyid | default('') }}"
 
 ###########################################################
-# 0. Resolve Proxy Group ID from name
-###########################################################
-###########################################################
-# 0. Resolve Proxy Group ID from name
-###########################################################
-- name: Get Proxy Group ID by name
-  uri:
-    url: "{{ zabbix_url }}/api_jsonrpc.php"
-    method: POST
-    headers:
-      Content-Type: "application/json-rpc"
-      Authorization: "Bearer {{ zbx_token }}"
-    body_format: json
-    body:
-      jsonrpc: "2.0"
-      method: "proxygroup.get"
-      params:
-        filter:
-          name: "{{ proxy_group_name }}"
-        output: "proxygroupid"    # <-- must be a string, not a list
-      id: 0
-    validate_certs: false
-  register: proxy_group_lookup
-
-- name: Set proxy_groupid fact
-  set_fact:
-    proxy_groupid: "{{ proxy_group_lookup.json.result[0].proxygroupid | default(omit) }}"
-
-###########################################################
 # 3. Create Proxy if NOT exists
 ###########################################################
 - name: Create or update Zabbix Proxy
@@ -99,7 +70,7 @@
             'name': proxy_name,
             'operating_mode': proxy_mode,
             'hosts': proxy_hosts | default(omit),
-            'proxy_groupid': proxy_groupid | default(omit),
+            'proxy_groupid': {{ proxy_group_name }},
             'proxyid': existing_proxy_id if existing_proxy_id != '' else omit,
             'address': proxy_ip if proxy_mode == '1' else omit,
             'port': proxy_port if proxy_mode == '1' else omit
