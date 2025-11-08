@@ -28,14 +28,12 @@
     line: 'log_bin_trust_function_creators = 1'
     insertafter: '^\[mysqld\]'
     state: present
-  notify: Restart MySQL
 
 # Handler to restart MySQL
 - name: Restart MySQL
   ansible.builtin.systemd:
     name: mysqld
     state: restarted
-  listen: Restart MySQL
 
 # Create Zabbix Proxy database and user
 - name: Create Zabbix Proxy database and user
