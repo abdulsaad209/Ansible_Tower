@@ -29,8 +29,8 @@
     state: present
     disable_gpg_check: true
 
-# - name: Clean yum cache
-#   ansible.builtin.command: yum clean all
+- name: Clean yum cache
+  ansible.builtin.command: yum clean all
 
 - name: Install Zabbix Proxy
   ansible.builtin.yum:
