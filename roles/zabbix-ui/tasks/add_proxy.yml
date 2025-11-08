@@ -66,19 +66,16 @@
       method: "proxy.create"
       params:
         name: "{{ proxy_name }}"
-        mode: "{{ proxy_mode }}"     # 1=Active, 2=Passive
-        interface:
-          ip: "{{ proxy_ip }}"
-          dns: ""
-          port: "10051"
-          useip: 1
+        mode: "{{ proxy_mode }}"   # 1=Active, 2=Passive
+        interfaces:
+          - ip: "{{ proxy_ip }}"
+            dns: ""
+            port: "10051"
+            useip: 1
       id: 3
     validate_certs: false
   register: proxy_create
 
-###########################################################
-# 4. Update Proxy if exists
-###########################################################
 - name: Update existing Zabbix Proxy
   when: existing_proxy_id != ""
   uri:
@@ -94,12 +91,12 @@
       params:
         proxyid: "{{ existing_proxy_id }}"
         name: "{{ proxy_name }}"
-        mode: "{{ proxy_mode }}"
-        interface:
-          ip: "{{ proxy_ip }}"
-          dns: ""
-          port: "10051"
-          useip: 1
+        mode: "{{ proxy_mode }}"   # 1=Active, 2=Passive
+        interfaces:
+          - ip: "{{ proxy_ip }}"
+            dns: ""
+            port: "10051"
+            useip: 1
       id: 4
     validate_certs: false
   register: proxy_update
