@@ -54,10 +54,16 @@
     executable: /bin/bash
   become: true
 
-# Import initial schema for Zabbix Proxy
 - name: Import Zabbix Proxy initial schema
-  ansible.builtin.command: >
-    cat /usr/share/zabbix/sql-scripts/mysql/proxy.sql | mysql --default-character-set=utf8mb4 -u'{{ zabbix_proxy_db_user }}' -p'{{ zabbix_proxy_db_password }}'  
+  ansible.builtin.shell: |
+    cat /usr/share/zabbix/sql-scripts/mysql/proxy.sql | \
+    mysql --default-character-set=utf8mb4 \
+      -u'{{ zabbix_proxy_db_user }}' \
+      -p'{{ zabbix_proxy_db_password }}' \
+      {{ zabbix_proxy_db }}
+  args:
+    executable: /bin/bash
+  become: true
 
 # Restart Zabbix Proxy
 - name: Restart Zabbix Proxy service
