@@ -38,16 +38,12 @@
       jsonrpc: "2.0"
       method: "proxy.get"
       params:
-        filter:
-          host: "{{ proxy_name }}"
-        output: ["proxyid", "host"]
+        search:
+          name: "{{ proxy_name }}"
+        output: ["proxyid", "name"]
       id: 2
     validate_certs: false
   register: proxy_check
-
-- set_fact:
-    existing_proxy_id: "{{ proxy_check.json.result[0].proxyid | default('') }}"
-
 
 ###########################################################
 # 3. Create Proxy if NOT exists
@@ -66,7 +62,7 @@
       method: "proxy.create"
       params:
         name: "{{ proxy_name }}"
-        status: "{{ proxy_mode }}"    # 5 = Active, 6 = Passive
+        mode: "{{ proxy_mode }}"     # 1=Active, 2=Passive
         interface:
           ip: "{{ proxy_ip }}"
           dns: ""
@@ -75,7 +71,6 @@
       id: 3
     validate_certs: false
   register: proxy_create
-
 
 ###########################################################
 # 4. Update Proxy if exists
@@ -95,7 +90,7 @@
       params:
         proxyid: "{{ existing_proxy_id }}"
         name: "{{ proxy_name }}"
-        status: "{{ proxy_mode }}"
+        mode: "{{ proxy_mode }}"
         interface:
           ip: "{{ proxy_ip }}"
           dns: ""
@@ -104,3 +99,4 @@
       id: 4
     validate_certs: false
   register: proxy_update
+  
