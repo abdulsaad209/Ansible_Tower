@@ -33,13 +33,13 @@
 #   ansible.builtin.command: yum clean all
 
 - name: Install Zabbix Proxy
-  ansible.builtin.dnf:
+  ansible.builtin.yum:
     name:
       - zabbix-proxy-mysql 
       - zabbix-sql-scripts 
       - zabbix-selinux-policy
     state: present
-    disable_gpg_check: true
+    # disable_gpg_check: true
 
 # Agent Configuration Start from Here
 # - name: Set Zabbix server parameters
