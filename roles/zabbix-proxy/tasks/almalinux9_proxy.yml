@@ -1,5 +1,5 @@
 ---
-# Install MariaDB/MySQL server
+# Install MySQL server
 - name: Install MySQL server
   ansible.builtin.yum:
     name: mysql-server
@@ -8,43 +8,53 @@
 # Ensure MySQL service is running
 - name: Start and enable MySQL service
   ansible.builtin.systemd:
-    name: mysql
+    name: mysqld
     enabled: true
     state: started
 
-# Install MySQL client for importing schema
-- name: Install MySQL client
-  ansible.builtin.yum:
-    name: mysql
+# Configure mysqld for log_bin_trust_function_creators
+- name: Set log_bin_trust_function_creators in mysqld.cnf
+  ansible.builtin.lineinfile:
+    path: /etc/my.cnf.d/mysqld.cnf
+    regexp: '^log_bin_trust_function_creators'
+    line: 'log_bin_trust_function_creators = 1'
+    insertafter: '^\[mysqld\]'
     state: present
+  notify: Restart MySQL
 
-# Create Zabbix Proxy database
-- name: Create Zabbix Proxy database
-  community.mysql.mysql_db:
-    name: "{{ zabbix_proxy_db }}"
-    encoding: utf8mb4
-    collation: utf8mb4_bin
-    state: present
-  vars:
-    ansible_python_interpreter: /usr/bin/python3
+# Handler to restart MySQL
+- name: Restart MySQL
+  ansible.builtin.systemd:
+    name: mysqld
+    state: restarted
+  listen: Restart MySQL
 
-# Create Zabbix Proxy database user
-- name: Create Zabbix Proxy database user
-  community.mysql.mysql_user:
-    name: "{{ zabbix_proxy_db_user }}"
-    password: "{{ zabbix_proxy_db_password }}"
-    priv: "{{ zabbix_proxy_db }}.*:ALL"
-    host: "localhost"
-    state: present
-  vars:
-    ansible_python_interpreter: /usr/bin/python3
+# Create Zabbix Proxy database and user
+- name: Create Zabbix Proxy database and user
+  ansible.builtin.shell: |
+    mysql -uroot <<EOF
+    CREATE DATABASE IF NOT EXISTS {{ zabbix_proxy_db }} CHARACTER SET utf8 COLLATE utf8_bin;
+    CREATE USER IF NOT EXISTS '{{ zabbix_proxy_db_user }}'@'localhost' IDENTIFIED BY '{{ zabbix_proxy_db_password }}';
+    GRANT ALL PRIVILEGES ON {{ zabbix_proxy_db }}.* TO '{{ zabbix_proxy_db_user }}'@'localhost';
+    FLUSH PRIVILEGES;
+    EOF
+  args:
+    executable: /bin/bash
+  become: true
 
 # Import initial schema for Zabbix Proxy
-- name: Import initial schema for Zabbix Proxy
+- name: Import Zabbix Proxy initial schema
   ansible.builtin.command: >
     mysql -u {{ zabbix_proxy_db_user }} -p{{ zabbix_proxy_db_password }} {{ zabbix_proxy_db }} < /usr/share/doc/zabbix-sql-scripts/mysql/proxy.sql
   args:
     creates: "/var/lib/mysql/{{ zabbix_proxy_db }}/history.db"
+
+# Restart Zabbix Proxy
+- name: Restart Zabbix Proxy service
+  ansible.builtin.systemd:
+    name: zabbix-proxy
+    state: restarted
+
 
 
 # - name: Ensure EPEL repository file exists
