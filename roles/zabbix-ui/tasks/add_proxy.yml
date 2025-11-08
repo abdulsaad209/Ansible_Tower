@@ -70,7 +70,6 @@
             'name': proxy_name,
             'operating_mode': proxy_mode,
             'hosts': proxy_hosts | default(omit),
-            'proxy_groupid': {{ proxy_group_name }},
             'proxyid': existing_proxy_id if existing_proxy_id != '' else omit,
             'address': proxy_ip if proxy_mode == '1' else omit,
             'port': proxy_port if proxy_mode == '1' else omit
