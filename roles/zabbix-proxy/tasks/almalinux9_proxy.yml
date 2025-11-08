@@ -21,6 +21,22 @@
     insertafter: '^\[mysqld\]'
     state: present
 
+- name: Ensure socket value is set in client.cnf
+  ansible.builtin.lineinfile:
+    path: /etc/my.cnf.d/client.cnf
+    regexp: '^socket='
+    line: 'socket=/var/lib/mysql/mysql.sock'
+    insertafter: '^\[client\]'
+    state: present
+
+- name: Ensure socket value is set in mysql-server.cnf
+  ansible.builtin.lineinfile:
+    path: /etc/my.cnf.d/mysql-server.cnf
+    regexp: '^socket='
+    line: 'socket=/var/lib/mysql/mysql.sock'
+    insertafter: '^\[mysqld\]'
+    state: present
+  
 - name: Restart MySQL
   ansible.builtin.systemd:
     name: mysqld
