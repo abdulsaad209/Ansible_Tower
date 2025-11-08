@@ -52,6 +52,9 @@
 ###########################################################
 # 0. Resolve Proxy Group ID from name
 ###########################################################
+###########################################################
+# 0. Resolve Proxy Group ID from name
+###########################################################
 - name: Get Proxy Group ID by name
   uri:
     url: "{{ zabbix_url }}/api_jsonrpc.php"
@@ -66,7 +69,7 @@
       params:
         filter:
           name: "{{ proxy_group_name }}"
-        output: ["proxygroupid", "name"]
+        output: "proxygroupid"    # <-- must be a string, not a list
       id: 0
     validate_certs: false
   register: proxy_group_lookup
