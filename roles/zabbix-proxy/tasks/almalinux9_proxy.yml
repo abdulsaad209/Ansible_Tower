@@ -1,26 +1,18 @@
 ---
-# Install MySQL server
-- name: Install MySQL server
+- name: Install MySQL Server and Client
   ansible.builtin.yum:
-    name: mysql-server
+    name: 
+      - mysql-server 
+      - mysql
     state: present
     disable_gpg_check: true
 
-# Install MySQL client
-- name: Install MySQL client
-  ansible.builtin.yum:
-    name: mysql
-    state: present
-    disable_gpg_check: true
-
-# Ensure MySQL service is running
 - name: Start and enable MySQL service
   ansible.builtin.systemd:
     name: mysqld
     enabled: true
     state: started
 
-# Configure mysqld for log_bin_trust_function_creators
 - name: Set log_bin_trust_function_creators in mysqld.cnf
   ansible.builtin.lineinfile:
     path: /etc/my.cnf.d/mysqld.cnf
@@ -29,13 +21,11 @@
     insertafter: '^\[mysqld\]'
     state: present
 
-# Handler to restart MySQL
 - name: Restart MySQL
   ansible.builtin.systemd:
     name: mysqld
     state: restarted
 
-# Create Zabbix Proxy database and user
 - name: Create Zabbix Proxy database and user
   ansible.builtin.shell: |
     mysql -uroot <<EOF
