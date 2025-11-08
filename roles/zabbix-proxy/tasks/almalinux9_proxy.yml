@@ -41,7 +41,7 @@
     state: present
     disable_gpg_check: true
     update_cache: yes
-    assume_yes: yes
+    extra_args: -y
 
 # Agent Configuration Start from Here
 # - name: Set Zabbix server parameters
