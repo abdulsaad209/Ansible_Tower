@@ -1,17 +1,17 @@
 ---
-# - name: Including task for Almalinux9/Redhat9
-#   include_tasks: almalinux9_proxy.yml
-#   when:
-#     - ansible_distribution == "AlmaLinux"
-#     - ansible_distribution_major_version == "9"
-#     - ansible_distribution_version is version('9.6', '==')
+- name: Including task for Almalinux9/Redhat9
+  include_tasks: almalinux9_proxy.yml
+  when:
+    - ansible_distribution == "AlmaLinux"
+    - ansible_distribution_major_version == "9"
+    - ansible_distribution_version is version('9.6', '==')
 
-# - name: Including task for ubuntu22.04
-#   include_tasks: ubuntu22_agent2.yml
-#   when:
-#     - ansible_distribution == "Ubuntu"
-#     - ansible_distribution_major_version == "22"
-#     - ansible_distribution_version is version('22.04', '==')
+- name: Including task for ubuntu22.04
+  include_tasks: ubuntu22_agent2.yml
+  when:
+    - ansible_distribution == "Ubuntu"
+    - ansible_distribution_major_version == "22"
+    - ansible_distribution_version is version('22.04', '==')
 
 - name: Including task from zabbix-ui role
   include_role:
