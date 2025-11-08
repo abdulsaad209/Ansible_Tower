@@ -13,9 +13,9 @@
     enabled: true
     state: started
 
-- name: Set log_bin_trust_function_creators in mysqld.cnf
+- name: Set log_bin_trust_function_creators in mysql-server.cnf
   ansible.builtin.lineinfile:
-    path: /etc/my.cnf.d/mysqld.cnf
+    path: /etc/my.cnf.d/mysql-server.cnf
     regexp: '^log_bin_trust_function_creators'
     line: 'log_bin_trust_function_creators = 1'
     insertafter: '^\[mysqld\]'
