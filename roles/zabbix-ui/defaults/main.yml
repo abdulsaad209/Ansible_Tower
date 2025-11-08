@@ -1,5 +1,6 @@
 --- 
-zabbix_url: "http://192.168.12.136/zabbix"
+#zabbix_url: "http://192.168.12.136/zabbix"
+zabbix_url: "http://zabbix.ms.com/zabbix"
 zabbix_user: "{{ zabbix_username }}"
 zabbix_pass: "{{ zabbix_password }}"
 
