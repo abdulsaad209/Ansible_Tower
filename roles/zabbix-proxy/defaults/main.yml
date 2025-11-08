@@ -5,6 +5,6 @@ zabbix_server: "10.0.0.36"
 ubuntu22_repo: "https://repo.zabbix.com/zabbix/7.4/release/ubuntu/pool/main/z/zabbix-release/zabbix-release_latest_7.4+ubuntu22.04_all.deb"
 
 # Database settings for Zabbix Proxy
-zabbix_proxy_db: zabbix_proxy
-zabbix_proxy_db_user: zabbix_proxy
-zabbix_proxy_db_password: saad123
+zabbix_proxy_db: "{{ proxy_username }}"
+zabbix_proxy_db_user: "{{ proxy_username }}"
+zabbix_proxy_db_password: "{{ proxy_password }}"
