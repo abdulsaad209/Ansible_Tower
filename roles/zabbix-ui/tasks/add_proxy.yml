@@ -65,14 +65,13 @@
       jsonrpc: "2.0"
       method: "proxy.create"
       params:
-        host: "{{ proxy_name }}"
-        status: "{{ proxy_mode }}"      # 5 = Active Proxy, 6 = Passive Proxy
+        name: "{{ proxy_name }}"
+        status: "{{ proxy_mode }}"    # 5 = Active, 6 = Passive
         interface:
-          - interfaceid: "1"
-            dns: ""
-            ip: "{{ proxy_ip }}"
-            port: "10051"
-            useip: 1
+          ip: "{{ proxy_ip }}"
+          dns: ""
+          port: "10051"
+          useip: 1
       id: 3
     validate_certs: false
   register: proxy_create
@@ -95,25 +94,13 @@
       method: "proxy.update"
       params:
         proxyid: "{{ existing_proxy_id }}"
-        status: "{{ proxy_mode }}"    # 5=Active / 6=Passive
+        name: "{{ proxy_name }}"
+        status: "{{ proxy_mode }}"
         interface:
-          - dns: ""
-            ip: "{{ proxy_ip }}"
-            port: "10051"
-            useip: 1
+          ip: "{{ proxy_ip }}"
+          dns: ""
+          port: "10051"
+          useip: 1
       id: 4
     validate_certs: false
   register: proxy_update
-
-
-###########################################################
-# 5. Debug Output – Created or Updated
-###########################################################
-- name: Proxy operation result
-  debug:
-    msg: >-
-      {% if existing_proxy_id == "" %}
-      ✅ Proxy created successfully → {{ proxy_create.json }}
-      {% else %}
-      ✅ Proxy updated successfully → {{ proxy_update.json }}
-      {% endif %}
