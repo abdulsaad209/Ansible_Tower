@@ -137,6 +137,16 @@
     executable: /bin/bash
   become: true
 
+- name: Check if Zabbix Proxy schema already exists
+  ansible.builtin.shell: |
+    mysql -u{{ zabbix_proxy_db_user }} -p{{ zabbix_proxy_db_password }} \
+      -e "SHOW TABLES LIKE 'proxy_history';" {{ zabbix_proxy_db }} | wc -l
+  args:
+    executable: /bin/bash
+  register: schema_exists
+  changed_when: false
+  become: true
+
 - name: Import Zabbix Proxy initial schema
   ansible.builtin.shell: |
     cat /usr/share/zabbix/sql-scripts/mysql/proxy.sql | \
@@ -147,6 +157,7 @@
   args:
     executable: /bin/bash
   become: true
+  when: schema_exists.stdout | int == 0
 
 # Restart Zabbix Proxy
 - name: Restart Zabbix Proxy service
