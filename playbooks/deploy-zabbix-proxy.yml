@@ -1,6 +1,6 @@
 ---
 - name: Deploy Zabbix Proxy 7.4
-  hosts: zabbix-proxy
+  hosts: zabbix-proxy.ms.com
   become: true
   roles:
     - zabbix-proxy
