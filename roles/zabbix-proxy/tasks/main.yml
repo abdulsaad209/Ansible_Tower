@@ -13,3 +13,7 @@
     - ansible_distribution_major_version == "22"
     - ansible_distribution_version is version('22.04', '==')
 
+- name: Including task from zabbix-ui role
+  include_role:
+    name: zabbix-ui
+    tasks_from: add_proxy.yml

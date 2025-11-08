@@ -1,0 +1,119 @@
+---
+###########################################################
+# 1. Authenticate – Get Zabbix API token
+###########################################################
+- name: Get Zabbix API token
+  uri:
+    url: "{{ zabbix_url }}/api_jsonrpc.php"
+    method: POST
+    body_format: json
+    headers:
+      Content-Type: "application/json-rpc"
+    body:
+      jsonrpc: "2.0"
+      method: "user.login"
+      params:
+        username: "{{ zabbix_user }}"
+        password: "{{ zabbix_pass }}"
+      id: 1
+    validate_certs: false
+  register: zbx_login
+
+- set_fact:
+    zbx_token: "{{ zbx_login.json.result }}"
+
+
+###########################################################
+# 2. Check if the Proxy already exists
+###########################################################
+- name: Check if Zabbix Proxy already exists
+  uri:
+    url: "{{ zabbix_url }}/api_jsonrpc.php"
+    method: POST
+    headers:
+      Content-Type: "application/json-rpc"
+      Authorization: "Bearer {{ zbx_token }}"
+    body_format: json
+    body:
+      jsonrpc: "2.0"
+      method: "proxy.get"
+      params:
+        filter:
+          host: "{{ proxy_name }}"
+        output: ["proxyid", "host"]
+      id: 2
+    validate_certs: false
+  register: proxy_check
+
+- set_fact:
+    existing_proxy_id: "{{ proxy_check.json.result[0].proxyid | default('') }}"
+
+
+###########################################################
+# 3. Create Proxy if NOT exists
+###########################################################
+- name: Create new Zabbix Proxy
+  when: existing_proxy_id == ""
+  uri:
+    url: "{{ zabbix_url }}/api_jsonrpc.php"
+    method: POST
+    headers:
+      Content-Type: "application/json-rpc"
+      Authorization: "Bearer {{ zbx_token }}"
+    body_format: json
+    body:
+      jsonrpc: "2.0"
+      method: "proxy.create"
+      params:
+        host: "{{ proxy_name }}"
+        status: "{{ proxy_mode }}"      # 5 = Active Proxy, 6 = Passive Proxy
+        interface:
+          - interfaceid: "1"
+            dns: ""
+            ip: "{{ proxy_ip }}"
+            port: "10051"
+            useip: 1
+      id: 3
+    validate_certs: false
+  register: proxy_create
+
+
+###########################################################
+# 4. Update Proxy if exists
+###########################################################
+- name: Update existing Zabbix Proxy
+  when: existing_proxy_id != ""
+  uri:
+    url: "{{ zabbix_url }}/api_jsonrpc.php"
+    method: POST
+    headers:
+      Content-Type: "application/json-rpc"
+      Authorization: "Bearer {{ zbx_token }}"
+    body_format: json
+    body:
+      jsonrpc: "2.0"
+      method: "proxy.update"
+      params:
+        proxyid: "{{ existing_proxy_id }}"
+        status: "{{ proxy_mode }}"    # 5=Active / 6=Passive
+        interface:
+          - dns: ""
+            ip: "{{ proxy_ip }}"
+            port: "10051"
+            useip: 1
+      id: 4
+    validate_certs: false
+  register: proxy_update
+
+
+###########################################################
+# 5. Debug Output – Created or Updated
+###########################################################
+- name: Proxy operation result
+  debug:
+    msg: >-
+      {% if existing_proxy_id == "" %}
+      ✅ Proxy created successfully → {{ proxy_create.json }}
+      {% else %}
+      ✅ Proxy updated successfully → {{ proxy_update.json }}
+      {% endif %}

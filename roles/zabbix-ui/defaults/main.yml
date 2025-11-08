@@ -10,3 +10,7 @@ host_ip: "{{ ansible_host }}"
 group_name: "Linux servers"
 template_name: "Kubernetes Kubelet by HTTP"
 
+# Proxy details
+proxy_name: "{{ inventory_hostname }}"
+proxy_ip: "{{ ansible_host }}"
+proxy_mode: 5
