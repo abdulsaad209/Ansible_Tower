@@ -22,7 +22,4 @@
   include_tasks: windows_server_agent2.yml
   when:
     - ansible_os_family == 'Windows'
-    - ansible_product_type in [2, 3]
-  vars:
-    gather_facts: true
 
