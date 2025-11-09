@@ -10,3 +10,32 @@
 
 
 
+
+---
+- name: Deploy Zabbix Agent
+  hosts: corp
+  become: true
+
+  vars:
+    zabbix_proxy: false   # Set to true if you want to monitor via Zabbix Proxy
+
+  pre_tasks:
+
+    - name: Dynamically set zabbix_server based on zabbix_proxy flag
+      set_fact:
+        zabbix_server: "{{ '10.0.0.37' if zabbix_proxy else '10.0.0.36' }}"
+
+    - debug:
+        msg: "Using Zabbix Server: {{ zabbix_server }} (proxy mode = {{ zabbix_proxy }})"
+
+  roles:
+    - zabbix-agent
+
+  tasks:
+    - name: Run host registration via Zabbix Proxy
+      include_tasks: "roles/zabbix-ui/tasks/add_host_by_proxy.yml"
+      when: zabbix_proxy | bool
+
+    - name: Run host registration via Zabbix Server directly
+      include_tasks: "roles/zabbix-ui/tasks/add_host.yml"
+      when: not zabbix_proxy | bool
