@@ -20,17 +20,18 @@
 
   roles:
     - zabbix-agent
+    - zabbix-ui
 
-  tasks:
+  # tasks:
 
-    - name: Register host via Zabbix Proxy
-      include_role:
-        name: zabbix-ui
-        tasks_from: add_host_by_proxy.yml
-      when: zabbix_proxy | bool
+  #   - name: Register host via Zabbix Proxy
+  #     include_role:
+  #       name: zabbix-ui
+  #       tasks_from: add_host_by_proxy.yml
+  #     when: zabbix_proxy | bool
 
-    - name: Register host via Zabbix Server
-      include_role:
-        name: zabbix-ui
-        tasks_from: add_host.yml
-      when: not zabbix_proxy | bool
+  #   - name: Register host via Zabbix Server
+  #     include_role:
+  #       name: zabbix-ui
+  #       tasks_from: add_host.yml
+  #     when: not zabbix_proxy | bool

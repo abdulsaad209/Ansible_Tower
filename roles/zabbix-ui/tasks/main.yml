@@ -1,10 +1,9 @@
 ---
-# - name: Including task to add host to zabbix UI
-#   include_tasks: add_host.yml
+- name: Including task to add host to zabbix UI
+  include_tasks: add_host.yml
 
 # - name: Including task to update macros to zabbix UI
 #   include_tasks: update_macros.yml
 
-- name: Including task to add host to zabbix UI
-  include_tasks: add_host_by_proxy.yml
-  
+# - name: Including task to add host to zabbix UI
+#   include_tasks: add_host_by_proxy.yml

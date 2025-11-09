@@ -110,6 +110,7 @@
 
 # ---------------------------------------------------------
 # Create or Update Host
+
 - name: Create new host (if not exists)
   when: existing_host_id == ''
   uri:
@@ -125,7 +126,8 @@
       params:
         host: "{{ host_name }}"
         name: "{{ visible_name }}"
-        #proxy_hostid: "{{ proxy_id }}"
+        proxyid: "{{ proxy_id if zabbix_proxy else omit }}"
+        monitored_by: "{{ monitored_by }}"
         interfaces:
           - type: 1
             main: 1
@@ -133,14 +135,11 @@
             ip: "{{ host_ip }}"
             dns: ""
             port: "10050"
-        groups: "{{ group_ids | map('community.general.dict_kv', 'groupid') | list }}"
-        templates: "{{ template_ids | map('community.general.dict_kv', 'templateid') | list }}"
-
+        groups: "{{ group_ids | map('community.general.dict_kv','groupid') | list }}"
+        templates: "{{ template_ids | map('community.general.dict_kv','templateid') | list }}"
       id: 6
-    validate_certs: false
-  register: host_create
 
-- name: Update existing host (if already exists)
+- name: Update existing host (dynamic proxy/server)
   when: existing_host_id != ''
   uri:
     url: "{{ zabbix_url }}/api_jsonrpc.php"
@@ -151,22 +150,74 @@
     body_format: json
     body:
       jsonrpc: "2.0"
-      method: "host.update"
+      method: "host.massupdate"
       params:
-        hostid: "{{ existing_host_id }}"
-        name: "{{ visible_name }}"
-        groups: "{{ group_ids | map('community.general.dict_kv', 'groupid') | list }}"
-        templates: "{{ template_ids | map('community.general.dict_kv', 'templateid') | list }}"
+        hosts:
+          - hostid: "{{ existing_host_id }}"
+        proxyid: "{{ proxy_id if zabbix_proxy else omit }}"
+        monitored_by: "{{ monitored_by }}"
+        groups: "{{ group_ids | map('community.general.dict_kv','groupid') | list }}"
+        templates: "{{ template_ids | map('community.general.dict_kv','templateid') | list }}"
       id: 7
-    validate_certs: false
-  register: host_update
 
-- name: Debug host operation result
-  debug:
-    msg: >-
-      {% if existing_host_id == '' %}
-        Host created successfully → {{ host_create.json }}
-      {% else %}
-        Host updated successfully → {{ host_update.json }}
-      {% endif %}
+
+# - name: Create new host (if not exists)
+#   when: existing_host_id == ''
+#   uri:
+#     url: "{{ zabbix_url }}/api_jsonrpc.php"
+#     method: POST
+#     headers:
+#       Content-Type: "application/json-rpc"
+#       Authorization: "Bearer {{ zbx_token }}"
+#     body_format: json
+#     body:
+#       jsonrpc: "2.0"
+#       method: "host.create"
+#       params:
+#         host: "{{ host_name }}"
+#         name: "{{ visible_name }}"
+#         #proxy_hostid: "{{ proxy_id }}"
+#         interfaces:
+#           - type: 1
+#             main: 1
+#             useip: 1
+#             ip: "{{ host_ip }}"
+#             dns: ""
+#             port: "10050"
+#         groups: "{{ group_ids | map('community.general.dict_kv', 'groupid') | list }}"
+#         templates: "{{ template_ids | map('community.general.dict_kv', 'templateid') | list }}"
+
+#       id: 6
+#     validate_certs: false
+#   register: host_create
+
+# - name: Update existing host (if already exists)
+#   when: existing_host_id != ''
+#   uri:
+#     url: "{{ zabbix_url }}/api_jsonrpc.php"
+#     method: POST
+#     headers:
+#       Content-Type: "application/json-rpc"
+#       Authorization: "Bearer {{ zbx_token }}"
+#     body_format: json
+#     body:
+#       jsonrpc: "2.0"
+#       method: "host.update"
+#       params:
+#         hostid: "{{ existing_host_id }}"
+#         name: "{{ visible_name }}"
+#         groups: "{{ group_ids | map('community.general.dict_kv', 'groupid') | list }}"
+#         templates: "{{ template_ids | map('community.general.dict_kv', 'templateid') | list }}"
+#       id: 7
+#     validate_certs: false
+#   register: host_update
+
+# - name: Debug host operation result
+#   debug:
+#     msg: >-
+#       {% if existing_host_id == '' %}
+#         Host created successfully → {{ host_create.json }}
+#       {% else %}
+#         Host updated successfully → {{ host_update.json }}
+#       {% endif %}
 
