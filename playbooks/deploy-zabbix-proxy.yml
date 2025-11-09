@@ -10,6 +10,6 @@
     proxy_ip: "{{ ansible_host }}"
     proxy_mode: 1          # 0 = active, 1 = passive
     proxy_port: "10051"
-    proxy_hosts: [10803]          # optional, list of host IDs to assign
-    
+    proxy_hosts: []          # optional, list of host IDs to assign
+
 
