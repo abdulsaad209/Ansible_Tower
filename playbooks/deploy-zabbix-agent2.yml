@@ -5,13 +5,14 @@
 
   vars:
     zabbix_proxy: false    # Set to true if monitored via Zabbix Proxy
-    monitored_by: 1        # 0 = Zabbix Server, 1 = Zabbix Proxy
+    monitored_by: 0        # 0 = Zabbix Server, 1 = Zabbix Proxy
     proxy_id: 8        # ID of the Zabbix Proxy to monitor through
 
     zabbix_url: "http://zabbix.ms.com/zabbix"
     zabbix_user: "{{ zabbix_username }}"
     zabbix_pass: "{{ zabbix_password }}"
 
+  # It will check the zabbix_proxy flag and set the ServerIP and ServerActive accordingly in the agent config
   pre_tasks:
     - name: Dynamically set zabbix_server based on zabbix_proxy flag
       set_fact:
