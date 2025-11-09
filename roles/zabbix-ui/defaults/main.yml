@@ -14,8 +14,9 @@ template_name: "Kubernetes Kubelet by HTTP"
 # Proxy details
 proxy_name: "{{ inventory_hostname }}"
 proxy_ip: "{{ ansible_host }}"
-proxy_mode: 0
+proxy_mode: 1          # 0 = active, 1 = passive
 proxy_port: "10051"
 proxy_group_name: "szcoders-dc"
 proxy_hosts: []          # optional, list of host IDs to assign
 proxy_id: 7
+monitored_by: 0        # 0 = Zabbix Server, 1 = Zabbix Proxy
