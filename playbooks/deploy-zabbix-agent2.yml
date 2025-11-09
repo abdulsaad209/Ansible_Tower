@@ -1,17 +1,4 @@
 ---
-- name: Deploy Zabbix Agent 
-  hosts: corp
-  become: true
-  roles:
-    - zabbix-agent
-    - zabbix-ui
-  vars:
-    zabbix_server: "10.0.0.37" # Set Zabbix Server OR Proxy IP Here
-
-
-
-
----
 - name: Deploy Zabbix Agent
   hosts: corp
   become: true
