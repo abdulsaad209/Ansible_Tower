@@ -13,16 +13,24 @@
     url: "{{ windows_server_repo }}"
     dest: C:\Temp\zabbix_agent2.msi
 
+# Install Zabbix Agent2 MSI
 - name: Install Zabbix Agent2 using MSI
   win_package:
     path: C:\Temp\zabbix_agent2.msi
     state: present
+    arguments: >
+      SERVER={{ zabbix_server }}
+      SERVERACTIVE={{ zabbix_server }}
+      HOSTNAME={{ inventory_hostname }}
+      /qn
   register: zabbix_install
 
-- name: Ensure Zabbix Agent2 service is installed
+# Ensure service installed and running
+- name: Ensure Zabbix Agent 2 service is running
   win_service:
-    name: Zabbix Agent 2
-    state: stopped
+    name: "Zabbix Agent 2"
+    start_mode: auto
+    state: started
 
 # ------------------------------------------------
 # Update zabbix_agent2.conf settings
