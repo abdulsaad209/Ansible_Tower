@@ -6,4 +6,4 @@
 #   include_tasks: update_macros.yml
 
 - name: Including task to add host to zabbix UI
-  include_tasks: add_host._by_proxy.yml
+  include_tasks: add_host_by_proxy.yml
