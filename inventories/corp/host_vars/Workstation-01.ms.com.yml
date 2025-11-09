@@ -1,0 +1,10 @@
+--- 
+### Zabbix UI
+zabbix_groups:
+  - "szcoders-corp"
+  - "Windows Servers"
+
+zabbix_templates:
+  - "Windows by Zabbix agent"
+  - "ICMP Ping"
+
