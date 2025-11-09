@@ -50,6 +50,12 @@
     regexp: '^Hostname='
     line: "Hostname={{ inventory_hostname }}"
 
+- name: Set Listen IP
+  lineinfile:
+    path: /etc/zabbix/zabbix_agent2.conf
+    regexp: '^ListenIP='
+    line: "ListenIP=0.0.0.0"
+
 - name: Deploy custom userparameter config if defined
   copy:
     content: "{{ item.value }}"
