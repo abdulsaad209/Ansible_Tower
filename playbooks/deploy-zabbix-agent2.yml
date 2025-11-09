@@ -4,10 +4,8 @@
   become: true
 
   vars:
-    zabbix_proxy: false
-    # zabbix_url: "http://zabbix.ms.com/zabbix"
-    # zabbix_user: "{{ zabbix_username }}"
-    # zabbix_pass: "{{ zabbix_password }}"
+    zabbix_proxy: true    # Set to true if monitored via Zabbix Proxy
+    monitored_by: 1        # 0 = Zabbix Server, 1 = Zabbix Proxy
 
   pre_tasks:
 
