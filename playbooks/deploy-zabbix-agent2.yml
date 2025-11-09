@@ -18,6 +18,11 @@
         zabbix_server: "{{ '10.0.0.37' if zabbix_proxy else '10.0.0.36' }}"
     - debug:
         msg: "Using Zabbix Server: {{ zabbix_server }} (proxy mode = {{ zabbix_proxy }})"
+      
+    # Gather Windows facts if the target is Windows  
+    - name: Gather Windows facts
+      setup:
+      when: ansible_os_family == 'Windows'
 
   roles:
     - zabbix-agent
