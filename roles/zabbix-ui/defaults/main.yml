@@ -18,3 +18,4 @@ proxy_mode: 0
 proxy_port: "10051"
 proxy_group_name: "szcoders-dc"
 proxy_hosts: []          # optional, list of host IDs to assign
+proxy_id: 7
