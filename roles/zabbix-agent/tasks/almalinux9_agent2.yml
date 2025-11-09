@@ -37,21 +37,18 @@
     path: /etc/zabbix/zabbix_agent2.conf
     regexp: '^Server='
     line: "Server={{ zabbix_server }}"
-  notify: Restart zabbix-agent2
 
 - name: Set active Zabbix server parameters
   lineinfile:
     path: /etc/zabbix/zabbix_agent2.conf
     regexp: '^ServerActive='
     line: "ServerActive={{ zabbix_server }}"
-  notify: Restart zabbix-agent2
 
 - name: Set agent hostname
   lineinfile:
     path: /etc/zabbix/zabbix_agent2.conf
     regexp: '^Hostname='
     line: "Hostname={{ inventory_hostname }}"
-  notify: Restart zabbix-agent2
 
 - name: Deploy custom userparameter config if defined
   copy:
@@ -62,7 +59,6 @@
     mode: '0644'
   loop: "{{ zabbix_custom_userparams | dict2items }}"
   when: zabbix_custom_userparams is defined
-  notify: Restart zabbix-agent2
 
 - name: Enable and start Zabbix Agent2
   ansible.builtin.systemd:
