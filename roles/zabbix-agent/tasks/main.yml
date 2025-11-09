@@ -19,4 +19,5 @@
   when:
     - ansible_os_family == 'Windows'
     - ansible_product_type in [2, 3]
+  become: false
 
