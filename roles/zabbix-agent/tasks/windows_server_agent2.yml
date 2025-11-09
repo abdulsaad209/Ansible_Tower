@@ -1,0 +1,56 @@
+---
+# ================================================
+# Install and Configure Zabbix Agent2 on Windows
+# ================================================
+
+- name: Create temp directory for Zabbix installer
+  win_file:
+    path: C:\Temp
+    state: directory
+
+- name: Download Zabbix Agent2 MSI for Windows
+  win_get_url:
+    url: "{{ windows_server_repo }}"
+    dest: C:\Temp\zabbix_agent2.msi
+
+- name: Install Zabbix Agent2 using MSI
+  win_package:
+    path: C:\Temp\zabbix_agent2.msi
+    state: present
+  register: zabbix_install
+
+- name: Ensure Zabbix Agent2 service is installed
+  win_service:
+    name: Zabbix Agent 2
+    state: stopped
+
+# ------------------------------------------------
+# Update zabbix_agent2.conf settings
+# ------------------------------------------------
+
+- name: Set Zabbix Server
+  win_lineinfile:
+    path: 'C:\Program Files\Zabbix Agent 2\zabbix_agent2.conf'
+    regexp: '^Server='
+    line: "Server={{ zabbix_server }}"
+
+- name: Set ServerActive
+  win_lineinfile:
+    path: 'C:\Program Files\Zabbix Agent 2\zabbix_agent2.conf'
+    regexp: '^ServerActive='
+    line: "ServerActive={{ zabbix_server }}"
+
+- name: Set Hostname
+  win_lineinfile:
+    path: 'C:\Program Files\Zabbix Agent 2\zabbix_agent2.conf'
+    regexp: '^Hostname='
+    line: "Hostname={{ inventory_hostname }}"
+
+# ------------------------------------------------
+# Restart service
+# ------------------------------------------------
+- name: Start and enable Zabbix Agent2 service
+  win_service:
+    name: "Zabbix Agent 2"
+    start_mode: auto
+    state: restarted

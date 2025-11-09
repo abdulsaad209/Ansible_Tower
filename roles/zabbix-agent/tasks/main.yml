@@ -13,3 +13,10 @@
     - ansible_distribution_major_version == "22"
     - ansible_distribution_version is version('22.04', '==')
 
+# type 1=Workstation, 2=Server, 3=Domain Controller
+- name: Including task for Windows Server
+  include_tasks: windows_server_agent2.yml
+  when:
+    - ansible_os_family == 'Windows'
+    - ansible_product_type in [2, 3]
+

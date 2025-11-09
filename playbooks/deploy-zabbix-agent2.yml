@@ -1,6 +1,6 @@
 ---
 - name: Deploy Zabbix Agent
-  hosts: corp
+  hosts: active-directory
   become: true
 
   vars:

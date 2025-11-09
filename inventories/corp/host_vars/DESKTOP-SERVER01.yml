@@ -1,0 +1,11 @@
+--- 
+### Zabbix UI
+zabbix_groups:
+  - "szcoders-corp"
+  - "Windows Servers"
+  - "Active Directory Hosts"
+
+zabbix_templates:
+  - "Windows by Zabbix agent"
+  - "ICMP Ping"
+
