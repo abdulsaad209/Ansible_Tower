@@ -1,7 +1,6 @@
 ---
 - name: Deploy Zabbix Agent
   hosts: active-directory
-  become: true
 
   vars:
     zabbix_proxy: true    # Set to true if monitored via Zabbix Proxy
