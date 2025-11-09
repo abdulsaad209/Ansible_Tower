@@ -3,8 +3,8 @@
   hosts: active-directory
 
   vars:
-    zabbix_proxy: true    # Set to true if monitored via Zabbix Proxy
-    monitored_by: 1        # 0 = Zabbix Server, 1 = Zabbix Proxy
+    zabbix_proxy: false    # Set to true if monitored via Zabbix Proxy
+    monitored_by: 0        # 0 = Zabbix Server, 1 = Zabbix Proxy
     proxy_id: 8        # ID of the Zabbix Proxy to monitor through
 
     zabbix_url: "http://zabbix.ms.com/zabbix"
@@ -18,11 +18,6 @@
         zabbix_server: "{{ '10.0.0.37' if zabbix_proxy else '10.0.0.36' }}"
     - debug:
         msg: "Using Zabbix Server: {{ zabbix_server }} (proxy mode = {{ zabbix_proxy }})"
-      
-    # Gather Windows facts if the target is Windows  
-    - name: Gather Windows facts
-      setup:
-      when: ansible_os_family == 'Windows'
 
   roles:
     - zabbix-agent
