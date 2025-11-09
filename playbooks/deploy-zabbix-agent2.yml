@@ -20,9 +20,9 @@
 
   tasks:
     - name: Run host registration via Zabbix Proxy
-      include_tasks: "roles/zabbix-ui/tasks/add_host_by_proxy.yml"
+      include_tasks: "../roles/zabbix-ui/tasks/add_host_by_proxy.yml"
       when: zabbix_proxy | bool
 
     - name: Run host registration via Zabbix Server directly
-      include_tasks: "roles/zabbix-ui/tasks/add_host.yml"
+      include_tasks: "../roles/zabbix-ui/tasks/add_host.yml"
       when: not zabbix_proxy | bool
