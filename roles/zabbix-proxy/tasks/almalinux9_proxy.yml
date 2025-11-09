@@ -54,7 +54,7 @@
   lineinfile:
     path: /etc/zabbix/zabbix_proxy.conf
     regexp: '^Hostname='
-    line: "Hostname={{ inventory_hostname }}"
+    line: "Hostname={{ proxy_name }}"
 
 - name: Set Proxy DB Name parameters
   lineinfile:

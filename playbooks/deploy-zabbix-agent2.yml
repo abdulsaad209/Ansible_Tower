@@ -1,6 +1,6 @@
 ---
 - name: Deploy Zabbix Agent
-  hosts: corp
+  hosts: gitlab
   become: true
 
   vars:
