@@ -20,12 +20,18 @@
       Content-Type: "application/json-rpc"
     validate_certs: false
   register: login_response
+  delegate_to: localhost
+  run_once: true
 
 - set_fact:
     zbx_token: "{{ login_response.json.result }}"
+  delegate_to: localhost
+  run_once: true
 
 - debug:
     msg: "Authenticated successfully with token {{ zbx_token }}"
+  delegate_to: localhost
+  run_once: true
 
 # ---------------------------------------------------------
 # Resolve all group IDs
@@ -47,12 +53,18 @@
       id: 2
     validate_certs: false
   register: group_response
+  delegate_to: localhost
+  run_once: true
 
 - set_fact:
     group_ids: "{{ group_response.json.result | map(attribute='groupid') | list }}"
+  delegate_to: localhost
+  run_once: true
 
 - debug:
     msg: "Resolved group IDs: {{ group_ids }} for groups {{ zabbix_groups }}"
+  delegate_to: localhost
+  run_once: true
 
 # ---------------------------------------------------------
 # Resolve all template IDs
@@ -74,12 +86,18 @@
       id: 3
     validate_certs: false
   register: template_response
+  delegate_to: localhost
+  run_once: true
 
 - set_fact:
     template_ids: "{{ template_response.json.result | map(attribute='templateid') | list }}"
+  delegate_to: localhost
+  run_once: true
 
 - debug:
     msg: "Resolved template IDs: {{ template_ids }} for templates {{ zabbix_templates }}"
+  delegate_to: localhost
+  run_once: true
 
 # ---------------------------------------------------------
 # Check if host already exists
@@ -101,12 +119,18 @@
       id: 5
     validate_certs: false
   register: host_check
+  delegate_to: localhost
+  run_once: true
 
 - set_fact:
     existing_host_id: "{{ host_check.json.result[0].hostid | default('') }}"
+  delegate_to: localhost
+  run_once: true
 
 - debug:
     msg: "Existing host ID (if any): {{ existing_host_id }}"
+  delegate_to: localhost
+  run_once: true
 
 # ---------------------------------------------------------
 # Create or Update Host
@@ -138,6 +162,8 @@
         groups: "{{ group_ids | map('community.general.dict_kv','groupid') | list }}"
         templates: "{{ template_ids | map('community.general.dict_kv','templateid') | list }}"
       id: 6
+  delegate_to: localhost
+  run_once: true
 
 - name: Update existing host (dynamic proxy/server)
   when: existing_host_id != ''
@@ -159,5 +185,7 @@
         groups: "{{ group_ids | map('community.general.dict_kv','groupid') | list }}"
         templates: "{{ template_ids | map('community.general.dict_kv','templateid') | list }}"
       id: 7
+  delegate_to: localhost
+  run_once: true
 
 
