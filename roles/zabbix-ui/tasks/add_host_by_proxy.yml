@@ -140,7 +140,7 @@
     validate_certs: false
   register: host_create
 
-- name: Update existing host (if already exists)
+- name: Update existing host (update proxy assignment)
   when: existing_host_id != ''
   uri:
     url: "{{ zabbix_url }}/api_jsonrpc.php"
@@ -151,10 +151,10 @@
     body_format: json
     body:
       jsonrpc: "2.0"
-      method: "host.update"
+      method: "host.massupdate"
       params:
-        hostid: "{{ existing_host_id }}"
-        name: "{{ visible_name }}"
+        hosts:
+          - hostid: "{{ existing_host_id }}"
         monitored_by: 1
         proxyid: "{{ proxy_id }}"
         groups: "{{ group_ids | map('community.general.dict_kv', 'groupid') | list }}"
