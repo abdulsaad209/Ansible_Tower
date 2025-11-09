@@ -4,7 +4,10 @@
   become: true
 
   vars:
-    zabbix_proxy: false   # Set to true if you want to monitor via Zabbix Proxy
+    zabbix_proxy: false
+    # zabbix_url: "http://zabbix.ms.com/zabbix"
+    # zabbix_user: "{{ zabbix_username }}"
+    # zabbix_pass: "{{ zabbix_password }}"
 
   pre_tasks:
 
@@ -19,10 +22,15 @@
     - zabbix-agent
 
   tasks:
-    - name: Run host registration via Zabbix Proxy
-      include_tasks: "../roles/zabbix-ui/tasks/add_host_by_proxy.yml"
+
+    - name: Register host via Zabbix Proxy
+      include_role:
+        name: zabbix-ui
+        tasks_from: add_host_by_proxy.yml
       when: zabbix_proxy | bool
 
-    - name: Run host registration via Zabbix Server directly
-      include_tasks: "../roles/zabbix-ui/tasks/add_host.yml"
+    - name: Register host via Zabbix Server
+      include_role:
+        name: zabbix-ui
+        tasks_from: add_host.yml
       when: not zabbix_proxy | bool
