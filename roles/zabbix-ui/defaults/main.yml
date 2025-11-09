@@ -20,3 +20,4 @@ proxy_group_name: "szcoders-dc"
 proxy_hosts: []          # optional, list of host IDs to assign
 proxy_id: 7
 monitored_by: 0        # 0 = Zabbix Server, 1 = Zabbix Proxy
+zabbix_proxy: false   # Set to true if monitored via Zabbix Proxy
