@@ -8,3 +8,5 @@ zabbix_templates:
   - "Windows by Zabbix agent"
   - "ICMP Ping"
 
+# Zabbix UI Variables
+host_ip: 10.0.0.20
