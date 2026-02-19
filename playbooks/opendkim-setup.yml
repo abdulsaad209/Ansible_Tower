@@ -11,12 +11,12 @@
     
     # Hosts that are allowed to send mail through this server and have their mail signed
     trusted_hosts:
-      - "<zabbix server ip>"
+      - "<zabbix server ip .e.g>"
       - "<ansible-awx.example.com>"
     # Domain patterns that should be signed (useful if you have multiple domains)
     signing_domains:
       - "example.com"
-      - "mail.example.com"
+      - "hub.example.com"
       - "alerts.example.com"
 
   tasks:
