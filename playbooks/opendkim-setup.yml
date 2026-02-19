@@ -1,0 +1,154 @@
+---
+- name: Deploy OpenDKIM for Universal Signing with Key Retrieval
+  hosts: mail_servers
+  become: true
+  vars:
+    # Change these to your primary domain and selector
+    dkim_primary_domain: "example.com"
+    dkim_selector: "default"
+    dkim_key_dir: "/etc/opendkim/keys"
+    opendkim_socket: "inet:8891@localhost"
+    
+    # Hosts that are allowed to send mail through this server and have their mail signed
+    trusted_hosts:
+      - "<zabbix server ip>"
+      - "<ansible-awx.example.com>"
+    # Domain patterns that should be signed (useful if you have multiple domains)
+    signing_domains:
+      - "example.com"
+      - "mail.example.com"
+      - "alerts.example.com"
+
+  tasks:
+    - name: Install OpenDKIM packages
+      apt:
+        name:
+          - opendkim
+          - opendkim-tools
+        state: present
+        update_cache: yes
+
+    - name: Create OpenDKIM directory structure
+      file:
+        path: "{{ item }}"
+        state: directory
+        owner: opendkim
+        group: opendkim
+        mode: '0750'
+      with_items:
+        - "/etc/opendkim"
+        - "{{ dkim_key_dir }}/{{ dkim_primary_domain }}"
+
+    - name: Generate OpenDKIM Private Key (if it doesn't exist)
+      command: >
+        opendkim-genkey -b 2048 -d {{ dkim_primary_domain }} -s {{ dkim_selector }} -D {{ dkim_key_dir }}/{{ dkim_primary_domain }}
+      args:
+        creates: "{{ dkim_key_dir }}/{{ dkim_primary_domain }}/{{ dkim_selector }}.private"
+
+    - name: Ensure correct permissions on private key
+      file:
+        path: "{{ dkim_key_dir }}/{{ dkim_primary_domain }}/{{ dkim_selector }}.private"
+        owner: opendkim
+        group: opendkim
+        mode: '0600'
+
+    - name: Configure /etc/opendkim.conf
+      copy:
+        dest: /etc/opendkim.conf
+        content: |
+          Syslog          yes
+          SyslogSuccess   yes
+          LogWhy          yes
+          UMask           002
+          Mode            sv
+          SendReports     yes
+          SoftwareHeader  yes
+          MinimumKeyBits  2048
+          Socket          {{ opendkim_socket }}
+          PidFile         /run/opendkim/opendkim.pid
+          OversignHeaders From
+          UserID          opendkim:opendkim
+          KeyTable        refile:/etc/opendkim/KeyTable
+          SigningTable    refile:/etc/opendkim/SigningTable
+          ExternalIgnoreList  refile:/etc/opendkim/TrustedHosts
+          InternalHosts       refile:/etc/opendkim/TrustedHosts
+          Canonicalization    relaxed/relaxed
+          OversignHeaders From
+          Domain          {{ dkim_primary_domain }}
+      notify: Restart OpenDKIM
+
+    - name: Create KeyTable
+      copy:
+        dest: /etc/opendkim/KeyTable
+        content: |
+          {{ dkim_selector }}._domainkey.{{ dkim_primary_domain }} {{ dkim_primary_domain }}:{{ dkim_selector }}:{{ dkim_key_dir }}/{{ dkim_primary_domain }}/{{ dkim_selector }}.private
+      notify: Restart OpenDKIM
+
+    - name: Create SigningTable (supports multiple domain mappings)
+      copy:
+        dest: /etc/opendkim/SigningTable
+        content: |
+          {% for domain in signing_domains %}
+          *@{{ domain }} {{ dkim_selector }}._domainkey.{{ dkim_primary_domain }}
+          {% endfor %}
+      notify: Restart OpenDKIM
+
+    - name: Create TrustedHosts (supports list of host entries)
+      copy:
+        dest: /etc/opendkim/TrustedHosts
+        content: |
+          127.0.0.1
+          localhost
+          ::1
+          {{ ansible_default_ipv4.address }}
+          *.{{ dkim_primary_domain }}
+          {% for host in trusted_hosts %}
+          {{ host }}
+          {% endfor %}
+      notify: Restart OpenDKIM
+
+    - name: Ensure OpenDKIM service is enabled and started
+      service:
+        name: opendkim
+        state: started
+        enabled: yes
+
+    - name: Configure Postfix to use OpenDKIM Milter
+      lineinfile:
+        path: /etc/postfix/main.cf
+        regexp: "^{{ item.key }}\\s*="
+        line: "{{ item.key }} = {{ item.value }}"
+        create: no
+        state: present
+      loop:
+        - { key: 'smtpd_milters', value: '{{ opendkim_socket }}' }
+        - { key: 'non_smtpd_milters', value: '$smtpd_milters' }
+        - { key: 'milter_default_action', value: 'accept' }
+      notify: Restart Postfix
+
+    # --- KEY RETRIEVAL SECTION ---
+
+    - name: Read generated Public Key for DNS
+      slurp:
+        src: "{{ dkim_key_dir }}/{{ dkim_primary_domain }}/{{ dkim_selector }}.txt"
+      register: dkim_public_key_b64
+
+    - name: Display Public Key for DNS
+      debug:
+        msg: 
+          - "--- DKIM PUBLIC KEY FOR YOUR DNS ---"
+          - "Domain: {{ dkim_primary_domain }}"
+          - "Selector: {{ dkim_selector }}"
+          - "Record Content:"
+          - "{{ dkim_public_key_b64['content'] | b64decode }}"
+
+  handlers:
+    - name: Restart OpenDKIM
+      service:
+        name: opendkim
+        state: restarted
+
+    - name: Restart Postfix
+      service:
+        name: postfix
+        state: restarted
