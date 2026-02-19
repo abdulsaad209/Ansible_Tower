@@ -1,6 +1,6 @@
 ---
 - name: Ping Windows hosts using WinRM
-  hosts: active-directory
+  hosts: workstations
   gather_facts: false
 
   tasks:
