@@ -50,65 +50,36 @@
         group: opendkim
         mode: '0600'
 
-    # --- OpenDKIM configuration using lineinfile ---
-    - name: Set Syslog
+    # --- OpenDKIM configuration ---
+    - name: Configure OpenDKIM parameters
       lineinfile:
         path: /etc/opendkim.conf
-        regexp: '^Syslog\s*'
-        line: 'Syslog yes'
+        regexp: "^{{ item.key }}\\s*"
+        line: "{{ item.key }} {{ item.value }}"
         create: yes
+      loop:
+        - { key: 'Syslog', value: 'yes' }
+        - { key: 'SyslogSuccess', value: 'yes' }
+        - { key: 'LogWhy', value: 'yes' }
+        - { key: 'UMask', value: '002' }
+        - { key: 'Mode', value: 'sv' }
+        - { key: 'SendReports', value: 'yes' }
+        - { key: 'SoftwareHeader', value: 'yes' }
+        - { key: 'MinimumKeyBits', value: '2048' }
+        - { key: 'Socket', value: '{{ opendkim_socket }}' }
+        - { key: 'PidFile', value: '/run/opendkim/opendkim.pid' }
+        - { key: 'OversignHeaders', value: 'From' }
+        - { key: 'UserID', value: 'opendkim:opendkim' }
+        - { key: 'KeyTable', value: 'refile:/etc/opendkim/KeyTable' }
+        - { key: 'SigningTable', value: 'refile:/etc/opendkim/SigningTable' }
+        - { key: 'ExternalIgnoreList', value: 'refile:/etc/opendkim/TrustedHosts' }
+        - { key: 'InternalHosts', value: 'refile:/etc/opendkim/TrustedHosts' }
+        - { key: 'Canonicalization', value: 'relaxed/relaxed' }
+        - { key: 'Domain', value: '{{ dkim_primary_domain }}' }
       notify: Restart OpenDKIM
 
-    - name: Set Socket
-      lineinfile:
-        path: /etc/opendkim.conf
-        regexp: '^Socket\s*'
-        line: "Socket {{ opendkim_socket }}"
-        create: yes
-      notify: Restart OpenDKIM
-
-    - name: Set UserID
-      lineinfile:
-        path: /etc/opendkim.conf
-        regexp: '^UserID\s*'
-        line: 'UserID opendkim:opendkim'
-        create: yes
-      notify: Restart OpenDKIM
-
-    - name: Set Domain
-      lineinfile:
-        path: /etc/opendkim.conf
-        regexp: '^Domain\s*'
-        line: "Domain {{ dkim_primary_domain }}"
-        create: yes
-      notify: Restart OpenDKIM
-
-    - name: Set KeyTable path
-      lineinfile:
-        path: /etc/opendkim.conf
-        regexp: '^KeyTable\s*'
-        line: 'KeyTable refile:/etc/opendkim/KeyTable'
-        create: yes
-      notify: Restart OpenDKIM
-
-    - name: Set SigningTable path
-      lineinfile:
-        path: /etc/opendkim.conf
-        regexp: '^SigningTable\s*'
-        line: 'SigningTable refile:/etc/opendkim/SigningTable'
-        create: yes
-      notify: Restart OpenDKIM
-
-    - name: Set TrustedHosts path
-      lineinfile:
-        path: /etc/opendkim.conf
-        regexp: '^InternalHosts\s*'
-        line: 'InternalHosts refile:/etc/opendkim/TrustedHosts'
-        create: yes
-      notify: Restart OpenDKIM
-
-    # --- KeyTable ---
-    - name: Ensure KeyTable entry exists
+    # --- KeyTable entries ---
+    - name: Ensure KeyTable entries exist
       lineinfile:
         path: /etc/opendkim/KeyTable
         line: "{{ dkim_selector }}._domainkey.{{ dkim_primary_domain }} {{ dkim_primary_domain }}:{{ dkim_selector }}:{{ dkim_key_dir }}/{{ dkim_primary_domain }}/{{ dkim_selector }}.private"
@@ -116,30 +87,38 @@
         state: present
       notify: Restart OpenDKIM
 
-    # --- SigningTable ---
+    # --- SigningTable entries ---
     - name: Ensure SigningTable entries exist
-      blockinfile:
+      lineinfile:
         path: /etc/opendkim/SigningTable
-        block: |
-          {% for domain in signing_domains %}
-          *@{{ domain }} {{ dkim_selector }}._domainkey.{{ dkim_primary_domain }}
-          {% endfor %}
+        line: "*@{{ item }} {{ dkim_selector }}._domainkey.{{ dkim_primary_domain }}"
         create: yes
+        state: present
+      loop: "{{ signing_domains }}"
       notify: Restart OpenDKIM
 
-    # --- TrustedHosts ---
+    # --- TrustedHosts entries ---
     - name: Ensure TrustedHosts entries exist
-      blockinfile:
+      lineinfile:
         path: /etc/opendkim/TrustedHosts
-        block: |
-          127.0.0.1
-          localhost
-          ::1
-          {{ ansible_default_ipv4.address }}
-          {% for host in trusted_hosts %}
-          {{ host }}
-          {% endfor %}
+        line: "{{ item }}"
         create: yes
+        state: present
+      loop:
+        - "127.0.0.1"
+        - "localhost"
+        - "::1"
+        - "{{ ansible_default_ipv4.address }}"
+        - "*.{{ dkim_primary_domain }}"
+      notify: Restart OpenDKIM
+
+    - name: Add extra TrustedHosts from variable
+      lineinfile:
+        path: /etc/opendkim/TrustedHosts
+        line: "{{ item }}"
+        create: yes
+        state: present
+      loop: "{{ trusted_hosts }}"
       notify: Restart OpenDKIM
 
     # --- Ensure services are running ---
@@ -154,6 +133,7 @@
         path: /etc/postfix/main.cf
         regexp: "^{{ item.key }}\\s*="
         line: "{{ item.key }} = {{ item.value }}"
+        create: yes
       loop:
         - { key: 'smtpd_milters', value: '{{ opendkim_socket }}' }
         - { key: 'non_smtpd_milters', value: '$smtpd_milters' }
