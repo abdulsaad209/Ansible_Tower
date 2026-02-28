@@ -1,6 +1,6 @@
 --- 
 ansible_connection: winrm
 ansible_user: "{{ win_username }}"
-ansible_winrm_transport: kerberos
+ansible_winrm_transport: basic
 ansible_password: "{{ win_password }}"
 ansible_winrm_server_cert_validation: ignore
