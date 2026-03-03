@@ -5,13 +5,17 @@
     state: present
     disable_gpg_check: true
 
-- name: Clean metadata
-  ansible.builtin.command: dnf clean all
-
 - name: Upgrade all Zabbix components
   ansible.builtin.yum:
-    name: "zabbix*"
+    name: 
+      - zabbix-server-mysql
+      - zabbix-web
+      - zabbix-web-mysql
+      - zabbix-apache-conf
+      - zabbix-agent2
+      - zabbix-sql-scripts
     state: latest
+    disable_gpg_check: true
 
 - name: Restart Zabbix server
   ansible.builtin.service:
@@ -21,7 +25,7 @@
 
 - name: Restart Zabbix agent
   ansible.builtin.service:
-    name: zabbix-agent
+    name: zabbix-agent2
     state: restarted
     enabled: yes
 
