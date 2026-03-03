@@ -1,0 +1,39 @@
+---
+- name: Add Zabbix repository for AlmaLinux 9
+  ansible.builtin.yum:
+    name: "{{ almalinux9_repo }}"
+    state: present
+    disable_gpg_check: true
+
+- name: Clean metadata
+  ansible.builtin.command: dnf clean all
+
+- name: Upgrade all Zabbix components
+  ansible.builtin.yum:
+    name: "zabbix*"
+    state: latest
+
+- name: Restart Zabbix server
+  ansible.builtin.service:
+    name: zabbix-server
+    state: restarted
+    enabled: yes
+
+- name: Restart Zabbix agent
+  ansible.builtin.service:
+    name: zabbix-agent
+    state: restarted
+    enabled: yes
+
+- name: Restart Apache
+  ansible.builtin.service:
+    name: httpd
+    state: restarted
+
+- name: Check Zabbix server version
+  ansible.builtin.command: zabbix_server -V
+  register: zbx_ver
+
+- name: Print upgraded version
+  ansible.builtin.debug:
+    msg: "{{ zbx_ver.stdout }}"

@@ -1,0 +1,4 @@
+- name: Include task to upgrade Zabbix Server
+  include_tasks: upgrade_zabbix_server.yml
+  when: zabbix_upgrade | default(false)
+
