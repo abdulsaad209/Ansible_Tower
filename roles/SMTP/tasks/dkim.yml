@@ -1,0 +1,152 @@
+---
+- name: Install OpenDKIM packages
+  ignore_errors: true
+  apt:
+    name:
+      - opendkim
+      - opendkim-tools
+    state: present
+
+- name: Create OpenDKIM directory structure
+  file:
+    path: "{{ item }}"
+    state: directory
+    owner: opendkim
+    group: opendkim
+    mode: '0750'
+  loop:
+    - "/etc/opendkim"
+    - "{{ dkim_key_dir }}"
+
+- name: Retrieve DKIM private key from AWS Secrets Manager using AWS CLI
+  command: >
+    aws secretsmanager get-secret-value
+    --secret-id {{ secrets_name }}
+    --region {{ aws_region }}
+    --query SecretString
+    --output text
+  register: dkim_secret_cli
+  changed_when: false
+
+- name: Write DKIM private key to disk
+  copy:
+    content: "{{ dkim_secret_cli.stdout }}"
+    dest: "{{ dkim_key_dir }}/{{ dkim_selector }}.private"
+    owner: opendkim
+    group: opendkim
+    mode: '0600'
+
+- name: Copy DKIM public key from role files
+  copy:
+    src: "vp.txt"
+    dest: "{{ dkim_key_dir }}/{{ dkim_selector }}.txt"
+    owner: opendkim
+    group: opendkim
+    mode: '0644'
+
+# --- OpenDKIM configuration ---
+- name: Configure OpenDKIM parameters
+  lineinfile:
+    path: /etc/opendkim.conf
+    regexp: "^{{ item.key }}\\s*"
+    line: "{{ item.key }} {{ item.value }}"
+    create: yes
+  loop:
+    - { key: 'Syslog', value: 'yes' }
+    - { key: 'SyslogSuccess', value: 'yes' }
+    - { key: 'LogWhy', value: 'yes' }
+    - { key: 'UMask', value: '002' }
+    - { key: 'Mode', value: 'sv' }
+    - { key: 'SendReports', value: 'yes' }
+    - { key: 'SoftwareHeader', value: 'yes' }
+    - { key: 'MinimumKeyBits', value: '2048' }
+    - { key: 'Socket', value: '{{ opendkim_socket }}' }
+    - { key: 'PidFile', value: '/run/opendkim/opendkim.pid' }
+    - { key: 'OversignHeaders', value: 'From' }
+    - { key: 'UserID', value: 'opendkim:opendkim' }
+    - { key: 'KeyTable', value: 'refile:/etc/opendkim/KeyTable' }
+    - { key: 'SigningTable', value: 'refile:/etc/opendkim/SigningTable' }
+    - { key: 'ExternalIgnoreList', value: 'refile:/etc/opendkim/TrustedHosts' }
+    - { key: 'InternalHosts', value: 'refile:/etc/opendkim/TrustedHosts' }
+    - { key: 'Canonicalization', value: 'relaxed/relaxed' }
+    - { key: 'Domain', value: '{{ dkim_primary_domain }}' }
+
+# --- KeyTable entries ---
+- name: Ensure KeyTable entries exist
+  lineinfile:
+    path: /etc/opendkim/KeyTable
+    line: "{{ dkim_selector }}._domainkey.{{ dkim_primary_domain }} {{ dkim_primary_domain }}:{{ dkim_selector }}:{{ dkim_key_dir }}/{{ dkim_selector }}.private"
+    create: yes
+    state: present
+
+# --- SigningTable entries ---
+- name: Ensure SigningTable entries exist
+  lineinfile:
+    path: /etc/opendkim/SigningTable
+    line: "*@{{ item }} {{ dkim_selector }}._domainkey.{{ dkim_primary_domain }}"
+    create: yes
+    state: present
+  loop: "{{ signing_domains }}"
+
+# --- TrustedHosts entries ---
+- name: Ensure TrustedHosts entries exist
+  lineinfile:
+    path: /etc/opendkim/TrustedHosts
+    line: "{{ item }}"
+    create: yes
+    state: present
+  loop:
+    - "127.0.0.1"
+    - "localhost"
+    - "::1"
+    - "{{ ansible_default_ipv4.address }}"
+    - "*.{{ dkim_primary_domain }}"
+
+- name: Add extra TrustedHosts from variable
+  lineinfile:
+    path: /etc/opendkim/TrustedHosts
+    line: "{{ item }}"
+    create: yes
+    state: present
+  loop: "{{ trusted_hosts }}"
+
+# --- Ensure services are running ---
+- name: Ensure OpenDKIM service is enabled and started
+  service:
+    name: opendkim
+    state: started
+    enabled: yes
+
+- name: Configure Postfix to use OpenDKIM Milter
+  lineinfile:
+    path: /etc/postfix/main.cf
+    regexp: "^{{ item.key }}\\s*="
+    line: "{{ item.key }} = {{ item.value }}"
+    create: yes
+  loop:
+    - { key: 'smtpd_milters', value: '{{ opendkim_socket }}' }
+    - { key: 'non_smtpd_milters', value: '$smtpd_milters' }
+    - { key: 'milter_default_action', value: 'accept' }
+
+# --- Display DKIM public key ---
+- name: Display DKIM Public Key for DNS
+  slurp:
+    src: "{{ dkim_key_dir }}/{{ dkim_selector }}.txt"
+  register: dkim_public_key_b64
+
+- name: Show DKIM Public Key
+  debug:
+    msg:
+      - "--- DKIM PUBLIC KEY FOR YOUR DNS ---"
+      - "Domain: {{ dkim_primary_domain }}"
+      - "Selector: {{ dkim_selector }}"
+      - "Record Content:"
+      - "{{ dkim_public_key_b64['content'] | b64decode }}"
+
+- name: Restart OpenDKIM and Postfix to apply configuration
+  service:
+    name: "{{ item }}"
+    state: restarted
+  loop:
+    - opendkim
+    - postfix

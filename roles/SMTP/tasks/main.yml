@@ -1,0 +1,2 @@
+- name: Including task to set up OpenDKIM configuration and keys
+  include_tasks: dkim.yml

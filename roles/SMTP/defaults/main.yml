@@ -1,0 +1,13 @@
+dkim_primary_domain: "redata.com"
+dkim_selector: "vp"
+dkim_conf_dir: "/etc/opendkim"
+dkim_key_dir: "{{ dkim_conf_dir }}/keys/{{ dkim_primary_domain }}"
+opendkim_socket: "inet:8891@localhost"
+aws_region: "us-east-1"
+secrets_name: "vp-dkim-key"   # Your secret in ASM
+
+trusted_hosts:
+  - "10.0.0.36"
+
+signing_domains:
+  - "redata.com"
