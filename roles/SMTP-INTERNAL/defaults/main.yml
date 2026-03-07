@@ -1,0 +1,61 @@
+---
+
+# defaults file for smtp-server
+
+# OS package dependencies
+os_package_map:
+  ubuntu:
+    '24':
+      packages:
+        - postfix
+        - postfix-pcre 
+        - mailutils
+        - pwgen
+        - opendkim
+        - opendkim-tools
+
+# Postfix configuration directory
+postfix_conf_dir: /etc/postfix
+main_cf: "{{ postfix_conf_dir }}/main.cf"
+
+# Define SMTP server to be used in main.cf
+smtp_helo_name: smtp.redata.com
+smtp_helo_port: 25
+
+# Smtp SSL Cert directory
+smtp_git_name: 'Smtp'
+smtp_git_folder: "/etc/certs/"
+smtp_git_url: "git@github.com:C1US-Constellation1/VP-IT-SSLCerts.git"
+smtp_git_prod_branch: "main"
+smtp_git_test_branch: "main"
+smtp_git_sshkey: "id_rsa"
+smtp_git_sleep: 240
+smtp_git_actions_type: "initd"
+smtp_git_actions_name: "postfix"
+smtp_git_actions_action: "restart"  
+
+#permissions.yml configs:
+sudoList: []
+
+aclList: []
+
+# DKIM configuration variables
+# Change these to your primary domain and selector
+dkim_primary_domain: "redata.com"
+dkim_selector: "vp"
+dkim_key_dir: "/etc/opendkim/keys/{{ dkim_primary_domain }}"
+dkim_conf_dir: "/etc/opendkim"
+dkim_conf_file: "/etc/opendkim.conf"
+opendkim_socket: "inet:8891@localhost"
+
+# Trusted Hosts
+trusted_hosts:
+  - "127.0.0.1"
+
+# List of Domains should be signed
+signing_domains:
+  - "redata.com"
+
+# AWS Secrets
+secrets_name: "vp/opendkim/keys/redata"
+aws_region: "us-east-1"

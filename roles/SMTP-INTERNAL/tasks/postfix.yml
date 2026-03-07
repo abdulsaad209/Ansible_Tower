@@ -1,0 +1,120 @@
+---
+- name: Create /etc/mailname with FQDN
+  ansible.builtin.copy:
+    dest: /etc/mailname
+    content: "{{ ansible_fqdn }}\n"
+    owner: root
+    group: root
+    mode: '0644'
+
+- name: Comment out existing ssl_cert line
+  ansible.builtin.replace:
+    path: "{{ main_cf }}"
+    regexp: '^(?!#)(\s*smtpd_tls_cert_file\s*=.*)$'
+    replace: '#\1'
+    backup: yes
+
+- name: Comment out existing ssl_key line
+  ansible.builtin.replace:
+    path: "{{ main_cf }}"
+    regexp: '^(?!#)(\s*smtpd_tls_key_file\s*=.*)$'
+    replace: '#\1'
+    backup: yes
+
+- name: Add new TLS/SSL configuration block after commented ssl lines
+  ansible.builtin.blockinfile:
+    path: "{{ main_cf }}"
+    marker: "# === Added TLS/SSL Config ==="
+    insertafter: '^#\s*smtpd_tls_security_level'
+    block: |
+      smtp_tls_CApath = /etc/ssl/certs
+      smtp_tls_security_level = may
+      #smtp_tls_session_cache_database = btree:${data_directory}/smtp_scache
+      smtp_tls_note_starttls_offer = yes
+      smtpd_tls_key_file = /etc/certs/star_redata.com/STAR_redata.com.key
+      smtpd_tls_cert_file = /etc/certs/star_redata.com/STAR.REDATA.COM.crt
+      smtpd_tls_CAfile = /etc/certs/star_redata.com/ns_bundle.crt
+      smtpd_tls_loglevel = 1
+      smtpd_tls_received_header = yes
+      smtpd_tls_session_cache_timeout = 3600s
+      tls_random_source = dev:/dev/urandom
+
+- name: Ensure Postfix main.cf parameters are properly configured
+  ansible.builtin.lineinfile:
+    path: "{{ main_cf }}"
+    regexp: '^{{ item.key }}\s*='
+    line: "{{ item.key }} = {{ item.value }}"
+    create: no
+    backrefs: yes
+  loop:
+    - { key: 'smtpd_relay_restrictions', value: 'permit_mynetworks permit_sasl_authenticated defer_unauth_destination' }
+    - { key: 'myhostname', value: '{{ ansible_fqdn }}' }
+    - { key: 'alias_maps', value: 'hash:/etc/aliases' }
+    - { key: 'alias_database', value: 'hash:/etc/aliases' }
+    - { key: 'mydestination', value: '{{ ansible_fqdn }}, localhost.redata.com, localhost' }
+    - { key: 'relayhost', value: '' }
+    - { key: 'mynetworks', value: '127.0.0.0/8, 10.0.0.0/8' }
+    - { key: 'mailbox_size_limit', value: '0' }
+    - { key: 'recipient_delimiter', value: '+' }
+    - { key: 'inet_interfaces', value: 'all' }
+    - { key: 'inet_protocols', value: 'all' }
+
+- name: Add smtp_helo_name after myhostname
+  ansible.builtin.lineinfile:
+    path: "{{ main_cf }}"
+    regexp: '^smtp_helo_name\s*='
+    line: 'smtp_helo_name = {{ smtp_helo_name }}'
+    insertafter: '^myhostname\s*='
+    create: yes
+
+- name: Add custom client restrictions file
+  ansible.builtin.copy:
+    src: client_restrictions
+    dest: "{{ postfix_conf_dir }}/client_restrictions"
+    owner: root
+    group: root
+    mode: '0644'
+
+- name: Check if client_restrictions exists
+  ansible.builtin.stat:
+    path: "{{ postfix_conf_dir }}/client_restrictions"
+  register: client_restrictions_file
+
+- name: Run postmap on client_restrictions
+  ansible.builtin.command: postmap "{{ postfix_conf_dir }}/client_restrictions"
+  when: client_restrictions_file.stat.exists
+
+- name: Add custom Postfix parameters at end of main.cf
+  blockinfile:
+    path: "{{ main_cf }}"
+    marker: "# {mark} ANSIBLE MANAGED CUSTOM SETTINGS"
+    insertafter: EOF
+    block: |
+      # Uncomment the next line to generate "delayed mail" warnings
+      #delay_warning_time = 4h
+      #message_size_limit = 20971520
+      # jrn 6/12/2013 bump limit to 48M
+      message_size_limit = 50331648
+
+      smtpd_client_restrictions = hash:/etc/postfix/client_restrictions
+
+      header_checks = regexp:/etc/postfix/header_checks
+      #transport_maps = hash:/etc/postfix/transport
+      always_add_missing_headers = yes
+
+- name: Create /etc/postfix/header_checks with custom filter rule
+  copy:
+    dest: /etc/postfix/header_checks
+    content: |
+      /^X-VP-MailTrap: .*/  FILTER testtrap:dummy
+      /^Received:/ IGNORE
+    owner: root
+    group: root
+    mode: '0644'
+    
+
+- name: Ensure postfix service is started and enabled
+  ansible.builtin.service:
+    name: postfix
+    state: reloaded
+    enabled: true

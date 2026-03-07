@@ -1,0 +1,15 @@
+---
+- name: Deploy SSL Certs
+  include_tasks: "common/tasks/gitDeployParameterized.yml"
+  vars:
+    git_name: "{{ smtp_git_name }}"
+    git_folder: "{{ smtp_git_folder }}"
+    git_url: "{{ smtp_git_url }}"
+    git_sshkey: "{{ smtp_git_sshkey }}"
+    git_prod_branch: "{{ smtp_git_prod_branch }}"
+    git_test_branch: "{{ smtp_git_test_branch }}"
+    git_sleep: "{{ smtp_git_sleep }}"
+    git_actions_type: "{{ smtp_git_actions_type }}"
+    git_actions_name: "{{ smtp_git_actions_name }}"
+    git_actions_action: "{{ smtp_git_actions_action }}"
+

@@ -1,0 +1,7 @@
+---
+# tasks file for smtp
+- include_tasks: packages.yml
+- include_tasks: postfix.yml
+- include_tasks: sslCertGitDeploy.yml
+- include_tasks: dkim.yml
+

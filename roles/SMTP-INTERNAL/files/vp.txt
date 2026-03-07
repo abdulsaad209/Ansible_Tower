@@ -1,0 +1,3 @@
+vp._domainkey   IN      TXT     ( "v=DKIM1; k=rsa; "
+          "p=MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAtxHJrRJQ8LpmT9YZeNMeq4ka+w2eKfqCFESfZDt0wfiFgEx6yzX3GjCeBPpHbUj80TVN4PGX7wYI/+z0Qnumj+LKJbEvR817Cwj+e0LZwdNfh5TfgqCpbKE7lU7lh3vhYe+aczqs6FgTyFur3dfupGST5CuWRNGbQHf/HHNP9LGl25BMBcVBLDwAPKUKjJ+kmP97DuWQH9sjMK"
+          "sZeb+rl48XIbTge06gYoPi92zjPFHnL0izDBBRx5qhkoFQgAI4MlCdWaBkmIfn2vS+3O9zo02FSxJyoQrDrQqOWqrRBuiJpJWWQUpi1BBlXzTcjVhFJDlCjSi2HOIoab10iQCTXwIDAQAB" )  ; ----- DKIM key vp for redata.com

@@ -1,0 +1,40 @@
+---
+- name: Update apt cache
+  ansible.builtin.apt:
+    update_cache: yes
+
+- name: Install SMTP packages (Postfix)
+  ansible.builtin.apt:
+    name: "{{ os_package_map['ubuntu']['24']['packages'] }}"
+    state: present
+
+- name: Ensure Postfix service is enabled and running
+  ansible.builtin.service:
+    name: postfix
+    state: started
+    enabled: yes
+
+- name: Set OS and version fact
+  set_fact:
+    os_family: "{{ ansible_distribution | lower }}"
+    os_version: "{{ ansible_distribution_major_version }}"
+
+- name: Check if OS package mapping exists
+  fail:
+    msg: "No package mapping exists for OS {{ os_family }} {{ os_version }}"
+  when: os_package_map[os_family][os_version] is not defined
+
+- name: Upgrade all packages
+  ansible.builtin.apt:
+    name: "*"
+    state: latest 
+
+- name: Set selected packages
+  set_fact:
+    selected_packages: "{{ os_package_map[os_family][os_version].packages }}"
+
+- name: Install via apt
+  ansible.builtin.apt:
+    pkg: "{{ selected_packages }}"
+    state: latest
+    update_cache: true
