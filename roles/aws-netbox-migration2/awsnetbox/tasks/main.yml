@@ -1,0 +1,7 @@
+---
+- name: Process each AWS account
+  include_tasks: process_account.yml
+  loop: "{{ aws_accounts }}"
+  loop_control:
+    loop_var: account
+    label: "{{ account.name }}"

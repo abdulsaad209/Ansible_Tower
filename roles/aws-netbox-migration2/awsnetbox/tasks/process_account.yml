@@ -1,0 +1,41 @@
+---
+- name: Set AWS profile for current account
+  set_fact:
+    aws_profile: "{{ account.credential }}"
+    current_netbox_tenant: "{{ account.netbox_tenant }}"
+    current_netbox_tenant_slug: "{{ account.netbox_tenant_slug }}"
+    current_netbox_tags: "{{ account.netbox_tags }}"
+    aws_region: "{{ account.regions }}"
+
+- name: Create NetBox Tenant for current account
+  include_tasks: tenet.yml    
+
+- name: Create NetBox sites and clusters
+  include_tasks: create.yml
+
+- name: Get VPC info from AWS
+  include_tasks: vpc.yml
+
+- name: Get Subnet info from AWS
+  include_tasks: subnet.yml
+
+- name: Get EC2 Instance info from AWS
+  include_tasks: instance.yml
+
+- name: Sync VPCs to NetBox
+  include_tasks: sync_vpc_to_netbox.yml
+
+- name: Sync Subnets to NetBox
+  include_tasks: sync_subnet_to_netbox.yml
+
+- name: Sync EC2 Instances to NetBox
+  include_tasks: sync_instance_to_netbox.yml
+
+- name: Mark removed VMs as offline in NetBox
+  include_tasks: offline.yml  
+
+- name: Clear temporary variables for next account
+  set_fact:
+    vpc_list: []
+    subnet_list: []
+    instance_list: []
