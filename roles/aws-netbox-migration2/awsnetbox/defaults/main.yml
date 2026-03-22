@@ -17,15 +17,15 @@ aws_accounts:
     regions:
       - us-east-1
   
-  - name: "SZCODERS-PROD-EXT-ACCOUNT"
-    profile: "szcoders-prod"
-    netbox_tenant: "SZCODERS-PROD-EXT-ACCOUNT"
-    netbox_tenant_slug: "szcoders-prod-ext-account"
-    netbox_tags:
-      - "szcoders"
-      - "Prod"
-    regions:
-      - us-west-2
+  # - name: "SZCODERS-PROD-EXT-ACCOUNT"
+  #   profile: "szcoders-prod"
+  #   netbox_tenant: "SZCODERS-PROD-EXT-ACCOUNT"
+  #   netbox_tenant_slug: "szcoders-prod-ext-account"
+  #   netbox_tags:
+  #     - "szcoders"
+  #     - "Prod"
+  #   regions:
+  #     - us-west-2
 
         #- name: "C1US-PROD-EXT-ACCOUNT"
         #  #profile: "c1prod"
