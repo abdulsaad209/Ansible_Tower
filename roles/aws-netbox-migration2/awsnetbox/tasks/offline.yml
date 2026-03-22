@@ -60,7 +60,7 @@
     data:
       name: "{{ item.name }}"
       status: decommissioning
-    state: present
+    state: absent
   loop: "{{ vms_to_offline }}"
   loop_control:
     label: "{{ item.name }}"
