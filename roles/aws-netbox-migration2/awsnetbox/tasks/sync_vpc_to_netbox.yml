@@ -1,4 +1,7 @@
 ---
+# ---------------------------------
+# Flatten VPC data
+# ---------------------------------
 - name: flatten vpc info with regions
   set_fact:
     vpc_list: "{{ vpc_list | default([]) + [{'vpc': item.1, 'region': item.0.item}] }}"
@@ -7,9 +10,9 @@
     label: "{{ item.1.vpc_id }}"
 
 
-# -------------------------------
-# Create VRF and register result
-# -------------------------------
+# ---------------------------------
+# Create VRFs in NetBox
+# ---------------------------------
 - name: sync vpc to netbox as vrf
   netbox.netbox.netbox_vrf:
     netbox_url: "{{ netbox_url }}"
@@ -26,28 +29,11 @@
   loop_control:
     label: "{{ item.vpc.vpc_id }}"
   when: not (item.vpc.is_default | default(false))
-  register: vrf_results
 
 
-# -------------------------------
-# Build VRF name → ID mapping
-# -------------------------------
-
-- name: debug vrf_results
-  debug:
-    var: vrf_results
-    
-- name: build vrf mapping
-  set_fact:
-    vrf_map: "{{ vrf_map | default({}) | combine({ item.vrf.name: item.vrf.id }) }}"
-  loop: "{{ vrf_results.results }}"
-  loop_control:
-    label: "{{ item.vrf.name }}"
-
-
-# -------------------------------
-# Create prefixes using VRF ID
-# -------------------------------
+# ---------------------------------
+# Create Prefixes in NetBox
+# ---------------------------------
 - name: sync vpc cidr blocks as prefixes
   netbox.netbox.netbox_prefix:
     netbox_url: "{{ netbox_url }}"
@@ -55,7 +41,7 @@
     data:
       prefix: "{{ item.vpc.cidr_block }}"
       description: "{{ item.vpc.tags.Name | default(item.vpc.vpc_id) }}"
-      vrf: "{{ vrf_map[item.vpc.vpc_id] }}"
+      vrf: "{{ item.vpc.vpc_id }}"
       tenant: "{{ current_netbox_tenant }}"
       status: active
       custom_fields:
@@ -67,6 +53,9 @@
   when: not (item.vpc.is_default | default(false))
 
 
+# ---------------------------------
+# Cleanup
+# ---------------------------------
 - name: Clear vpc_list for next account
   set_fact:
     vpc_list: []
