@@ -36,38 +36,26 @@
         )
       }}
 
-# - name: Normalize active VMs into a usable list
-#   set_fact:
-#     active_vms: >-
-#       {{
-#         active_vms_raw
-#         | map(attribute='value')
-#         | list
-#       }}
-
 - name: Normalize active VMs into a usable list
   set_fact:
-    active_vms: "{{ active_vms_raw }}"
-
-- name: Extract NetBox VM names
-  set_fact:
-    netbox_vm_names: "{{ active_vms | map(attribute='name') | list }}"
+    active_vms: >-
+      {{
+        active_vms_raw
+        | map(attribute='value')
+        | list
+      }}
 
 - name: Find VMs in NetBox that are no longer present in AWS
   set_fact:
-    vms_to_offline: "{{ netbox_vm_names | difference(aws_instance_names) }}"
-    
-# - name: Find VMs in NetBox that are no longer present in AWS
-#   set_fact:
-#     vms_to_offline: >-
-#       {{
-#         active_vms
-#         | selectattr('name', 'in',
-#             active_vms | map(attribute='name') | list
-#             | difference(aws_instance_names)
-#           )
-#         | list
-#       }}
+    vms_to_offline: >-
+      {{
+        active_vms
+        | selectattr('name', 'in',
+            active_vms | map(attribute='name') | list
+            | difference(aws_instance_names)
+          )
+        | list
+      }}
 
 - name: Mark removed VMs as offline in NetBox
   netbox.netbox.netbox_virtual_machine:
