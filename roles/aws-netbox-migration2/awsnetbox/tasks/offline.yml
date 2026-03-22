@@ -49,7 +49,7 @@
     vms_to_offline: >-
       {{
         active_vms
-        | rejectattr('name', 'in', aws_instance_names)
+        | rejectattr('value.name', 'in', aws_instance_names)
         | list
       }}
 
