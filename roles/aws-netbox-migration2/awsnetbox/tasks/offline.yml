@@ -36,15 +36,19 @@
         )
       }}
 
+# - name: Normalize active VMs into a usable list
+#   set_fact:
+#     active_vms: >-
+#       {{
+#         active_vms_raw
+#         | map(attribute='value')
+#         | list
+#       }}
+
 - name: Normalize active VMs into a usable list
   set_fact:
-    active_vms: >-
-      {{
-        active_vms_raw
-        | map(attribute='value')
-        | list
-      }}
-
+    active_vms: "{{ active_vms_raw }}"
+    
 - name: Find VMs in NetBox that are no longer present in AWS
   set_fact:
     vms_to_offline: >-
