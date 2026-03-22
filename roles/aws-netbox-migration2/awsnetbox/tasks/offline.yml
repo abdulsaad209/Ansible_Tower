@@ -64,15 +64,10 @@
   debug:
     var: active_vms[0]
 
-    
+
 - name: Normalize active VMs into a usable list
   set_fact:
-    active_vms: >-
-      {{
-        active_vms_raw
-        | map(attribute='value')
-        | list
-      }}
+    active_vms: "{{ [active_vms_raw.value] }}"
 
 - name: Find VMs in NetBox that are no longer present in AWS
   set_fact:
