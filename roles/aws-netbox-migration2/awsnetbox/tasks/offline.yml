@@ -49,7 +49,7 @@
     vms_to_offline: >-
       {{
         active_vms
-        | rejectattr('value.name', 'in', aws_instance_names)
+        | rejectattr('name', 'in', aws_instance_names)
         | list
       }}
 
@@ -65,4 +65,3 @@
   loop_control:
     label: "{{ item.name }}"
   when: vms_to_offline | length > 0
-
