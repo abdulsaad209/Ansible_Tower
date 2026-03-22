@@ -67,7 +67,7 @@
 
 - name: Normalize active VMs into a usable list
   set_fact:
-    active_vms: "{{ [active_vms_raw.value] }}"
+    active_vms: "{{ [active_vms_raw | dict2items] }}"
 
 - name: Find VMs in NetBox that are no longer present in AWS
   set_fact:
