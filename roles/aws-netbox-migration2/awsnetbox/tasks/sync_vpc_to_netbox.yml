@@ -32,6 +32,11 @@
 # -------------------------------
 # Build VRF name → ID mapping
 # -------------------------------
+
+- name: debug vrf_results
+  debug:
+    var: vrf_results
+    
 - name: build vrf mapping
   set_fact:
     vrf_map: "{{ vrf_map | default({}) | combine({ item.vrf.name: item.vrf.id }) }}"
