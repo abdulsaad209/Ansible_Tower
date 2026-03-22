@@ -49,7 +49,7 @@
     vms_to_offline: >-
       {{
         active_vms
-        | rejectattr('value.name', 'in', aws_instance_names)
+        | rejectattr('name', 'in', aws_instance_names)
         | list
       }}
 
@@ -58,10 +58,9 @@
     netbox_url: "{{ netbox_url }}"
     netbox_token: "{{ netbox_token }}"
     data:
-      name: "{{ item.value.name }}"
+      id: "{{ item.id }}"
       status: decommissioning
-    state: present
   loop: "{{ vms_to_offline }}"
   loop_control:
-    label: "{{ item.value.name }}"
+    label: "{{ item.name }}"
   when: vms_to_offline | length > 0
