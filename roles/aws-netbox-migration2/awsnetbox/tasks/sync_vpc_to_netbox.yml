@@ -41,7 +41,8 @@
     data:
       prefix: "{{ item.vpc.cidr_block }}"
       description: "{{ item.vpc.tags.Name | default(item.vpc.vpc_id) }}"
-      vrf: "{{ item.vpc.vpc_id }}"
+      vrf:
+        name: "{{ item.vpc.vpc_id }}"
       tenant: "{{ current_netbox_tenant }}"
       status: active
       custom_fields:
