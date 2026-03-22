@@ -53,14 +53,13 @@
         | list
       }}
 
-- name: Mark removed VMs as offline in NetBox
+- name: Remove deleted VMs from NetBox
   netbox.netbox.netbox_virtual_machine:
     netbox_url: "{{ netbox_url }}"
     netbox_token: "{{ netbox_token }}"
     data:
       name: "{{ item.name }}"
-      status: decommissioning
-    state: present
+    state: absent
   loop: "{{ vms_to_offline }}"
   loop_control:
     label: "{{ item.name }}"
