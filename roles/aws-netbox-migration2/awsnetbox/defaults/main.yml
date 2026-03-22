@@ -9,7 +9,6 @@ netbox_create_vlans: false
 aws_accounts:
   - name: "SZCODERS-CORP-EXT-ACCOUNT"
     profile: "szcoders-corp"  # AWS CLI profile name
-    #credential: vpdev
     netbox_tenant: "SZCODERS-CORP-EXT-ACCOUNT"
     netbox_tenant_slug: "szcoders-corp-ext-account"
     netbox_tags:
@@ -18,16 +17,15 @@ aws_accounts:
     regions:
       - us-east-1
   
-        #- name: "VPMA-PROD-EXT-ACCOUNT"
-        #  #profile: "vpprod"
-        #  credential: vpprod
-        #  netbox_tenant: "VPMA-PROD-EXT-ACCOUNT"
-        #  netbox_tenant_slug: "vpma-prod-ext-account"
-        #  netbox_tags:
-        #    - "VP"
-        #    - "Prod"
-        #  regions:
-        #    - us-east-1
+  - name: "SZCODERS-PROD-EXT-ACCOUNT"
+    profile: "szcoders-prod"
+    netbox_tenant: "SZCODERS-PROD-EXT-ACCOUNT"
+    netbox_tenant_slug: "szcoders-prod-ext-account"
+    netbox_tags:
+      - "szcoders"
+      - "Prod"
+    regions:
+      - us-west-2
 
         #- name: "C1US-PROD-EXT-ACCOUNT"
         #  #profile: "c1prod"
