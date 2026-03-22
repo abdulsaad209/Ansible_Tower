@@ -75,7 +75,7 @@
       slug: "{{ item | lower | regex_replace(' ', '-') }}"
     state: present
   loop: "{{ current_netbox_tags }}"
-  
+
 - name: sync ec2 instances to netbox as virtual machines
   netbox.netbox.netbox_virtual_machine:
     netbox_url: "{{ netbox_url }}"
