@@ -13,38 +13,15 @@
     data:
       name: "{{ item.vpc.vpc_id }}"
       description: "{{ item.vpc.tags.Name | default(item.vpc.vpc_id) }}"
-      tenant: "{{ current_netbox_tenant }}"
+      tenant: "{{ current_netbox_tenant }}"  # Changed
       custom_fields:
         cidr_block: "{{ item.vpc.cidr_block }}"
         region: "{{ item.region }}"
     state: present
   loop: "{{ vpc_list }}"
-  register: vrf_results
   loop_control:
     label: "{{ item.vpc.vpc_id }}"
   when: not (item.vpc.is_default | default(false))
-
-# - name: sync vpc to netbox as vrf
-#   netbox.netbox.netbox_vrf:
-#     netbox_url: "{{ netbox_url }}"
-#     netbox_token: "{{ netbox_token }}"
-#     data:
-#       name: "{{ item.vpc.vpc_id }}"
-#       description: "{{ item.vpc.tags.Name | default(item.vpc.vpc_id) }}"
-#       tenant: "{{ current_netbox_tenant }}"  # Changed
-#       custom_fields:
-#         cidr_block: "{{ item.vpc.cidr_block }}"
-#         region: "{{ item.region }}"
-#     state: present
-#   loop: "{{ vpc_list }}"
-#   loop_control:
-#     label: "{{ item.vpc.vpc_id }}"
-#   when: not (item.vpc.is_default | default(false))
-
-- name: Build VRF mapping
-  set_fact:
-    vrf_mapping: "{{ vrf_mapping | default({}) | combine({item.data.name: item.data.id}) }}"
-  loop: "{{ vrf_results.results }}"
 
 - name: sync vpc cidr blocks as prefixes
   netbox.netbox.netbox_prefix:
@@ -53,32 +30,16 @@
     data:
       prefix: "{{ item.vpc.cidr_block }}"
       description: "{{ item.vpc.tags.Name | default(item.vpc.vpc_id) }}"
-      vrf: "{{ vrf_mapping[item.vpc.vpc_id] }}"
-      tenant: "{{ current_netbox_tenant }}"
+      vrf: "{{ item.vpc.vpc_id }}"
+      tenant: "{{ current_netbox_tenant }}"  # Changed
       status: active
       custom_fields:
         region: "{{ item.region }}"
     state: present
   loop: "{{ vpc_list }}"
+  loop_control:
+    label: "{{ item.vpc.vpc_id }} - {{ item.vpc.cidr_block }}"
   when: not (item.vpc.is_default | default(false))
-
-# - name: sync vpc cidr blocks as prefixes
-#   netbox.netbox.netbox_prefix:
-#     netbox_url: "{{ netbox_url }}"
-#     netbox_token: "{{ netbox_token }}"
-#     data:
-#       prefix: "{{ item.vpc.cidr_block }}"
-#       description: "{{ item.vpc.tags.Name | default(item.vpc.vpc_id) }}"
-#       vrf: "{{ item.vpc.vpc_id }}"
-#       tenant: "{{ current_netbox_tenant }}"  # Changed
-#       status: active
-#       custom_fields:
-#         region: "{{ item.region }}"
-#     state: present
-#   loop: "{{ vpc_list }}"
-#   loop_control:
-#     label: "{{ item.vpc.vpc_id }} - {{ item.vpc.cidr_block }}"
-#   when: not (item.vpc.is_default | default(false))
 
 - name: Clear vpc_list for next account
   set_fact:
