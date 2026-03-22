@@ -38,12 +38,11 @@
 
 - name: Normalize active VMs into a usable list
   set_fact:
-    active_vms: >-
-      {{
-        active_vms_raw
-        | map(attribute='value')
-        | list
-      }}
+    active_vms: "{{ active_vms_raw | list }}"
+
+- name: Extract NetBox VM names
+  set_fact:
+    netbox_vm_names: "{{ active_vms | map(attribute='name') | list }}"
 
 - name: Find VMs in NetBox that are no longer present in AWS
   set_fact:
