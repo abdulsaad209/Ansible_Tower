@@ -64,10 +64,9 @@
   debug:
     var: active_vms[0]
 
-
-- name: Extract NetBox VM list
+- name: Normalize active VMs into a usable list
   set_fact:
-    netbox_vm_names: "{{ netbox_vms.json.results | map(attribute='name') | list }}"
+    active_vms: "{{ [active_vms_raw | dict2items] }}"
 
 - name: Find VMs in NetBox that are no longer present in AWS
   set_fact:
