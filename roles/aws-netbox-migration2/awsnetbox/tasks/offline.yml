@@ -58,11 +58,11 @@
     netbox_url: "{{ netbox_url }}"
     netbox_token: "{{ netbox_token }}"
     data:
-      name: "{{ item.name }}"
+      name: "{{ item.value.name }}"
       status: decommissioning
     state: absent
   loop: "{{ vms_to_offline }}"
   loop_control:
-    label: "{{ item.name }}"
+    label: "{{ item.value.name }}"
   when: vms_to_offline | length > 0
 
