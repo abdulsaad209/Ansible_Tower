@@ -72,15 +72,12 @@
         | ternary([active_vms_raw.value], active_vms_raw)
       }}
 
-- name: Find VMs in NetBox that are no longer present in AWS
+- name: Find VMs to offline
   set_fact:
     vms_to_offline: >-
       {{
         active_vms
-        | selectattr('name', 'in',
-            active_vms | map(attribute='name') | list
-            | difference(aws_instance_names)
-          )
+        | rejectattr('name', 'in', aws_instance_names)
         | list
       }}
 
