@@ -34,14 +34,10 @@
 # -------------------------------
 - name: build vrf mapping
   set_fact:
-    vrf_map: >-
-      {{
-        vrf_map | default({}) |
-        combine({ item.data.name: item.vrf.id })
-      }}
+    vrf_map: "{{ vrf_map | default({}) | combine({ item.vrf.name: item.vrf.id }) }}"
   loop: "{{ vrf_results.results }}"
   loop_control:
-    label: "{{ item.data.name }}"
+    label: "{{ item.vrf.name }}"
 
 
 # -------------------------------
