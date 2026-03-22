@@ -1,7 +1,7 @@
 ---
 - name: Get AWS Account Information
   amazon.aws.aws_caller_info:
-    profile: "{{ account.credential }}"
+    profile: "{{ account.profile }}"
   register: aws_caller_info
 
 - name: Create/Update NetBox Tenant with Account ID

@@ -1,10 +1,25 @@
 ---
+- name: Initialize instance_list
+  set_fact:
+    instance_list: []
+
 - name: flatten instance info with regions
   set_fact:
-    instance_list: "{{ instance_list | default([]) + [{'instance': item.1, 'region': item.0.item, 'netbox_tenant': current_netbox_tenant, 'aws_profile': aws_profile}] }}"
+    instance_list: "{{ instance_list + [{'instance': item.1, 'region': item.0.item, 'netbox_tenant': current_netbox_tenant, 'aws_profile': aws_profile}] }}"
   loop: "{{ aws_instance_info.results | subelements('instances') }}"
   loop_control:
     label: "{{ item.1.instance_id }}"
+  when:
+    - aws_instance_info is defined
+    - aws_instance_info.results is defined
+    - aws_instance_info.results | length > 0
+
+      #- name: flatten instance info with regions
+      #  set_fact:
+      #    instance_list: "{{ instance_list | default([]) + [{'instance': item.1, 'region': item.0.item, 'netbox_tenant': current_netbox_tenant, 'aws_profile': aws_profile}] }}"
+      #  loop: "{{ aws_instance_info.results | subelements('instances') }}"
+      #  loop_control:
+      #    label: "{{ item.1.instance_id }}"
 
 - name: Extract unique instance types from discovered instances
   set_fact:

@@ -1,7 +1,7 @@
 ---
 - name: Set AWS profile for current account
   set_fact:
-    aws_profile: "{{ account.credential }}"
+    aws_profile: "{{ account.profile }}"
     current_netbox_tenant: "{{ account.netbox_tenant }}"
     current_netbox_tenant_slug: "{{ account.netbox_tenant_slug }}"
     current_netbox_tags: "{{ account.netbox_tags }}"
