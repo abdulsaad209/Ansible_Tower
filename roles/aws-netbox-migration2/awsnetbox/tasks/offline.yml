@@ -36,34 +36,6 @@
         )
       }}
 
-- name: Debug - Raw NetBox lookup output
-  debug:
-    var: active_vms_raw
-
-- name: Debug - Type of active_vms_raw
-  debug:
-    msg: "Type of active_vms_raw = {{ active_vms_raw | type_debug }}"
-
-- name: Debug - First item of active_vms_raw
-  debug:
-    var: active_vms_raw[0]
-
-- name: Debug - Type of first item
-  debug:
-    msg: "Type of first item = {{ active_vms_raw[0] | type_debug }}"
-
-- name: Debug - Active VMs after normalization
-  debug:
-    var: active_vms
-
-- name: Debug - Type of active_vms
-  debug:
-    msg: "Type of active_vms = {{ active_vms | type_debug }}"
-
-- name: Debug - First item in active_vms
-  debug:
-    var: active_vms[0]
-
 - name: Normalize active VMs into a usable list
   set_fact:
     active_vms: >-
