@@ -66,4 +66,3 @@
     label: "{{ item.name }}"
   when: vms_to_offline | length > 0
 
-  
