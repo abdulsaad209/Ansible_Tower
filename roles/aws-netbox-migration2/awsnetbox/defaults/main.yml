@@ -25,7 +25,7 @@ aws_accounts:
       - "szcoders"
       - "Prod"
     regions:
-      - us-west-2
+      - us-east-1
 
         #- name: "C1US-PROD-EXT-ACCOUNT"
         #  #profile: "c1prod"
