@@ -1,0 +1,30 @@
+---
+- name: flatten subnet info with regions
+  set_fact:
+    subnet_list: "{{ subnet_list | default([]) + [{'subnet': item.1, 'region': item.0.item}] }}"
+  loop: "{{ aws_subnet_info.results | subelements('subnets') }}"
+  loop_control:
+    label: "{{ item.1.subnet_id }}"
+
+- name: sync subnets to netbox as prefixes
+  netbox.netbox.netbox_prefix:
+    netbox_url: "{{ netbox_url }}"
+    netbox_token: "{{ netbox_token }}"
+    data:
+      prefix: "{{ item.subnet.cidr_block }}"
+      description: "AWS Subnet - {{ item.subnet.tags.Name | default(item.subnet.subnet_id) }} ({{ item.subnet.availability_zone }})"
+      vrf: "{{ item.subnet.vpc_id }}"
+      tenant: "{{ current_netbox_tenant }}"
+      comments: "{{ item.subnet.subnet_id }}"
+      status: active
+      custom_fields:
+        region: "{{ item.region }}"
+    state: present
+  loop: "{{ subnet_list }}"
+  loop_control:
+    label: "{{ item.subnet.subnet_id }} - {{ item.subnet.cidr_block }}"
+  when: not (item.subnet.default_for_az | default(false))
+  register: netbox_prefix_result
+  retries: 5
+  delay: 10
+  until: netbox_prefix_result is succeeded

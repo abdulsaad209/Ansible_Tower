@@ -1,0 +1,13 @@
+---
+- name: Collect AWS Region Information
+  hosts: localhost
+  connection: local
+  gather_facts: false
+
+  vars:
+    # Target Accounts to sync (by name or tag). Use "all" to sync all accounts.
+    target_accounts:
+      - "all"
+
+  roles:
+    - AWS-NETBOX-C1

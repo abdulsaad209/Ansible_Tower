@@ -1,0 +1,7 @@
+---
+- name: get ec2 instance info from aws
+  amazon.aws.ec2_instance_info:
+    region: "{{ item }}"
+    profile: "{{ aws_profile }}"
+  loop: "{{ aws_region }}"
+  register: aws_instance_info

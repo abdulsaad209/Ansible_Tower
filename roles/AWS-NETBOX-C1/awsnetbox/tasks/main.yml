@@ -1,0 +1,49 @@
+---
+- name: Normalize target_accounts
+  set_fact:
+    target_accounts_list: >-
+      {{
+        (
+          target_accounts is string and target_accounts == 'all'
+        ) | ternary(
+          ['all'],
+          (
+            target_accounts is string
+          ) | ternary(
+            [target_accounts],
+            target_accounts
+          )
+        )
+      }}
+
+- name: Process each AWS account
+  include_tasks: process_account.yml
+  loop: "{{ aws_accounts }}"
+  loop_control:
+    loop_var: account
+    label: "{{ account.name }}"
+  when: >
+    'all' in target_accounts_list
+    or
+    account.name in target_accounts_list
+    or
+    (account.netbox_tags | intersect(target_accounts_list) | length > 0)
+
+# Test Purpose
+#- name: DEBUG target_accounts_list
+#  debug:
+#    var: target_accounts_list
+
+#- name: TEST - Which accounts will run
+#  debug:
+#    msg: "WILL RUN: {{ account.name }}"
+#  loop: "{{ aws_accounts }}"
+#  loop_control:
+#    loop_var: account
+#    label: "{{ account.name }}"
+#  when: >
+#    'all' in target_accounts_list
+#    or
+#    account.name in target_accounts_list
+#    or
+#    (account.netbox_tags | intersect(target_accounts_list) | length > 0)
