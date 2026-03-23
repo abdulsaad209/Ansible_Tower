@@ -6,7 +6,7 @@ netbox_token: "o9xGqFFMiho2NeRJTIEmoBv71eO5u5RjISllFrVG"
 netbox_create_vlans: false
 
 # Account to sync
-target_accounts: "all"
+target_accounts: ["SZCODERS-PROD-EXT-ACCOUNT"]
 
 # Multi-Account Configuration
 aws_accounts:
