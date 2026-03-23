@@ -1,8 +1,0 @@
----
-- name: Collect AWS Region Information
-  hosts: localhost
-  connection: local
-  gather_facts: false
-
-  roles:
-    - awsnetbox

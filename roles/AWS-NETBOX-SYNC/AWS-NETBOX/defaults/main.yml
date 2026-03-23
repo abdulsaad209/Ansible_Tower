@@ -17,9 +17,10 @@ aws_accounts:
     netbox_tags:
       - "szcoders"
       - "Corp"
+      - "AWS"
     regions:
       - us-east-1
-  
+
   - name: "SZCODERS-PROD-EXT-ACCOUNT"
     profile: "szcoders-prod"
     netbox_tenant: "SZCODERS-PROD-EXT-ACCOUNT"
@@ -27,6 +28,7 @@ aws_accounts:
     netbox_tags:
       - "szcoders"
       - "Prod"
+      - "AWS"
     regions:
       - us-east-1
 
@@ -52,9 +54,7 @@ netbox_instance_status_map:
   stopping: "staged"
   stopped: "offline"
   shutting-down: "decommissioning"
-  terminated: "decommissioning"
-
-
+  terminated: "decommissionined"
 
 # AWS Region to NetBox Site Mapping
 # Define your NetBox sites that correspond to AWS regions
