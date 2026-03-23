@@ -43,6 +43,56 @@ ansible-playbook \
 echo "[$(date)] Completed NetBox sync for: $ENV_TAG" | tee -a "$LOG_FILE"
 
 
+
+
+Another version 
+
+```
+#!/bin/bash
+
+set -euo pipefail
+
+export PATH=$PATH:/usr/local/bin
+
+BASE_DIR="/usr/local/tasks/Netbox/AWS-NETBOX-SYNC"
+cd "$BASE_DIR"
+
+LOG_FILE="/var/log/netbox_sync.log"
+LOCK_FILE="/var/run/netbox_sync.lock"
+
+INPUT="${1:-all}"
+
+# 🔒 Lock
+exec 200>"$LOCK_FILE"
+flock -n 200 || {
+    echo "[$(date)] Another instance is already running. Exiting." >> "$LOG_FILE"
+    exit 1
+}
+
+: > "$LOG_FILE"
+
+echo "[$(date)] Starting NetBox sync for: $INPUT" | tee -a "$LOG_FILE"
+
+# Convert input to JSON array
+if [[ "$INPUT" == "all" ]]; then
+    TARGET_JSON="all"
+else
+    IFS=',' read -ra ACCOUNTS <<< "$INPUT"
+
+    JSON_ARRAY=$(printf '"%s",' "${ACCOUNTS[@]}")
+    JSON_ARRAY="[${JSON_ARRAY%,}]"
+    TARGET_JSON="$JSON_ARRAY"
+fi
+
+# Run playbook
+ansible-playbook \
+  -i inventory.yml \
+  -e "{\"target_accounts\": $TARGET_JSON}" \
+  deployment.yml 2>&1 | tee -a "$LOG_FILE"
+
+echo "[$(date)] Completed NetBox sync for: $INPUT" | tee -a "$LOG_FILE"
+```
+
 chmod +x /usr/local/tasks/Netbox/run_netbox_sync.sh
 
 cp -R /root/Ansible_Tower/roles/AWS-NETBOX-SYNC /usr/local/tasks/Netbox/AWS-NETBOX-SYNC
