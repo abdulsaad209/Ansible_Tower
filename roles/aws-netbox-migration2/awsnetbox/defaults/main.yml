@@ -6,7 +6,7 @@ netbox_token: "o9xGqFFMiho2NeRJTIEmoBv71eO5u5RjISllFrVG"
 netbox_create_vlans: false
 
 # Account to sync
-target_accounts: ["SZCODERS-PROD-EXT-ACCOUNT"]
+target_accounts: ["SZCODERS-PROD-EXT-ACCOUNT","SZCODERS-CORP-EXT-ACCOUNT"]
 
 # Multi-Account Configuration
 aws_accounts:
@@ -15,7 +15,7 @@ aws_accounts:
     netbox_tenant: "SZCODERS-CORP-EXT-ACCOUNT"
     netbox_tenant_slug: "szcoders-corp-ext-account"
     netbox_tags:
-      - "szcoders" 
+      - "szcoders"
       - "Corp"
     regions:
       - us-east-1
