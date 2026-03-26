@@ -1,8 +1,8 @@
 # NetBox Configuration
-netbox_url: "http://netbox.hub.csiprod.com"
-netbox_token: "c9ed68ffbafb0e7251bcc39d00dc4a29614742eb"
+netbox_url: "{{ NETBOX_URL }}"
+netbox_token: "{{ NETBOX_TOKEN }}"
 
-# Optional: Create VLANs for subnets
+# Optional: Create VLANs c9ed68ffbafb0e7251bcc39d00dc4a29614742ebfor subnets
 netbox_create_vlans: false
 
 # Account to sync
