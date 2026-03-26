@@ -1,6 +1,6 @@
 # NetBox Configuration
-netbox_url: "http://netbox.ms.com"
-netbox_token: "o9xGqFFMiho2NeRJTIEmoBv71eO5u5RjISllFrVG"
+netbox_url: "http://netbox.hub.csiprod.com"
+netbox_token: "c9ed68ffbafb0e7251bcc39d00dc4a29614742eb"
 
 # Optional: Create VLANs for subnets
 netbox_create_vlans: false
@@ -10,38 +10,36 @@ target_accounts: ["all"]
 
 # Multi-Account Configuration
 aws_accounts:
-  - name: "SZCODERS-CORP-EXT-ACCOUNT"
-    profile: "szcoders-corp"  # AWS CLI profile name
-    netbox_tenant: "SZCODERS-CORP-EXT-ACCOUNT"
-    netbox_tenant_slug: "szcoders-corp-ext-account"
+  - name: "VPMA-DEV-EXT-ACCOUNT"
+    profile: "vpdev"  # AWS CLI profile name
+    netbox_tenant: "VPMA-DEV-EXT-ACCOUNT"
+    netbox_tenant_slug: "vpma-dev-ext-account"
     netbox_tags:
-      - "szcoders"
-      - "Corp"
-      - "AWS"
+      - "VP"
+      - "Dev"
     regions:
       - us-east-1
 
-  - name: "SZCODERS-PROD-EXT-ACCOUNT"
-    profile: "szcoders-prod"
-    netbox_tenant: "SZCODERS-PROD-EXT-ACCOUNT"
-    netbox_tenant_slug: "szcoders-prod-ext-account"
+  - name: "VPMA-PROD-EXT-ACCOUNT"
+    profile: "vpprod"
+    netbox_tenant: "VPMA-PROD-EXT-ACCOUNT"
+    netbox_tenant_slug: "vpma-prod-ext-account"
     netbox_tags:
-      - "szcoders"
+      - "VP"
       - "Prod"
-      - "AWS"
     regions:
       - us-east-1
 
-        #- name: "C1US-PROD-EXT-ACCOUNT"
-        #  #profile: "c1prod"
-        #  credential: c1prod
-        #  netbox_tenant: "C1US-PROD-EXT-ACCOUNT"
-        #  netbox_tenant_slug: "c1us-prod-ext-account"
-        #  netbox_tags:
-        #    - "C1"
-        #    - "Prod"
-        #  regions:
-        #    - us-west-2    
+  - name: "C1US-PROD-EXT-ACCOUNT"
+    profile: "c1prod"
+    netbox_tenant: "C1US-PROD-EXT-ACCOUNT"
+    netbox_tenant_slug: "c1us-prod-ext-account"
+    netbox_tags:
+      - "C1"
+      - "Prod"
+    regions:
+      - us-west-2
+
 
 # ============================================
 # NetBox Mappings for EC2 Instances
@@ -55,6 +53,8 @@ netbox_instance_status_map:
   stopped: "offline"
   shutting-down: "decommissioning"
   terminated: "decommissioning"
+
+
 
 # AWS Region to NetBox Site Mapping
 # Define your NetBox sites that correspond to AWS regions
@@ -82,7 +82,7 @@ netbox_instance_status_map:
   #  us-east-1d: "VP-PROD-US-EAST-1D"
   #  us-east-1e: "VP-PROD-US-EAST-1E"
   #  us-east-1f: "VP-PROD-US-EAST-1F"
-  
+
   # Add more AZs as needed for your regions
 
 # ============================================
@@ -100,4 +100,3 @@ sync_stopped_instances: true
 
 # Whether to sync terminated instances
 sync_terminated_instances: false
-

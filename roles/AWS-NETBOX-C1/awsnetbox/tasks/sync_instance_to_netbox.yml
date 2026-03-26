@@ -1,5 +1,4 @@
 ---
-# --- Updated: NetBox VM sync with proper retry handling ---
 - name: flatten instance info with regions
   set_fact:
     instance_list: "{{ instance_list | default([]) + [{'instance': item.1, 'region': item.0.item, 'netbox_tenant': current_netbox_tenant, 'aws_profile': aws_profile}] }}"

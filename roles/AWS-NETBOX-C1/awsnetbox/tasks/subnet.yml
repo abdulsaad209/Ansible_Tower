@@ -1,5 +1,4 @@
 ---
-
 - name: Get subnet info from AWS for {{ account.name }}
   amazon.aws.ec2_vpc_subnet_info:
     region: "{{ item }}"

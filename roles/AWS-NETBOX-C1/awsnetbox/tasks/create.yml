@@ -1,6 +1,4 @@
 ---
-# Auto-generate site names
-# Auto-generate site names
 - name: Create NetBox site for current account and region
   netbox.netbox.netbox_site:
     netbox_url: "{{ netbox_url }}"
@@ -79,4 +77,3 @@
   set_fact:
     dynamic_cluster_mapping: "{{ dynamic_cluster_mapping | default({}) | combine({item: current_netbox_tenant + '-' + item | upper}) }}"
   loop: "{{ availability_zones }}"
-
