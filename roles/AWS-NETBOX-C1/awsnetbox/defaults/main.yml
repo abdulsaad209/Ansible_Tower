@@ -1,3 +1,4 @@
+---
 # NetBox Configuration
 netbox_url: "{{ NETBOX_URL }}"
 netbox_token: "{{ NETBOX_TOKEN }}"
