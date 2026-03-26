@@ -6,7 +6,8 @@ netbox_token: "c9ed68ffbafb0e7251bcc39d00dc4a29614742eb"
 netbox_create_vlans: false
 
 # Account to sync
-target_accounts: ["all"]
+target_accounts:
+  - "all"
 
 # Multi-Account Configuration
 aws_accounts:
