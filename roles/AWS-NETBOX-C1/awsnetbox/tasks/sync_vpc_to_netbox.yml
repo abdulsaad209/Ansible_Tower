@@ -1,4 +1,3 @@
----
 - name: flatten vpc info with regions
   set_fact:
     vpc_list: "{{ vpc_list | default([]) + [{'vpc': item.1, 'region': item.0.item}] }}"
@@ -22,8 +21,8 @@
   loop_control:
     label: "{{ item.vpc.vpc_id }}"
   register: netbox_vrf_result
-  retries: 5
-  delay: 10
+  retries: "{{ task_retries }}"
+  delay: "{{ task_delay }}"
   until: netbox_vrf_result is succeeded
   when: not (item.vpc.is_default | default(false))
 
@@ -44,8 +43,8 @@
   loop_control:
     label: "{{ item.vpc.vpc_id }} - {{ item.vpc.cidr_block }}"
   register: netbox_prefix_result
-  retries: 5
-  delay: 10
+  retries: "{{ task_retries }}"
+  delay: "{{ task_delay }}"
   until: netbox_prefix_result is succeeded
   when: not (item.vpc.is_default | default(false))
 

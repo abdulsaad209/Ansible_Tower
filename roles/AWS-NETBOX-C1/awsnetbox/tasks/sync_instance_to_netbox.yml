@@ -78,8 +78,8 @@
   loop_control:
     label: "{{ item.0.instance.instance_id }}"
   register: netbox_vm_result
-  retries: 5
-  delay: 10
+  retries: "{{ task_retries }}"
+  delay: "{{ task_delay }}"
   until: netbox_vm_result is succeeded
 
 - name: flatten instance and volume info for virtual disks
@@ -118,8 +118,8 @@
     - item.1.attachment_set is defined
     - item.1.attachment_set | length > 0
   register: netbox_disk_result
-  retries: 5
-  delay: 10
+  retries: "{{ task_retries }}"
+  delay: "{{ task_delay }}"
   until: netbox_disk_result is succeeded
 
 - name: create primary network interface for instances
@@ -139,8 +139,8 @@
     - item.instance.network_interfaces is defined
     - item.instance.network_interfaces | length > 0
   register: netbox_iface_result
-  retries: 5
-  delay: 10
+  retries: "{{ task_retries }}"
+  delay: "{{ task_delay }}"
   until: netbox_iface_result is succeeded
 
 - name: assign private IP address to instance
@@ -167,8 +167,8 @@
   when:
     - item.instance.private_ip_address is defined
   register: netbox_private_ip_result
-  retries: 5
-  delay: 10
+  retries: "{{ task_retries }}"
+  delay: "{{ task_delay }}"
   until: netbox_private_ip_result is succeeded
 
 - name: assign public IP address to instance
@@ -193,8 +193,8 @@
     - item.instance.public_ip_address is defined
     - item.instance.public_ip_address != ""
   register: netbox_public_ip_result
-  retries: 5
-  delay: 10
+  retries: "{{ task_retries }}"
+  delay: "{{ task_delay }}"
   until: netbox_public_ip_result is succeeded
 
 - name: update virtual machine with primary IP
@@ -211,6 +211,6 @@
   when:
     - item.instance.private_ip_address is defined
   register: netbox_primary_ip_result
-  retries: 5
-  delay: 10
+  retries: "{{ task_retries }}"
+  delay: "{{ task_delay }}"
   until: netbox_primary_ip_result is succeeded

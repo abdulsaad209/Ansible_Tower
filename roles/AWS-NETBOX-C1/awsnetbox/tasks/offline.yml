@@ -38,8 +38,8 @@
           api_filter='status=active tenant=' ~ current_netbox_tenant_slug
         )
       }}
-  retries: 5
-  delay: 3
+  retries: "{{ task_retries }}"
+  delay: "{{ task_delay }}"
 
 - name: Normalize active VMs into a usable list
   set_fact:
@@ -74,8 +74,8 @@
   loop_control:
     label: "{{ item.name }}"
   when: vms_to_offline | length > 0
-  retries: 5
-  delay: 3
+  retries: "{{ task_retries }}"
+  delay: "{{ task_delay }}"
   until: result is succeeded
   register: result
   throttle: 1

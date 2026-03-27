@@ -1,14 +1,17 @@
----
 # NetBox Configuration
-netbox_url: "{{ NETBOX_URL }}"
-netbox_token: "{{ NETBOX_TOKEN }}"
+netbox_url: "http://netbox.hub.csiprod.com"
+netbox_token: "c9ed68ffbafb0e7251bcc39d00dc4a29614742eb"
 
-# Optional: Create VLANs c9ed68ffbafb0e7251bcc39d00dc4a29614742ebfor subnets
+# Optional: Create VLANs for subnets
 netbox_create_vlans: false
 
 # Account to sync
 target_accounts:
   - "all"
+
+# Task Retry and Delay Interval
+task_retries: 5
+task_delay: 10
 
 # Multi-Account Configuration
 aws_accounts:

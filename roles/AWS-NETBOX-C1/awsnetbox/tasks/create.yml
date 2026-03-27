@@ -1,4 +1,5 @@
 ---
+# Auto-generate site names
 - name: Create NetBox site for current account and region
   netbox.netbox.netbox_site:
     netbox_url: "{{ netbox_url }}"
@@ -12,8 +13,8 @@
     state: present
   loop: "{{ aws_region }}"
   register: created_sites
-  retries: 5
-  delay: 3
+  retries: "{{ task_retries }}"
+  delay: "{{ task_delay }}"
   until: created_sites is succeeded
 
 # Store auto-generated site mapping
@@ -29,8 +30,8 @@
     profile: "{{ aws_profile }}"
   loop: "{{ aws_region }}"
   register: az_info
-  retries: 3
-  delay: 2
+  retries: "{{ task_retries }}"
+  delay: "{{ task_delay }}"
   until: az_info is succeeded
 
 # Flatten AZ list
@@ -48,8 +49,8 @@
       slug: "{{ current_netbox_tenant.split('-')[0:2] | join('-') | lower }}"
       description: "{{ current_netbox_tenant }} AWS EC2 Clusters"
     state: present
-  retries: 5
-  delay: 3
+  retries: "{{ task_retries }}"
+  delay: "{{ task_delay }}"
   until: result is succeeded
   register: result
 
@@ -68,8 +69,8 @@
     state: present
   loop: "{{ availability_zones }}"
   register: created_clusters
-  retries: 5
-  delay: 3
+  retries: "{{ task_retries }}"
+  delay: "{{ task_delay }}"
   until: created_clusters is succeeded
 
 # Store auto-generated cluster mapping

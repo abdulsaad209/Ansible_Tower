@@ -25,6 +25,6 @@
     label: "{{ item.subnet.subnet_id }} - {{ item.subnet.cidr_block }}"
   when: not (item.subnet.default_for_az | default(false))
   register: netbox_prefix_result
-  retries: 5
-  delay: 10
+  retries: "{{ task_retries }}"
+  delay: "{{ task_delay }}"
   until: netbox_prefix_result is succeeded

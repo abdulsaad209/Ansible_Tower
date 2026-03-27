@@ -14,7 +14,6 @@
         tenet_id: "{{ aws_caller_info.account }}"
     state: present
   register: tenant_result
-  retries: 5
-  delay: 10
+  retries: "{{ task_retries }}"
+  delay: "{{ task_delay }}"
   until: tenant_result is succeeded
-  
