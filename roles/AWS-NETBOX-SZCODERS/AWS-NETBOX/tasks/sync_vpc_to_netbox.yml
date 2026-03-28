@@ -1,3 +1,4 @@
+---
 - name: flatten vpc info with regions
   set_fact:
     vpc_list: "{{ vpc_list | default([]) + [{'vpc': item.1, 'region': item.0.item}] }}"

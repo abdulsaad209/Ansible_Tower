@@ -1,3 +1,4 @@
+---
 - name: get ec2 instance info from aws
   amazon.aws.ec2_instance_info:
     region: "{{ item }}"

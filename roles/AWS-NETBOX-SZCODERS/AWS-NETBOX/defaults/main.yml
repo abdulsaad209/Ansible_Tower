@@ -8,6 +8,10 @@ netbox_create_vlans: false
 # Account to sync
 target_accounts: ["all"]
 
+# Task Retry and Delay Interval
+task_retries: 5
+task_delay: 10
+
 # Multi-Account Configuration
 aws_accounts:
   - name: "SZCODERS-CORP-EXT-ACCOUNT"
@@ -32,17 +36,6 @@ aws_accounts:
     regions:
       - us-east-1
 
-        #- name: "C1US-PROD-EXT-ACCOUNT"
-        #  #profile: "c1prod"
-        #  credential: c1prod
-        #  netbox_tenant: "C1US-PROD-EXT-ACCOUNT"
-        #  netbox_tenant_slug: "c1us-prod-ext-account"
-        #  netbox_tags:
-        #    - "C1"
-        #    - "Prod"
-        #  regions:
-        #    - us-west-2    
-
 # ============================================
 # NetBox Mappings for EC2 Instances
 # ============================================
@@ -55,35 +48,6 @@ netbox_instance_status_map:
   stopped: "offline"
   shutting-down: "decommissioning"
   terminated: "decommissionined"
-
-# AWS Region to NetBox Site Mapping
-# Define your NetBox sites that correspond to AWS regions
-#netbox_site_mapping:
-  AWS-VP-DEV:
-    us-east-1: "VP-DEV-US-EAST-1"
-  AWS-VP-PROD:
-    us-east-1: "VP-PROD-US-EAST-1"
-
-# AWS Availability Zone to NetBox Cluster Mapping
-# Define your NetBox clusters that correspond to AWS AZs
-#netbox_cluster_mapping:
-  #AWS-VP-DEV:
-  #  us-east-1a: "VP-DEV-US-EAST-1A"
-  #  us-east-1b: "VP-DEV-US-EAST-1B"
-  #  us-east-1c: "VP-DEV-US-EAST-1C"
-  #  us-east-1d: "VP-DEV-US-EAST-1D"
-  #  us-east-1e: "VP-DEV-US-EAST-1E"
-  #  us-east-1f: "VP-DEV-US-EAST-1F"
-
-  #AWS-VP-PROD:
-  #  us-east-1a: "VP-PROD-US-EAST-1A"
-  #  us-east-1b: "VP-PROD-US-EAST-1B"
-  #  us-east-1c: "VP-PROD-US-EAST-1C"
-  #  us-east-1d: "VP-PROD-US-EAST-1D"
-  #  us-east-1e: "VP-PROD-US-EAST-1E"
-  #  us-east-1f: "VP-PROD-US-EAST-1F"
-  
-  # Add more AZs as needed for your regions
 
 # ============================================
 # Additional Instance Sync Settings
@@ -100,4 +64,3 @@ sync_stopped_instances: true
 
 # Whether to sync terminated instances
 sync_terminated_instances: false
-

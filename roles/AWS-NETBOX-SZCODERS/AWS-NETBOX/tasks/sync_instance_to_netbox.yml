@@ -1,32 +1,22 @@
 ---
-- name: Initialize instance_list
-  set_fact:
-    instance_list: []
-
 - name: flatten instance info with regions
   set_fact:
-    instance_list: "{{ instance_list + [{'instance': item.1, 'region': item.0.item, 'netbox_tenant': current_netbox_tenant, 'aws_profile': aws_profile}] }}"
-  loop: "{{ aws_instance_info.results | subelements('instances') }}"
+    instance_list: "{{ instance_list | default([]) + [ {
+      'instance': item.1,
+      'region': item.0.item,
+      'netbox_tenant': current_netbox_tenant,
+      'aws_profile': aws_profile
+    } ] }}"
+  loop: "{{ aws_instance_info.results | default([]) | subelements('instances', skip_missing=True) }}"
   loop_control:
-    label: "{{ item.1.instance_id }}"
-  when:
-    - aws_instance_info is defined
-    - aws_instance_info.results is defined
-    - aws_instance_info.results | length > 0
-
-      #- name: flatten instance info with regions
-      #  set_fact:
-      #    instance_list: "{{ instance_list | default([]) + [{'instance': item.1, 'region': item.0.item, 'netbox_tenant': current_netbox_tenant, 'aws_profile': aws_profile}] }}"
-      #  loop: "{{ aws_instance_info.results | subelements('instances') }}"
-      #  loop_control:
-      #    label: "{{ item.1.instance_id }}"
+    label: "{{ item.1.instance_id | default('no-instance') }}"
 
 - name: Extract unique instance types from discovered instances
   set_fact:
     discovered_instance_types: >-
-      {{ instance_list 
-         | map(attribute='instance.instance_type') 
-         | unique 
+      {{ instance_list
+         | map(attribute='instance.instance_type')
+         | unique
          | list }}
 
 - name: Get instance type specifications using AWS CLI
@@ -66,16 +56,6 @@
   register: volume_info_results
   when: item.instance.block_device_mappings | length > 0
 
-- name: Ensure NetBox tags exist
-  netbox.netbox.netbox_tag:
-    netbox_url: "{{ netbox_url }}"
-    netbox_token: "{{ netbox_token }}"
-    data:
-      name: "{{ item }}"
-      slug: "{{ item | lower | regex_replace(' ', '-') }}"
-    state: present
-  loop: "{{ current_netbox_tags }}"
-
 - name: sync ec2 instances to netbox as virtual machines
   netbox.netbox.netbox_virtual_machine:
     netbox_url: "{{ netbox_url }}"
@@ -88,7 +68,7 @@
       #cluster: "{{ item.0.netbox_tenant }}-{{ item.0.region | upper }}"
 
       tenant: "{{ item.0.netbox_tenant }}"
-      vcpus: "{{ item.0.instance.cpu_options.core_count * item.0.instance.cpu_options.threads_per_core | default(1) }}" 
+      vcpus: "{{ item.0.instance.cpu_options.core_count * item.0.instance.cpu_options.threads_per_core | default(1) }}"
       memory: "{{ dynamic_memory_map[item.0.instance.instance_type] | default(1024) }}"
       comments: "{{ item.0.instance.tags.Description | default('') }}"
       tags: "{{ current_netbox_tags }}"
@@ -102,6 +82,10 @@
   loop: "{{ instance_list | zip(volume_info_results.results) | list }}"
   loop_control:
     label: "{{ item.0.instance.instance_id }}"
+  register: netbox_vm_result
+  retries: "{{ task_retries }}"
+  delay: "{{ task_delay }}"
+  until: netbox_vm_result is succeeded
 
 - name: flatten instance and volume info for virtual disks
   set_fact:
@@ -111,7 +95,7 @@
     label: "{{ item.0.instance.instance_id }}"
   vars:
     vol: "{{ item.1.volumes }}"
-  when: 
+  when:
     - item.1.volumes is defined
     - item.1.volumes | length > 0
 
@@ -138,7 +122,10 @@
   when:
     - item.1.attachment_set is defined
     - item.1.attachment_set | length > 0
-
+  register: netbox_disk_result
+  retries: "{{ task_retries }}"
+  delay: "{{ task_delay }}"
+  until: netbox_disk_result is succeeded
 
 - name: create primary network interface for instances
   netbox.netbox.netbox_vm_interface:
@@ -153,9 +140,13 @@
   loop: "{{ instance_list }}"
   loop_control:
     label: "{{ item.instance.instance_id }}"
-  when: 
+  when:
     - item.instance.network_interfaces is defined
     - item.instance.network_interfaces | length > 0
+  register: netbox_iface_result
+  retries: "{{ task_retries }}"
+  delay: "{{ task_delay }}"
+  until: netbox_iface_result is succeeded
 
 - name: assign private IP address to instance
   netbox.netbox.netbox_ip_address:
@@ -174,12 +165,16 @@
   loop_control:
     label: "{{ item.instance.instance_id }} - {{ item.instance.private_ip_address | default('N/A') }}"
   vars:
-    subnet_cidr: "{{ subnet_list | 
-                     selectattr('subnet.subnet_id', 'equalto', item.instance.subnet_id) | 
-                     map(attribute='subnet.cidr_block') | 
+    subnet_cidr: "{{ subnet_list |
+                     selectattr('subnet.subnet_id', 'equalto', item.instance.subnet_id) |
+                     map(attribute='subnet.cidr_block') |
                      first | default('0.0.0.0/0') }}"
-  when: 
+  when:
     - item.instance.private_ip_address is defined
+  register: netbox_private_ip_result
+  retries: "{{ task_retries }}"
+  delay: "{{ task_delay }}"
+  until: netbox_private_ip_result is succeeded
 
 - name: assign public IP address to instance
   netbox.netbox.netbox_ip_address:
@@ -199,9 +194,13 @@
   loop: "{{ instance_list }}"
   loop_control:
     label: "{{ item.instance.instance_id }} - {{ item.instance.public_ip_address | default('N/A') }}"
-  when: 
+  when:
     - item.instance.public_ip_address is defined
     - item.instance.public_ip_address != ""
+  register: netbox_public_ip_result
+  retries: "{{ task_retries }}"
+  delay: "{{ task_delay }}"
+  until: netbox_public_ip_result is succeeded
 
 - name: update virtual machine with primary IP
   netbox.netbox.netbox_virtual_machine:
@@ -214,5 +213,9 @@
   loop: "{{ instance_list }}"
   loop_control:
     label: "{{ item.instance.instance_id }}"
-  when: 
+  when:
     - item.instance.private_ip_address is defined
+  register: netbox_primary_ip_result
+  retries: "{{ task_retries }}"
+  delay: "{{ task_delay }}"
+  until: netbox_primary_ip_result is succeeded
