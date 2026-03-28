@@ -46,8 +46,7 @@ EOF
 
 export PATH=$PATH:/usr/local/bin
 
-CURRENT_DIR="$(pwd)"
-BASE_DIR="$(cd "$CURRENT_DIR/../AWS-NETBOX-SZCODERS" && pwd)"
+BASE_DIR="$(pwd)/AWS-NETBOX-SZCODERS"
 
 cd "$BASE_DIR"
 
