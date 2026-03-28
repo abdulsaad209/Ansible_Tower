@@ -46,7 +46,7 @@ EOF
 
 export PATH=$PATH:/usr/local/bin
 
-BASE_DIR="$(pwd)/AWS-NETBOX-SZCODERS"
+BASE_DIR="/usr/local/tasks/Netbox/AWS-NETBOX-SZCODERS"
 
 cd "$BASE_DIR"
 
