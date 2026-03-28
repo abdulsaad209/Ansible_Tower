@@ -59,7 +59,7 @@
     netbox_token: "{{ netbox_token }}"
     data:
       id: "{{ item.id }}"
-      status: decommissioned
+      status: decommissioning
   loop: "{{ vms_to_offline }}"
   loop_control:
     label: "{{ item.name }}"
