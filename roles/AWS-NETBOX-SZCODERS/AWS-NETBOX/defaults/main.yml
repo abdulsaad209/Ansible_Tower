@@ -46,8 +46,8 @@ netbox_instance_status_map:
   running: "active"
   stopping: "staged"
   stopped: "offline"
-  shutting-down: "decommissioning"
-  terminated: "decommissioning"
+  shutting-down: "decommissioned"
+  terminated: "decommissioned"
 
 # ============================================
 # Additional Instance Sync Settings
