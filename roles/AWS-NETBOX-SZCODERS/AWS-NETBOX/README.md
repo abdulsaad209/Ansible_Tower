@@ -31,15 +31,15 @@ unzip awscliv2.zip
 sudo ./aws/install
 ```
 
-########## Version Details ###########
+### Version Details
+```
 Ansible Version: ansible [core 2.17.0]
 Python Version: Python 3.11.13
 AWS CLI Version: aws-cli/2.34.11
 
 amazon.aws Version: "11.2.0"
 netbox.netbox Version: "3.22.0"
-######################################
-
+```
 
 ### Configure AWS Credentials and Profiles
 
