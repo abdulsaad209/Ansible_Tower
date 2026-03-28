@@ -1,8 +1,0 @@
----
-
-- name: Get VPC info from AWS for {{ account.name }}
-  amazon.aws.ec2_vpc_net_info:
-    region: "{{ item }}"
-    profile: "{{ aws_profile }}"
-  loop: "{{ aws_region }}"
-  register: aws_vpc_info

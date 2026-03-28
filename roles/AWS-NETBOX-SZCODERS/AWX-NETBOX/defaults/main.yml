@@ -6,7 +6,11 @@ netbox_token: "o9xGqFFMiho2NeRJTIEmoBv71eO5u5RjISllFrVG"
 netbox_create_vlans: false
 
 # Account to sync
-target_accounts: ["all"]
+target_accounts: ["Corp"]
+
+# Task Retry and Delay Interval
+task_retries: 5
+task_delay: 10
 
 # Multi-Account Configuration
 aws_accounts:
@@ -41,7 +45,7 @@ aws_accounts:
         #    - "C1"
         #    - "Prod"
         #  regions:
-        #    - us-west-2    
+        #    - us-west-2
 
 # ============================================
 # NetBox Mappings for EC2 Instances
@@ -54,7 +58,7 @@ netbox_instance_status_map:
   stopping: "staged"
   stopped: "offline"
   shutting-down: "decommissioning"
-  terminated: "decommissioning"
+  terminated: "decommissionined"
 
 # AWS Region to NetBox Site Mapping
 # Define your NetBox sites that correspond to AWS regions
@@ -82,7 +86,7 @@ netbox_instance_status_map:
   #  us-east-1d: "VP-PROD-US-EAST-1D"
   #  us-east-1e: "VP-PROD-US-EAST-1E"
   #  us-east-1f: "VP-PROD-US-EAST-1F"
-  
+
   # Add more AZs as needed for your regions
 
 # ============================================
@@ -100,4 +104,5 @@ sync_stopped_instances: true
 
 # Whether to sync terminated instances
 sync_terminated_instances: false
+
 

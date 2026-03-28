@@ -1,7 +1,0 @@
-
----
-all:                                    # Top-level group containing all hosts
-  hosts:                                # Defines the hosts in this group
-    localhost:                          # The hostname/target machine
-      ansible_connection: local         # How Ansible connects to this host
-      ansible_python_interpreter: /bin/python3.11  # Which Python to use
