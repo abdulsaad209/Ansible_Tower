@@ -1,0 +1,66 @@
+---
+# Auto-generate site names
+- name: Create NetBox site for current account and region
+  netbox.netbox.netbox_site:
+    netbox_url: "{{ netbox_url }}"
+    netbox_token: "{{ netbox_token }}"
+    data:
+      name: "{{ current_netbox_tenant }}-{{ item | upper }}"
+      slug: "{{ (current_netbox_tenant + '-' + item) | lower | regex_replace('_', '-') }}"
+      status: active
+      tenant:  "{{ current_netbox_tenant }}"
+      description: "AWS {{ item }} region for {{ current_netbox_tenant }}"
+    state: present
+  loop: "{{ aws_region }}"
+  register: created_sites
+
+# Store auto-generated site mapping
+- name: Build dynamic site mapping
+  set_fact:
+    dynamic_site_mapping: "{{ dynamic_site_mapping | default({}) | combine({item: current_netbox_tenant + '-' + item | upper}) }}"
+  loop: "{{ aws_region }}"
+
+# Discover availability zones dynamically from AWS
+- name: Get availability zones for region
+  amazon.aws.aws_az_info:
+    region: "{{ item }}"
+    profile: "{{ aws_profile }}"
+  loop: "{{ aws_region }}"
+  register: az_info
+
+# Flatten AZ list
+- name: Build AZ list
+  set_fact:
+    availability_zones: "{{ az_info.results | map(attribute='availability_zones') | flatten | map(attribute='zone_name') | list }}"
+
+- name: Ensure cluster type exists for current account
+  netbox.netbox.netbox_cluster_type:
+    netbox_url: "{{ netbox_url }}"
+    netbox_token: "{{ netbox_token }}"
+    data:
+      name: "{{ current_netbox_tenant.split('-')[0:2] | join('-') }}"
+      slug: "{{ current_netbox_tenant.split('-')[0:2] | join('-') | lower }}"
+      description: "{{ current_netbox_tenant }} AWS EC2 Clusters"
+    state: present
+
+# Auto-generate cluster names for each AZ
+- name: Create NetBox clusters for availability zones
+  netbox.netbox.netbox_cluster:
+    netbox_url: "{{ netbox_url }}"
+    netbox_token: "{{ netbox_token }}"
+    data:
+      name: "{{ current_netbox_tenant }}-{{ item | upper }}"
+      #cluster_type: "{{ current_netbox_tenant.split('-')[1:] | join('-') }}"
+      cluster_type: "{{ current_netbox_tenant.split('-')[0:2] | join('-') }}"
+      #site: "{{ current_netbox_tenant }}-{{ aws_region | first | upper }}"
+      tenant: "{{ current_netbox_tenant }}"
+      description: "AWS Availability Zone {{ item }}"
+    state: present
+  loop: "{{ availability_zones }}"
+  register: created_clusters
+
+# Store auto-generated cluster mapping
+- name: Build dynamic cluster mapping
+  set_fact:
+    dynamic_cluster_mapping: "{{ dynamic_cluster_mapping | default({}) | combine({item: current_netbox_tenant + '-' + item | upper}) }}"
+  loop: "{{ availability_zones }}"
