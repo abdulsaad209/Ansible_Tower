@@ -21,11 +21,17 @@ dnf install python3.11 -y
 
 sudo dnf install python3.11 python3.11-pip -y
 pip3.11 install boto3 botocore pynetbox ansible-core==2.17.0
+```
 
+```
 vim ~/.bashrc
+```
+```
 export PATH=$PATH:/usr/local/bin
+```
 
 ### Install AWS CLI
+```
 curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
 unzip awscliv2.zip
 sudo ./aws/install
@@ -45,13 +51,18 @@ netbox.netbox Version: "3.22.0"
 
 ```
 vim ~/.aws/credentials
+```
+
+```
 [szcoders-corp]
 aws_access_key_id = XYZ
 aws_secret_access_key = ABC
+```
 
-
-
+```
 vim ~/.aws/config
+```
+```
 [profile szcoders-corp]
 region = us-east-1
 output = json
@@ -60,12 +71,14 @@ output = json
 role_arn = arn:aws:iam::744308405931:role/NetBoxSyncRole
 source_profile = szcoders-corp
 region = us-east-1
-
+```
 
 ### Make sure NetBox URL is resolving through DNS and you are able to access or curl it 
+```
 curl http://netbox.ms.com -I
-
+```
 ### Install NetBox and AWS Collections
+```
 ansible-galaxy collection install netbox.netbox:3.22.0
 ansible-galaxy collection install amazon.aws:11.2.0
 ```
@@ -76,24 +89,28 @@ Role Variables
 Main Variables of This role are mentioned below, rest of the variables you can use default one as defined in defaults/main.yml.
 
 1. Netbox Related:
-
+```
 netbox_url: "<your netbox url>"
 netbox_token: "<api token used to connect with netbox>"
-
+```
 This will be used to run playbook for specific aws account or tag only
+```
 target_accounts:
   - "all" 
   - "<account name of aws, tags defined for tenant in netbox etc>"
+```
 
 If netbox api calls failing the job then you can increase task retries or delay value from here
 retries mean: task after fail will run 5 times more
 delay mean: each time will task retry to run there would be gap of 10 seconds in each run
+```
 task_retries: 5
 task_delay: 10
-
+```
 2. AWS Related
 
 In the variable you can define multiple AWS Accounts which you wanna sync to NetBox
+```
 aws_accounts:
   - name: "SZCODERS-CORP-EXT-ACCOUNT"
     profile: "szcoders-corp"  # AWS CLI profile name
@@ -105,7 +122,7 @@ aws_accounts:
       - "AWS"
     regions:
       - us-east-1
-
+```
 
 Dependencies
 ------------
@@ -113,6 +130,7 @@ Dependencies
 There is no Dependency for now but if you wanna configure this playbook more dynamically or wanna add into CronJob then you can use and configure below Bash Script.
 
 Directory Structure:
+```
 /usr/local/tasks/Netbox/AWS-NETBOX-SZCODERS/
                     --- AWS-NETBOX
                     --- ansible.cfg
@@ -120,10 +138,11 @@ Directory Structure:
                     --- inventory.yml
                     --- README.md
                     --- run_netbox_sync.sh
-
+```
 ```
 vim run_netbox_sync.sh
-
+```
+```
 #!/bin/bash
 
 set -euo pipefail
