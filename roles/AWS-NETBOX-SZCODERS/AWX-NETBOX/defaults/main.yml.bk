@@ -1,0 +1,107 @@
+# NetBox Configuration
+netbox_url: "http://netbox.hub.csiprod.com"
+netbox_token: "c9ed68ffbafb0e7251bcc39d00dc4a29614742eb"
+
+# Optional: Create VLANs for subnets
+netbox_create_vlans: false
+
+# Account to sync
+target_accounts:
+  - "all"
+
+# Task Retry and Delay Interval
+task_retries: 5
+task_delay: 10
+
+# Multi-Account Configuration
+aws_accounts:
+  - name: "VPMA-DEV-EXT-ACCOUNT"
+    profile: "vpdev"  # AWS CLI profile name
+    netbox_tenant: "VPMA-DEV-EXT-ACCOUNT"
+    netbox_tenant_slug: "vpma-dev-ext-account"
+    netbox_tags:
+      - "VP"
+      - "Dev"
+    regions:
+      - us-east-1
+
+  - name: "VPMA-PROD-EXT-ACCOUNT"
+    profile: "vpprod"
+    netbox_tenant: "VPMA-PROD-EXT-ACCOUNT"
+    netbox_tenant_slug: "vpma-prod-ext-account"
+    netbox_tags:
+      - "VP"
+      - "Prod"
+    regions:
+      - us-east-1
+
+  - name: "C1US-PROD-EXT-ACCOUNT"
+    profile: "c1prod"
+    netbox_tenant: "C1US-PROD-EXT-ACCOUNT"
+    netbox_tenant_slug: "c1us-prod-ext-account"
+    netbox_tags:
+      - "C1"
+      - "Prod"
+    regions:
+      - us-west-2
+
+
+# ============================================
+# NetBox Mappings for EC2 Instances
+# ============================================
+
+# AWS EC2 Instance State to NetBox VM Status Mapping
+netbox_instance_status_map:
+  pending: "planned"
+  running: "active"
+  stopping: "staged"
+  stopped: "offline"
+  shutting-down: "decommissioning"
+  terminated: "decommissioning"
+
+
+
+# AWS Region to NetBox Site Mapping
+# Define your NetBox sites that correspond to AWS regions
+#netbox_site_mapping:
+  AWS-VP-DEV:
+    us-east-1: "VP-DEV-US-EAST-1"
+  AWS-VP-PROD:
+    us-east-1: "VP-PROD-US-EAST-1"
+
+# AWS Availability Zone to NetBox Cluster Mapping
+# Define your NetBox clusters that correspond to AWS AZs
+#netbox_cluster_mapping:
+  #AWS-VP-DEV:
+  #  us-east-1a: "VP-DEV-US-EAST-1A"
+  #  us-east-1b: "VP-DEV-US-EAST-1B"
+  #  us-east-1c: "VP-DEV-US-EAST-1C"
+  #  us-east-1d: "VP-DEV-US-EAST-1D"
+  #  us-east-1e: "VP-DEV-US-EAST-1E"
+  #  us-east-1f: "VP-DEV-US-EAST-1F"
+
+  #AWS-VP-PROD:
+  #  us-east-1a: "VP-PROD-US-EAST-1A"
+  #  us-east-1b: "VP-PROD-US-EAST-1B"
+  #  us-east-1c: "VP-PROD-US-EAST-1C"
+  #  us-east-1d: "VP-PROD-US-EAST-1D"
+  #  us-east-1e: "VP-PROD-US-EAST-1E"
+  #  us-east-1f: "VP-PROD-US-EAST-1F"
+
+  # Add more AZs as needed for your regions
+
+# ============================================
+# Additional Instance Sync Settings
+# ============================================
+
+# Default memory size (in MiB) if instance type lookup fails
+default_instance_memory: 1024
+
+# Default disk size (in MB) if volume info is unavailable
+default_instance_disk: 8192
+
+# Whether to sync stopped instances
+sync_stopped_instances: true
+
+# Whether to sync terminated instances
+sync_terminated_instances: false

@@ -1,0 +1,66 @@
+# tasks/offline_vm.yml
+# Runs after sync tasks inside process_account.yml loop.
+# Marks NetBox VMs as offline if they no longer exist in AWS for this account.
+
+- name: Collect EC2 instances across all regions for this account
+  amazon.aws.ec2_instance_info:
+    region: "{{ item }}"
+    profile: "{{ aws_profile }}"
+  loop: "{{ aws_region }}"
+  register: aws_instance_info_offline
+
+- name: Build flat list of AWS instance names for this account
+  set_fact:
+    aws_instance_names: >-
+      {{
+        aws_instance_info_offline.results
+        | map(attribute='instances')
+        | flatten
+        | map(attribute='tags')
+        | select('defined')
+        | map(attribute='Name')
+        | select('defined')
+        | list
+      }}
+
+- name: Get active VMs from NetBox scoped to this tenant
+  set_fact:
+    active_vms_raw: >-
+      {{
+        lookup(
+          'netbox.netbox.nb_lookup',
+          'virtual-machines',
+          api_endpoint=netbox_url,
+          token=netbox_token,
+          api_filter='status=active tenant=' ~ current_netbox_tenant_slug
+        )
+      }}
+
+- name: Normalize active VMs into a usable list
+  set_fact:
+    active_vms: >-
+      {{
+        (active_vms_raw is mapping)
+        | ternary([active_vms_raw.value], active_vms_raw)
+      }}
+
+- name: Find VMs to offline
+  set_fact:
+    vms_to_offline: >-
+      {{
+        active_vms
+        | rejectattr('name', 'in', aws_instance_names)
+        | list
+      }}
+
+- name: Mark removed VMs as offline in NetBox
+  netbox.netbox.netbox_virtual_machine:
+    netbox_url: "{{ netbox_url }}"
+    netbox_token: "{{ netbox_token }}"
+    data:
+      id: "{{ item.id }}"
+      status: decommissioning
+  loop: "{{ vms_to_offline }}"
+  loop_control:
+    label: "{{ item.name }}"
+  when: vms_to_offline | length > 0
