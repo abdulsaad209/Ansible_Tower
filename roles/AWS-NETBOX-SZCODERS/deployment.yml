@@ -10,4 +10,4 @@
       - "all"
 
   roles:
-    - AWX-NETBOX
+    - AWS-NETBOX
