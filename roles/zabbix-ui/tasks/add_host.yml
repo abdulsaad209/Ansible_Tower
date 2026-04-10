@@ -1,8 +1,5 @@
 ---
-# ==========================================================
 # Create or Update Host in Zabbix 7.4 via JSON-RPC API
-# ==========================================================
-
 - name: Get API token
   become: false
   uri:
@@ -20,7 +17,7 @@
       Content-Type: "application/json-rpc"
     validate_certs: false
   register: login_response
-  delegate_to: localhost
+  #delegate_to: localhost
   run_once: true
 
 - set_fact:
@@ -33,8 +30,6 @@
   delegate_to: localhost
   run_once: true
 
-# ---------------------------------------------------------
-# Resolve all group IDs
 - name: Get group IDs from Zabbix
   uri:
     url: "{{ zabbix_url }}/api_jsonrpc.php"
@@ -53,7 +48,7 @@
       id: 2
     validate_certs: false
   register: group_response
-  delegate_to: localhost
+  #delegate_to: localhost
   run_once: true
 
 - set_fact:
@@ -66,8 +61,6 @@
   delegate_to: localhost
   run_once: true
 
-# ---------------------------------------------------------
-# Resolve all template IDs
 - name: Get template IDs from Zabbix
   uri:
     url: "{{ zabbix_url }}/api_jsonrpc.php"
@@ -86,7 +79,7 @@
       id: 3
     validate_certs: false
   register: template_response
-  delegate_to: localhost
+  #delegate_to: localhost
   run_once: true
 
 - set_fact:
@@ -99,8 +92,6 @@
   delegate_to: localhost
   run_once: true
 
-# ---------------------------------------------------------
-# Check if host already exists
 - name: Check if host already exists in Zabbix
   uri:
     url: "{{ zabbix_url }}/api_jsonrpc.php"
@@ -119,7 +110,7 @@
       id: 5
     validate_certs: false
   register: host_check
-  delegate_to: localhost
+  #delegate_to: localhost
   run_once: true
 
 - set_fact:
@@ -132,14 +123,12 @@
   delegate_to: localhost
   run_once: true
 
-# ---------------------------------------------------------
-# Create or Update Host
-
 - name: Create new host (if not exists)
   when: existing_host_id == ''
   uri:
     url: "{{ zabbix_url }}/api_jsonrpc.php"
     method: POST
+    validate_certs: false
     headers:
       Content-Type: "application/json-rpc"
       Authorization: "Bearer {{ zbx_token }}"
@@ -162,7 +151,7 @@
         groups: "{{ group_ids | map('community.general.dict_kv','groupid') | list }}"
         templates: "{{ template_ids | map('community.general.dict_kv','templateid') | list }}"
       id: 6
-  delegate_to: localhost
+  #delegate_to: localhost
   run_once: true
 
 - name: Update existing host (dynamic proxy/server)
@@ -170,6 +159,7 @@
   uri:
     url: "{{ zabbix_url }}/api_jsonrpc.php"
     method: POST
+    validate_certs: false
     headers:
       Content-Type: "application/json-rpc"
       Authorization: "Bearer {{ zbx_token }}"
@@ -185,7 +175,7 @@
         groups: "{{ group_ids | map('community.general.dict_kv','groupid') | list }}"
         templates: "{{ template_ids | map('community.general.dict_kv','templateid') | list }}"
       id: 7
-  delegate_to: localhost
+  #delegate_to: localhost
   run_once: true
 
 

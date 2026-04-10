@@ -1,0 +1,79 @@
+---
+- name: Ensure EPEL repository file exists
+  become: true
+  ansible.builtin.stat:
+    path: /etc/yum.repos.d/epel.repo
+  register: epel_repo_file
+
+- name: Disable Zabbix packages from EPEL repo
+  become: true
+  ansible.builtin.blockinfile:
+    path: /etc/yum.repos.d/epel.repo
+    insertafter: '^\[epel\]'
+    block: |
+      excludepkgs=zabbix*
+  when: epel_repo_file.stat.exists
+
+- name: Add Zabbix repository for AlmaLinux 9
+  become: true
+  ansible.builtin.yum:
+    name: "{{ almalinux9_repo }}"
+    state: present
+    disable_gpg_check: true
+
+- name: Install Zabbix Agent2
+  become: true
+  ansible.builtin.yum:
+    name:
+      - zabbix-agent2
+      - zabbix-agent2-plugin-mongodb 
+      - zabbix-agent2-plugin-mssql 
+      - zabbix-agent2-plugin-postgresql
+    state: present
+    disable_gpg_check: true
+
+# Agent Configuration Start from Here
+- name: Set Zabbix server parameters
+  become: true
+  ansible.builtin.lineinfile:
+    path: /etc/zabbix/zabbix_agent2.conf
+    regexp: '^Server='
+    line: "Server={{ zabbix_server }}"
+
+- name: Set active Zabbix server parameters
+  become: true
+  ansible.builtin.lineinfile:
+    path: /etc/zabbix/zabbix_agent2.conf
+    regexp: '^ServerActive='
+    line: "ServerActive={{ zabbix_server }}"
+
+- name: Set agent hostname
+  become: true
+  ansible.builtin.lineinfile:
+    path: /etc/zabbix/zabbix_agent2.conf
+    regexp: '^Hostname='
+    line: "Hostname={{ inventory_hostname }}"
+
+- name: Deploy custom userparameter config if defined
+  become: true
+  ansible.builtin.copy:
+    content: "{{ item.value }}"
+    dest: "/etc/zabbix/zabbix_agent2.d/{{ item.key }}.conf"
+    owner: root
+    group: root
+    mode: '0644'
+  loop: "{{ zabbix_custom_userparams | dict2items }}"
+  when: zabbix_custom_userparams is defined
+
+- name: Enable and start Zabbix Agent2
+  become: true
+  ansible.builtin.systemd:
+    name: zabbix-agent2
+    enabled: true
+    state: started
+
+- name: Restart Zabbix Agent2
+  become: true
+  ansible.builtin.systemd:
+    name: zabbix-agent2
+    state: restarted
