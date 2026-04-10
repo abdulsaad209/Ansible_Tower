@@ -1,8 +1,0 @@
---- 
-- name: Loop over templates to update macros
-  include_tasks: update_template_macros_inner.yml
-  loop: "{{ zabbix_template_macros }}"
-  loop_control:
-    label: "{{ item.template_name }}"
-  vars:
-    template_item: "{{ item }}"
