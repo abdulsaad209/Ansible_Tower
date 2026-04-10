@@ -1,8 +1,8 @@
 --- 
-#zabbix_url: "http://192.168.12.136/zabbix"
-zabbix_url: "http://zabbix.ms.com/zabbix"
-zabbix_user: "{{ zabbix_username }}"
-zabbix_pass: "{{ zabbix_password }}"
+# UI Credentials
+zabbix_url: "https://zabbix.ms.com/zabbix"
+zabbix_user: "{{ zabbix_user }}"
+zabbix_pass: "{{ zabbix_pass }}"
 
 # Host details
 host_name: "{{ inventory_hostname }}"

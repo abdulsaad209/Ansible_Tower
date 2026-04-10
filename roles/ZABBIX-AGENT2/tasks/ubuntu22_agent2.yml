@@ -1,0 +1,94 @@
+---
+- name: Download Zabbix release package
+  become: true
+  get_url:
+    url: "{{ ubuntu22_repo }}"
+    dest: /tmp/zabbix-release_latest_7.4.deb
+
+- name: Purge zabbix repo 
+  ignore_errors: true
+  become: true
+  apt: 
+    name: zabbix-release
+    state: absent
+    purge: yes
+
+- name: Install Zabbix release package
+  become: true
+  apt:
+    deb: /tmp/zabbix-release_latest_7.4.deb
+    state: present
+
+- name: Update apt cache
+  become: true
+  apt:
+    update_cache: yes
+  ignore_errors: true
+
+- name: Install Zabbix Agent2 and plugins
+  become: true
+  environment:
+    DEBIAN_FRONTEND: noninteractive
+  apt:
+    name:
+      - zabbix-agent2
+      - zabbix-agent2-plugin-mongodb
+      - zabbix-agent2-plugin-mssql
+      - zabbix-agent2-plugin-postgresql
+    state: present
+
+- name: Ensure Zabbix Agent2 is running and enabled
+  become: true
+  ansible.builtin.systemd:
+    name: zabbix-agent2
+    enabled: yes
+    state: started
+
+# ---------------- Agent Configuration ----------------
+
+- name: Set Zabbix server parameters
+  become: true
+  ansible.builtin.lineinfile:
+    path: /etc/zabbix/zabbix_agent2.conf
+    regexp: '^Server='
+    line: "Server={{ zabbix_server }}"
+
+- name: Set active Zabbix server parameters
+  become: true
+  ansible.builtin.lineinfile:
+    path: /etc/zabbix/zabbix_agent2.conf
+    regexp: '^ServerActive='
+    line: "ServerActive={{ zabbix_server }}"
+
+- name: Set agent hostname
+  become: true
+  ansible.builtin.lineinfile:
+    path: /etc/zabbix/zabbix_agent2.conf
+    regexp: '^Hostname='
+    line: "Hostname={{ inventory_hostname }}"
+
+- name: Set Listen IP
+  become: true
+  ansible.builtin.lineinfile:
+    path: /etc/zabbix/zabbix_agent2.conf
+    regexp: '^ListenIP='
+    line: "ListenIP=0.0.0.0"
+
+- name: Deploy custom userparameter config if defined
+  become: true
+  copy:
+    content: "{{ item.value }}"
+    dest: "/etc/zabbix/zabbix_agent2.d/{{ item.key }}.conf"
+    owner: root
+    group: root
+    mode: '0644'
+  loop: "{{ zabbix_custom_userparams | dict2items }}"
+  when: zabbix_custom_userparams is defined
+
+- name: Enable and start Zabbix Agent2
+  become: true
+  ansible.builtin.systemd:
+    name: zabbix-agent2
+    enabled: true
+    state: restarted
+
