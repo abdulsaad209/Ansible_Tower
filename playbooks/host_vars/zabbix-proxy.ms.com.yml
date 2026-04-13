@@ -1,0 +1,19 @@
+--- 
+### Zabbix UI
+zabbix_groups:
+  - "szcoders-prod"
+  - "Linux servers"
+  - "Proxy Servers"
+
+zabbix_templates:
+  - "Linux by Zabbix agent"
+  - "ICMP Ping"
+  - "Zabbix proxy health by Zabbix agent"
+
+### MOTD Message
+motd_env: "Production"
+motd_purpose: "Zabbix Proxy Server and Jenkins Server"
+motd_logs: "/var/log/zabbix/zabbix_proxy.log, /var/log/*"
+motd_applications: "Zabbix Proxy Server and Jenkins Server"
+
+

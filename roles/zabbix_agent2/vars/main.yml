@@ -1,5 +1,4 @@
 ---
-zabbix_server: '10.245.130.89'
 
 # Repository URLs for Zabbix Agent 2
 almalinux9_repo: "https://repo.zabbix.com/zabbix/7.4/release/alma/9/noarch/zabbix-release-latest-7.4.el9.noarch.rpm"
@@ -13,3 +12,10 @@ windows_server_repo: "https://cdn.zabbix.com/zabbix/binaries/stable/7.4/7.4.5/za
 #       UserParameter=disk.free,/usr/bin/df -h / | tail -1 | awk '{print $4}'
 #     custom_nginx_status: |
 #       UserParameter=nginx.active_connections,curl -s http://127.0.0.1/nginx_status | grep 'Active' | awk '{print $3}'
+
+
+
+
+zabbix_server: '{{ zabbix_ip }}'
+zabbix_ip: '10.0.0.36'
+

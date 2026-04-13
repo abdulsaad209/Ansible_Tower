@@ -1,0 +1,19 @@
+--- 
+### Zabbix UI
+zabbix_groups:
+  - "szcoders-prod"
+  - "Linux servers"
+  - "Zabbix servers"
+
+zabbix_templates:
+  - "Linux by Zabbix agent"
+  - "ICMP Ping"
+  - "Zabbix server health by Zabbix agent"
+
+### MOTD Message
+motd_env: "Production"
+motd_purpose: "Zabbix Master Server"
+motd_logs: "/var/log/zabbix/zabbix_server.log, /var/log/*"
+motd_applications: "Zabbix Master Server"
+
+

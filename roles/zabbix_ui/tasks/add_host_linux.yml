@@ -25,10 +25,10 @@
   delegate_to: localhost
   run_once: true
 
-- debug:
-    msg: "Authenticated successfully with token {{ zbx_token }}"
-  delegate_to: localhost
-  run_once: true
+# - debug:
+#     msg: "Authenticated successfully with token {{ zbx_token }}"
+#   delegate_to: localhost
+#   run_once: true
 
 - name: Get group IDs from Zabbix
   uri:
@@ -56,10 +56,10 @@
   delegate_to: localhost
   run_once: true
 
-- debug:
-    msg: "Resolved group IDs: {{ group_ids }} for groups {{ zabbix_groups }}"
-  delegate_to: localhost
-  run_once: true
+# - debug:
+#     msg: "Resolved group IDs: {{ group_ids }} for groups {{ zabbix_groups }}"
+#   delegate_to: localhost
+#   run_once: true
 
 - name: Get template IDs from Zabbix
   uri:
@@ -87,10 +87,10 @@
   delegate_to: localhost
   run_once: true
 
-- debug:
-    msg: "Resolved template IDs: {{ template_ids }} for templates {{ zabbix_templates }}"
-  delegate_to: localhost
-  run_once: true
+# - debug:
+#     msg: "Resolved template IDs: {{ template_ids }} for templates {{ zabbix_templates }}"
+#   delegate_to: localhost
+#   run_once: true
 
 - name: Check if host already exists in Zabbix
   uri:
@@ -118,10 +118,10 @@
   delegate_to: localhost
   run_once: true
 
-- debug:
-    msg: "Existing host ID (if any): {{ existing_host_id }}"
-  delegate_to: localhost
-  run_once: true
+# - debug:
+#     msg: "Existing host ID (if any): {{ existing_host_id }}"
+#   delegate_to: localhost
+#   run_once: true
 
 - name: Create new host (if not exists)
   when: existing_host_id == ''
@@ -177,5 +177,3 @@
       id: 7
   #delegate_to: localhost
   run_once: true
-
-

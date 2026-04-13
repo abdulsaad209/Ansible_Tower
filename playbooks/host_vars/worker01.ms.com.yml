@@ -3,6 +3,7 @@
 zabbix_groups:
   - "szcoders-prod"
   - "Linux servers"
+  - "Proxy Servers"
 
 zabbix_templates:
   - "Linux by Zabbix agent"
@@ -10,9 +11,9 @@ zabbix_templates:
 
 ### MOTD Message
 motd_env: "Production"
-motd_purpose: "Netbox Server to fetch inventory data for Ansible AWX"
+motd_purpose: "Kubernetes worker01 Node "
 motd_logs: "/var/log/messages, /var/log/kubelet.log"
-motd_applications: "Netbox Application Server"
-
+motd_docker: "kubectl logs -n <namespace> <pod-name>"
+motd_applications: "k8s cluster participating node"
 
 

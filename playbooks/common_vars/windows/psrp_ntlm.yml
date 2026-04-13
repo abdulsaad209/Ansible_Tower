@@ -1,0 +1,8 @@
+ansible_connection: psrp
+ansible_psrp_protocol: http 
+ansible_psrp_operation_timeout: 30 
+ansible_psrp_read_timeout: 10800
+ansible_psrp_reconnection_retries: 3
+ansible_psrp_connection_backoff: 5
+ansible_psrp_auth: ntlm
+ansible_psrp_cert_validation: ignore

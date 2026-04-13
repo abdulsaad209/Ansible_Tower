@@ -10,9 +10,7 @@ zabbix_templates:
 
 ### MOTD Message
 motd_env: "Production"
-motd_purpose: "Netbox Server to fetch inventory data for Ansible AWX"
-motd_logs: "/var/log/messages, /var/log/kubelet.log"
-motd_applications: "Netbox Application Server"
-
+motd_purpose: "GitLab Server for CICD"
+motd_applications: "GitLab"
 
 

@@ -1,3 +1,10 @@
 ---
 - name: Including task to add host to zabbix UI
-  include_tasks: add_host.yml
+  include_tasks: add_host_linux.yml
+  when:
+    - ansible_os_family != 'Windows'
+
+- name: Including task for Windows Server
+  ansible.builtin.include_tasks: add_host_windows.yml
+  when:
+    - ansible_os_family == 'Windows'
