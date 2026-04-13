@@ -1,0 +1,6 @@
+# Zabbix
+zabbix_groups:
+  - "Linux servers"
+
+zabbix_templates:
+  - "Linux by Zabbix agent"
