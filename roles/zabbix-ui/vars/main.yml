@@ -1,2 +1,30 @@
 ---
-zabbix_url: "https://zabbix.ms.com/zabbix"
+monitored_by: 0        # 0 = Zabbix Server, 1 = Zabbix Proxy
+zabbix_proxy: false   # Set to true if monitored via Zabbix Proxy
+proxy_id: 7
+
+zabbix_url: "https://zabbix.hub.csiprod.com/zabbix"
+zabbix_user: "{{ zabbix_user }}"
+zabbix_pass: "{{ zabbix_pass }}"
+
+zabbix_server: '10.245.130.89'
+zabbix_proxy_ip: '10.99.1.229'
+
+host_name: "{{ ansible_hostname }}"
+visible_name: "{{ inventory_hostname }}"
+host_ip: "{{ ansible_host }}"
+
+# zabbix_groups:
+#   - "Zabbix servers"
+
+# zabbix_templates:
+#   - "Linux by Zabbix agent"
+
+# Proxy details
+# proxy_name: "{{ inventory_hostname }}"
+# proxy_ip: "{{ ansible_host }}"
+# proxy_mode: 1          # 0 = active, 1 = passive
+# proxy_port: "10051"
+# proxy_group_name: "zabbix-proxies"
+# proxy_hosts: []          # optional, list of host IDs to assign
+

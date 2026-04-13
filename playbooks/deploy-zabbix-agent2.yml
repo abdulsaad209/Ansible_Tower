@@ -1,28 +1,16 @@
 ---
-- name: Deploy Zabbix Agent2
+- name: Install And Configure Zabbix Agent2
   hosts: all
-
-  vars:
-    zabbix_proxy: true     # Set to true if monitored via Zabbix Proxy
-    monitored_by: 1        # 0 = Zabbix Server, 1 = Zabbix Proxy
-    proxy_id: 8            # ID of the Zabbix Proxy to monitor through
-
-    zabbix_url: "https://zabbix.ms.com/zabbix"
-    zabbix_user: "{{ zabbix_user }}"
-    zabbix_pass: "{{ zabbix_pass }}"
-
-    proxy_id: 9           # Update this to the correct proxy ID for the host
-
+  
   # It will check the zabbix_proxy flag and set the ServerIP and ServerActive accordingly in the agent config
   pre_tasks:
     - name: Dynamically set zabbix_server based on zabbix_proxy flag
       set_fact:
-        zabbix_server: "{{ '10.0.0.37' if zabbix_proxy else '10.0.0.36' }}"
+      zabbix_server_ip: '{{ zabbix_server }}'
+      zabbix_server: "{{ zabbix_proxy_ip if zabbix_proxy else zabbix_server_ip }}"
     - debug:
         msg: "Using Zabbix Server: {{ zabbix_server }} (proxy mode = {{ zabbix_proxy }})"
 
   roles:
-    - ZABBIX-AGENT2
-    - ZABBIX-UI
-
-
+    - zabbix_agent2
+    - zabbix_ui

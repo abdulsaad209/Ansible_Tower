@@ -60,12 +60,17 @@
     regexp: '^ServerActive='
     line: "ServerActive={{ zabbix_server }}"
 
+- name: Gather Ansible facts to get the hostname
+  ansible.builtin.setup:
+    gather_subset: min
+    filter: ansible_hostname
+
 - name: Set agent hostname
   become: true
   ansible.builtin.lineinfile:
     path: /etc/zabbix/zabbix_agent2.conf
     regexp: '^Hostname='
-    line: "Hostname={{ inventory_hostname }}"
+    line: "Hostname={{ ansible_hostname }}"
 
 - name: Set Listen IP
   become: true

@@ -12,7 +12,6 @@
   when:
     - ansible_distribution == "Ubuntu"
     - ansible_distribution_major_version == "22"
-    - ansible_distribution_version is version('22.04', '==')
   vars:
     become: true
 
