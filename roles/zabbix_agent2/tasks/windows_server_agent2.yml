@@ -31,21 +31,24 @@
     path: 'C:\Program Files\Zabbix Agent 2\zabbix_agent2.conf'
     regexp: '^Server='
     line: "Server={{ zabbix_server }}"
+    register: zabbix_server_config
 
 - name: Set ServerActive
   ansible.builtin.win_lineinfile:
     path: 'C:\Program Files\Zabbix Agent 2\zabbix_agent2.conf'
     regexp: '^ServerActive='
     line: "ServerActive={{ zabbix_server }}"
+  register: zabbix_serveractive_config
 
 - name: Set Hostname
   ansible.builtin.win_lineinfile:
     path: 'C:\Program Files\Zabbix Agent 2\zabbix_agent2.conf'
     regexp: '^Hostname='
     line: "Hostname={{ inventory_hostname }}"
-
+  register: zabbix_hostname_config
+  
 - name: Start and enable Zabbix Agent2 service
   ansible.builtin.win_service:
     name: "Zabbix Agent 2"
     start_mode: auto
-    state: restarted
+    state: "{{ 'restarted' if zabbix_server_config.changed or zabbix_serveractive_config.changed or zabbix_hostname_config.changed else 'started' }}"

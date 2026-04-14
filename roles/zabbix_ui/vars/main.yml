@@ -3,14 +3,6 @@ monitored_by: 0        # 0 = Zabbix Server, 1 = Zabbix Proxy
 zabbix_proxy: false   # Set to true if monitored via Zabbix Proxy
 proxy_id: 9
 
-zabbix_url: "https://zabbix.ms.com/zabbix"
-zabbix_user: "{{ zabbix_user }}"
-zabbix_pass: "{{ zabbix_pass }}"
-zabbix_server: '{{ zabbix_ip }}'
-
-proxy_ip: '10.0.0.37'
-zabbix_ip: '10.0.0.36'
-
 host_name: "{{ ansible_hostname }}"
 visible_name: "{{ ansible_hostname }}"
 host_ip: "{{ ansible_host }}"

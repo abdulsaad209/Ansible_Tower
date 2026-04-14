@@ -76,9 +76,3 @@
     name: zabbix-agent2
     enabled: true
     state: started
-
-- name: Restart Zabbix Agent2
-  become: true
-  ansible.builtin.systemd:
-    name: zabbix-agent2
-    state: restarted

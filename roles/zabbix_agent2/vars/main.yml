@@ -1,5 +1,4 @@
 ---
-
 # Repository URLs for Zabbix Agent 2
 almalinux9_repo: "https://repo.zabbix.com/zabbix/7.4/release/alma/9/noarch/zabbix-release-latest-7.4.el9.noarch.rpm"
 ubuntu22_repo: "https://repo.zabbix.com/zabbix/7.4/release/ubuntu/pool/main/z/zabbix-release/zabbix-release_latest_7.4+ubuntu22.04_all.deb"
@@ -13,9 +12,5 @@ windows_server_repo: "https://cdn.zabbix.com/zabbix/binaries/stable/7.4/7.4.5/za
 #     custom_nginx_status: |
 #       UserParameter=nginx.active_connections,curl -s http://127.0.0.1/nginx_status | grep 'Active' | awk '{print $3}'
 
-
-
-
 zabbix_server: '{{ zabbix_ip }}'
-zabbix_ip: '10.0.0.36'
-
+zabbix_ip: '10.245.130.89'

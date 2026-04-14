@@ -5,13 +5,18 @@
     url: "{{ ubuntu22_repo }}"
     dest: /tmp/zabbix-release_latest_7.4.deb
 
+- name: Gather installed package facts
+  become: true
+  ansible.builtin.package_facts:
+    manager: auto
+    
 - name: Purge zabbix repo 
-  ignore_errors: true
   become: true
   apt: 
     name: zabbix-release
     state: absent
     purge: yes
+  when: "'zabbix-release' in ansible_facts.packages"
 
 - name: Install Zabbix release package
   become: true
@@ -24,6 +29,10 @@
   apt:
     update_cache: yes
   ignore_errors: true
+  register: apt_update_result
+  until: apt_update_result is succeeded
+  retries: 3
+  delay: 5
 
 - name: Install Zabbix Agent2 and plugins
   become: true

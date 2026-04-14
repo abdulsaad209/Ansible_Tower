@@ -32,7 +32,6 @@
     method: POST
     headers:
       Content-Type: "application/json-rpc"
-      Authorization: "Bearer {{ zbx_token }}"
     body_format: json
     body:
       jsonrpc: "2.0"
@@ -41,13 +40,14 @@
         search:
           name: "{{ proxy_name }}"
         output: ["proxyid", "name"]
+      auth: "{{ zbx_token }}"
       id: 2
     validate_certs: false
   register: proxy_check
 
 - name: Set existing proxy ID (safe)
   set_fact:
-    existing_proxy_id: "{{ proxy_check.json.result[0].proxyid | default('') }}"
+    existing_proxy_id: "{{ ((proxy_check.json.result | first | default({})).proxyid) | default('') }}"
 
 ###########################################################
 # 3. Create Proxy if NOT exists
@@ -58,7 +58,6 @@
     method: POST
     headers:
       Content-Type: "application/json-rpc"
-      Authorization: "Bearer {{ zbx_token }}"
     body_format: json
     body:
       jsonrpc: "2.0"
@@ -75,6 +74,7 @@
             'port': proxy_port if proxy_mode == '1' else omit
           }
         }}
+      auth: "{{ zbx_token }}"
       id: 1
     validate_certs: false
   register: proxy_result

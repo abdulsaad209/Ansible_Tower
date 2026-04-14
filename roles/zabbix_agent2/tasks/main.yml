@@ -4,16 +4,12 @@
   when:
     - ansible_distribution == "AlmaLinux"
     - ansible_distribution_major_version == "9"
-  vars:
-    become: true
 
 - name: Including task for ubuntu22.04
   ansible.builtin.include_tasks: ubuntu22_agent2.yml
   when:
     - ansible_distribution == "Ubuntu"
     - ansible_distribution_major_version == "22"
-  vars:
-    become: true
 
 - name: Including task for Windows Server
   ansible.builtin.include_tasks: windows_server_agent2.yml

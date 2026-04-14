@@ -4,8 +4,6 @@
   
   # It will check the zabbix_proxy flag and set the ServerIP and ServerActive accordingly in the agent config
   pre_tasks:
-  - name: Configure Windows Ansible Connection
-    include_vars: "./common_vars/windows/psrp_ntlm.yml"
   - name: Dynamically set zabbix_server based on zabbix_proxy flag
     set_fact:
       zabbix_server: "{{ proxy_ip if zabbix_proxy else zabbix_ip }}"
