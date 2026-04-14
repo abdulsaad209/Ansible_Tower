@@ -36,6 +36,7 @@
     method: POST
     headers:
       Content-Type: "application/json-rpc"
+      Authorization: "Bearer {{ zbx_token }}"
     body_format: json
     body:
       jsonrpc: "2.0"
@@ -44,7 +45,6 @@
         filter:
           name: "{{ zabbix_groups }}"
         output: ["groupid", "name"]
-      auth: "{{ zbx_token }}"
       id: 2
     validate_certs: false
   register: group_response
@@ -67,6 +67,7 @@
     method: POST
     headers:
       Content-Type: "application/json-rpc"
+      Authorization: "Bearer {{ zbx_token }}"
     body_format: json
     body:
       jsonrpc: "2.0"
@@ -75,7 +76,6 @@
         filter:
           host: "{{ zabbix_templates }}"
         output: ["templateid", "host"]
-      auth: "{{ zbx_token }}"
       id: 3
     validate_certs: false
   register: template_response
@@ -98,6 +98,7 @@
     method: POST
     headers:
       Content-Type: "application/json-rpc"
+      Authorization: "Bearer {{ zbx_token }}"
     body_format: json
     body:
       jsonrpc: "2.0"
@@ -106,7 +107,6 @@
         filter:
           host: "{{ host_name }}"
         output: ["hostid", "host"]
-      auth: "{{ zbx_token }}"
       id: 5
     validate_certs: false
   register: host_check
@@ -131,6 +131,7 @@
     validate_certs: false
     headers:
       Content-Type: "application/json-rpc"
+      Authorization: "Bearer {{ zbx_token }}"
     body_format: json
     body:
       jsonrpc: "2.0"
@@ -149,7 +150,6 @@
             port: "10050"
         groups: "{{ group_ids | map('community.general.dict_kv','groupid') | list }}"
         templates: "{{ template_ids | map('community.general.dict_kv','templateid') | list }}"
-      auth: "{{ zbx_token }}"
       id: 6
   #delegate_to: localhost
   run_once: true
@@ -162,6 +162,7 @@
     validate_certs: false
     headers:
       Content-Type: "application/json-rpc"
+      Authorization: "Bearer {{ zbx_token }}"
     body_format: json
     body:
       jsonrpc: "2.0"
@@ -173,7 +174,6 @@
         monitored_by: "{{ monitored_by }}"
         groups: "{{ group_ids | map('community.general.dict_kv','groupid') | list }}"
         templates: "{{ template_ids | map('community.general.dict_kv','templateid') | list }}"
-      auth: "{{ zbx_token }}"
       id: 7
   #delegate_to: localhost
   run_once: true

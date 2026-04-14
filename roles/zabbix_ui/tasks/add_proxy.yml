@@ -32,6 +32,7 @@
     method: POST
     headers:
       Content-Type: "application/json-rpc"
+      Authorization: "Bearer {{ zbx_token }}"
     body_format: json
     body:
       jsonrpc: "2.0"
@@ -40,7 +41,6 @@
         search:
           name: "{{ proxy_name }}"
         output: ["proxyid", "name"]
-      auth: "{{ zbx_token }}"
       id: 2
     validate_certs: false
   register: proxy_check
@@ -58,6 +58,7 @@
     method: POST
     headers:
       Content-Type: "application/json-rpc"
+      Authorization: "Bearer {{ zbx_token }}"
     body_format: json
     body:
       jsonrpc: "2.0"
@@ -74,7 +75,6 @@
             'port': proxy_port if proxy_mode == '1' else omit
           }
         }}
-      auth: "{{ zbx_token }}"
       id: 1
     validate_certs: false
   register: proxy_result
