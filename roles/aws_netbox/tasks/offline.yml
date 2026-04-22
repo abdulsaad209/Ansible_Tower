@@ -1,0 +1,145 @@
+---
+# tasks/offline_vm.yml
+- name: Reset instance name lists
+  set_fact:
+    aws_alive_names: []
+    aws_stopped_names: []
+
+- name: Collect EC2 instances across all regions for this account
+  amazon.aws.ec2_instance_info:
+    region: "{{ item }}"
+    profile: "{{ aws_profile }}"
+  loop: "{{ aws_region }}"
+  register: aws_instance_info_offline
+
+- name: Build flat list of all AWS instances
+  set_fact:
+    aws_all_instances: >-
+      {{
+        aws_instance_info_offline.results
+        | map(attribute='instances')
+        | flatten
+        | list
+      }}
+
+- name: Build list of alive AWS instance names/IDs
+  set_fact:
+    aws_alive_names: >-
+      {{
+        aws_alive_names | default([])
+        + [
+            (item.tags.Name
+             if (item.tags is defined and item.tags.Name is defined and item.tags.Name)
+             else item.instance_id)
+          ]
+      }}
+  loop: >-
+    {{
+      aws_all_instances
+      | selectattr('state.name', 'in', ['running', 'pending'])
+      | list
+    }}
+  loop_control:
+    label: "{{ item.tags.Name if (item.tags is defined and item.tags.Name is defined and item.tags.Name) else item.instance_id }}"
+
+- name: Build list of stopped AWS instance names/IDs
+  set_fact:
+    aws_stopped_names: >-
+      {{
+        aws_stopped_names | default([])
+        + [
+            (item.tags.Name
+             if (item.tags is defined and item.tags.Name is defined and item.tags.Name)
+             else item.instance_id)
+          ]
+      }}
+  loop: >-
+    {{
+      aws_all_instances
+      | selectattr('state.name', 'equalto', 'stopped')
+      | list
+    }}
+  loop_control:
+    label: "{{ item.tags.Name if (item.tags is defined and item.tags.Name is defined and item.tags.Name) else item.instance_id }}"
+
+- name: Get active VMs from NetBox scoped to this tenant
+  set_fact:
+    active_vms_raw: >-
+      {{
+        lookup(
+          'netbox.netbox.nb_lookup',
+          'virtual-machines',
+          api_endpoint=netbox_url,
+          token=netbox_token,
+          api_filter='status=active tenant=' ~ current_netbox_tenant_slug
+        )
+      }}
+  retries: "{{ task_retries }}"
+  delay: "{{ task_delay }}"
+
+- name: Normalize active VMs into a usable list
+  set_fact:
+    active_vms: >-
+      {{
+        active_vms_raw
+        | map(attribute='value')
+        | list
+      }}
+
+- name: Find VMs that are stopped in AWS
+  set_fact:
+    vms_to_offline: >-
+      {{
+        active_vms
+        | selectattr('name', 'in', aws_stopped_names)
+        | list
+      }}
+
+- name: Find VMs that are terminated/missing in AWS
+  set_fact:
+    vms_to_decommission: >-
+      {{
+        active_vms
+        | selectattr('name', 'in',
+            active_vms | map(attribute='name') | list
+            | difference(aws_alive_names)
+            | difference(aws_stopped_names)
+          )
+        | list
+      }}
+
+- name: Mark stopped VMs as offline in NetBox
+  netbox.netbox.netbox_virtual_machine:
+    netbox_url: "{{ netbox_url }}"
+    netbox_token: "{{ netbox_token }}"
+    data:
+      name: "{{ item.name }}"
+      status: offline
+    state: present
+  loop: "{{ vms_to_offline }}"
+  loop_control:
+    label: "{{ item.name }}"
+  when: vms_to_offline | length > 0
+  retries: "{{ task_retries }}"
+  delay: "{{ task_delay }}"
+  until: result_offline is succeeded
+  register: result_offline
+  throttle: 1
+
+- name: Mark terminated/missing VMs as decommissioning in NetBox
+  netbox.netbox.netbox_virtual_machine:
+    netbox_url: "{{ netbox_url }}"
+    netbox_token: "{{ netbox_token }}"
+    data:
+      name: "{{ item.name }}"
+      status: decommissioning
+    state: present
+  loop: "{{ vms_to_decommission }}"
+  loop_control:
+    label: "{{ item.name }}"
+  when: vms_to_decommission | length > 0
+  retries: "{{ task_retries }}"
+  delay: "{{ task_delay }}"
+  until: result_decommission is succeeded
+  register: result_decommission
+  throttle: 1

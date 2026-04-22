@@ -1,0 +1,170 @@
+# NetBox Configuration
+netbox_url: "{{ lookup('env', 'NETBOX_URL') }}"
+netbox_token: "{{ lookup('env', 'NETBOX_TOKEN') }}"
+
+# Optional: Create VLANs for subnets
+netbox_create_vlans: false
+
+# Account to sync
+target_accounts:
+  - "all"
+
+# Task Retry and Delay Interval
+task_retries: 5
+task_delay: 10
+
+# Multi-Account Configuration
+aws_accounts:
+  - name: "VPMA-DEV-EXT-ACCOUNT"
+    profile: "vpdev"  # AWS CLI profile name
+    netbox_tenant: "VPMA-DEV-EXT-ACCOUNT"
+    netbox_tenant_slug: "vpma-dev-ext-account"
+    netbox_tags:
+      - "VP"
+      - "Dev"
+    regions:
+      - us-east-1
+
+  - name: "VPMA-PROD-EXT-ACCOUNT"
+    profile: "vpprod"
+    netbox_tenant: "VPMA-PROD-EXT-ACCOUNT"
+    netbox_tenant_slug: "vpma-prod-ext-account"
+    netbox_tags:
+      - "VP"
+      - "Prod"
+    regions:
+      - us-east-1
+
+  - name: "C1US-PROD-EXT-ACCOUNT"
+    profile: "c1prod"
+    netbox_tenant: "C1US-PROD-EXT-ACCOUNT"
+    netbox_tenant_slug: "c1us-prod-ext-account"
+    netbox_tags:
+      - "C1"
+      - "Prod"
+    regions:
+      - us-west-2
+
+  - name: "Z5SD-PROD-EXT-ACCOUNT-PRODUCTION"
+    profile: "z5prod"
+    netbox_tenant: "Z5SD-PROD-EXT-ACCOUNT-PRODUCTION"
+    netbox_tenant_slug: "z5sd-prod-ext-account-production"
+    netbox_tags:
+      - "Z5SD"
+      - "Prod"
+    regions:
+      - us-east-1
+
+  - name: "ZPSD-DEV-EXT-ACCOUNT-DEVELOPMENT"
+    profile: "zpsddev"
+    netbox_tenant: "ZPSD-DEV-EXT-ACCOUNT-DEVELOPMENT"
+    netbox_tenant_slug: "zpsd-dev-ext-account-development"
+    netbox_tags:
+      - "ZPSD"
+      - "Dev"
+    regions:
+      - us-east-1
+
+  - name: "ZPSD-PROD-EXT-ACCOUNT"
+    profile: "zpsdprod"
+    netbox_tenant: "ZPSD-PROD-EXT-ACCOUNT"
+    netbox_tenant_slug: "zpsd-prod-ext-account"
+    netbox_tags:
+      - "ZPSD"
+      - "Prod"
+    regions:
+      - us-east-1
+
+  - name: "ZPSD-PROD-EXT-ACCOUNT-CORP"
+    profile: "zpcorpprod"
+    netbox_tenant: "ZPSD-PROD-EXT-ACCOUNT-CORP"
+    netbox_tenant_slug: "zpsd-prod-ext-account-corp"
+    netbox_tags:
+      - "ZPSD"
+      - "Prod"
+      - "Corp"
+    regions:
+      - us-east-1
+
+  - name: "TPCA-PROD-EXT-ACCOUNT"
+    profile: "tpcaprod"
+    netbox_tenant: "TPCA-PROD-EXT-ACCOUNT"
+    netbox_tenant_slug: "tpca-prod-ext-account"
+    netbox_tags:
+      - "TPCA"
+      - "Prod"
+    regions:
+      - us-east-1
+
+  - name: "TPCA-STAGING-INT-ACCOUNT"
+    profile: "tpcastaging"
+    netbox_tenant: "TPCA-STAGING-INT-ACCOUNT"
+    netbox_tenant_slug: "tpca-staging-int-account"
+    netbox_tags:
+      - "TPCA"
+      - "staging"
+    regions:
+      - us-east-1
+
+  - name: "SZSS-PROD-EXT-ACCOUNT"
+    profile: "szssprod"
+    netbox_tenant: "SZSS-PROD-EXT-ACCOUNT"
+    netbox_tenant_slug: "szss-prod-ext-account"
+    netbox_tags:
+      - "SZSS"
+      - "Prod"
+    regions:
+      - us-west-2
+
+
+  - name: "LDBV-DEV-EXT-ACCOUNT"
+    profile: "ldbvdev"
+    netbox_tenant: "LDBV-DEV-EXT-ACCOUNT"
+    netbox_tenant_slug: "ldbv-dev-ext-account"
+    netbox_tags:
+      - "LDBV"
+      - "Dev"
+    regions:
+      - us-west-2
+
+# ============================================
+# NetBox Mappings for EC2 Instances
+# ============================================
+
+# AWS EC2 Instance State to NetBox VM Status Mapping
+netbox_instance_status_map:
+  pending: "planned"
+  running: "active"
+  stopping: "staged"
+  stopped: "offline"
+  shutting-down: "decommissioning"
+  terminated: "decommissioning"
+
+
+
+# AWS Region to NetBox Site Mapping
+# Define your NetBox sites that correspond to AWS regions
+#netbox_site_mapping:
+  AWS-VP-DEV:
+    us-east-1: "VP-DEV-US-EAST-1"
+  AWS-VP-PROD:
+    us-east-1: "VP-PROD-US-EAST-1"
+
+# ============================================
+# Additional Instance Sync Settings
+# ============================================
+
+# Default memory size (in MiB) if instance type lookup fails
+default_instance_memory: 1024
+
+# Default disk size (in MB) if volume info is unavailable
+default_instance_disk: 8192
+
+# Whether to sync stopped instances
+sync_stopped_instances: true
+
+# Whether to sync terminated instances
+sync_terminated_instances: false
+
+ansible_connection: local
+ansible_python_interpreter: /bin/python3.11

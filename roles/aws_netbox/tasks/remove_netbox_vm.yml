@@ -1,0 +1,29 @@
+---
+# tasks file for removevm
+- name: Get decommissioned VMs from NetBox
+  ansible.builtin.uri:
+    url: "{{ netbox_url }}/api/virtualization/virtual-machines/?status=decommissioning&limit=500"
+    method: GET
+    headers:
+      Authorization: "Token {{ netbox_token }}"
+      Content-Type: "application/json"
+    return_content: yes
+    status_code: 200
+  register: netbox_response
+
+- name: Normalize active VMs into a usable list
+  set_fact:
+    active_vms: "{{ netbox_response.json.results }}"
+
+- name: Remove decommissioned VMs from NetBox by ID
+  ansible.builtin.uri:
+    url: "{{ netbox_url }}/api/virtualization/virtual-machines/{{ item.id }}/"
+    method: DELETE
+    headers:
+      Authorization: "Token {{ netbox_token }}"
+      Content-Type: "application/json"
+    status_code: 204
+  loop: "{{ active_vms }}"
+  loop_control:
+    label: "{{ item.name }} (id={{ item.id }})"
+  when: active_vms | length > 0
