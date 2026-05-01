@@ -1,9 +1,10 @@
 ---
-- hosts: worker02.ms.com
+- name: Check user shell to test ansible connectivity
+  hosts: all
   become: true
   vars:
     users:
-      - ansiblessh
+      - ansibleawx
 
   tasks:
     - name: Check user details
