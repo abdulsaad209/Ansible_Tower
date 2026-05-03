@@ -1,0 +1,36 @@
+---
+
+- name: Add Wazuh repo (Debian-based)
+  apt_repository:
+    repo: "{{ wazuh_repo_debian }}"
+    state: present
+    filename: wazuh
+    validate_certs: no
+
+- name: Disable GPG check workaround
+  copy:
+    dest: /etc/apt/apt.conf.d/99insecure
+    content: |
+      Acquire::AllowInsecureRepositories "true";
+      Acquire::AllowDowngradeToInsecureRepositories "true";
+
+- name: Update apt cache
+  apt:
+    update_cache: yes
+
+- name: Install Wazuh agent
+  apt:
+    name: wazuh-agent
+    state: present
+
+- name: Configure manager
+  lineinfile:
+    path: /var/ossec/etc/ossec.conf
+    regexp: '<address>'
+    line: "<address>{{ wazuh_manager }}</address>"
+
+- name: Enable and start wazuh-agent
+  service:
+    name: wazuh-agent
+    enabled: yes
+    state: started

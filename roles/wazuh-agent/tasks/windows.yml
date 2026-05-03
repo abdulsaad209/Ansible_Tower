@@ -1,0 +1,18 @@
+---
+
+- name: Download Wazuh agent
+  win_get_url:
+    url: "{{ wazuh_repo_windows }}"
+    dest: C:\Temp\wazuh-agent.msi
+
+- name: Install Wazuh agent
+  win_package:
+    path: C:\Temp\wazuh-agent.msi
+    arguments: /q WAZUH_MANAGER="{{ wazuh_manager }}"
+    state: present
+
+- name: Start Wazuh service
+  win_service:
+    name: WazuhSvc
+    start_mode: auto
+    state: started

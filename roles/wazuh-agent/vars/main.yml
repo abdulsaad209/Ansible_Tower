@@ -1,0 +1,7 @@
+---
+wazuh_manager: "192.168.100.77"
+
+# Repos (you said you will provide)
+wazuh_repo_redhat: "https://packages.wazuh.com/4.x/yum/"
+wazuh_repo_debian: "deb https://packages.wazuh.com/4.x/apt/ stable main"
+wazuh_repo_windows: "https://packages.wazuh.com/4.x/windows/wazuh-agent.msi"

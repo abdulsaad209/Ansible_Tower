@@ -1,0 +1,26 @@
+---
+
+- name: Add Wazuh repo (RHEL-based)
+  yum_repository:
+    name: wazuh
+    description: Wazuh repository
+    baseurl: "{{ wazuh_repo_redhat }}"
+    gpgcheck: no
+    enabled: yes
+
+- name: Install Wazuh agent
+  yum:
+    name: wazuh-agent
+    state: present
+
+- name: Configure Wazuh manager
+  lineinfile:
+    path: /var/ossec/etc/ossec.conf
+    regexp: '<address>'
+    line: "<address>{{ wazuh_manager }}</address>"
+
+- name: Enable and start wazuh-agent
+  service:
+    name: wazuh-agent
+    enabled: yes
+    state: started
