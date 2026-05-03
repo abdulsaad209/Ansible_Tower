@@ -1,5 +1,6 @@
 ---
 wazuh_manager: "192.168.100.77"
+wazuh_agent_version: "4.12.0"
 
 # Repos (you said you will provide)
 wazuh_repo_redhat: "https://packages.wazuh.com/4.x/yum/"

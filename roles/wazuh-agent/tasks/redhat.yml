@@ -3,7 +3,7 @@
 # Check if Wazuh Agent is already installed to avoid unnecessary work
 - name: Check if Wazuh Agent is already installed
   ansible.builtin.stat:
-    path: /var/ossec/bin/wazuh-agent
+    path: /var/ossec/bin/wazuh-agentd
   register: wazuh_agent_status
 
 # Add Wazuh repo (generic)
@@ -37,7 +37,7 @@
 # Install Wazuh agent
 - name: Install Wazuh agent
   package:
-    name: wazuh-agent
+    name: "wazuh-agent-{{ wazuh_agent_version }}"
     state: present
   when: not wazuh_agent_status.stat.exists
 
