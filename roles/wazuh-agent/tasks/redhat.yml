@@ -1,26 +1,74 @@
 ---
 
-- name: Add Wazuh repo (RHEL-based)
-  yum_repository:
-    name: wazuh
-    description: Wazuh repository
-    baseurl: "{{ wazuh_repo_redhat }}"
-    gpgcheck: no
-    enabled: yes
+# Check if Wazuh Agent is already installed to avoid unnecessary work
+- name: Check if Wazuh Agent is already installed
+  ansible.builtin.stat:
+    path: /var/ossec/bin/wazuh-agent
+  register: wazuh_agent_status
 
+# Add Wazuh repo (generic)
+- name: Add Wazuh repo
+  copy:
+    dest: /etc/yum.repos.d/wazuh.repo
+    content: |
+      [wazuh]
+      gpgcheck=0
+      enabled=1
+      name=EL-$releasever - Wazuh
+      baseurl={{ wazuh_repo_redhat }}
+  when: not wazuh_agent_status.stat.exists
+
+# Set protect for EL <= 8
+- name: Set protect=1 for EL <= 8
+  lineinfile:
+    path: /etc/yum.repos.d/wazuh.repo
+    line: "protect=1"
+    insertafter: "^baseurl="
+  when: ansible_distribution_major_version | int <= 8
+
+# Set priority for EL >= 9
+- name: Set priority=1 for EL >= 9
+  lineinfile:
+    path: /etc/yum.repos.d/wazuh.repo
+    line: "priority=1"
+    insertafter: "^baseurl="
+  when: ansible_distribution_major_version | int >= 9
+
+# Install Wazuh agent
 - name: Install Wazuh agent
-  yum:
+  package:
     name: wazuh-agent
     state: present
+  when: not wazuh_agent_status.stat.exists
 
+# Disable repo after installation (Avoid Auto Update)
+- name: Disable Wazuh repo after install
+  replace:
+    path: /etc/yum.repos.d/wazuh.repo
+    regexp: '^enabled=1'
+    replace: 'enabled=0'
+
+# Configure Wazuh manager
 - name: Configure Wazuh manager
   lineinfile:
     path: /var/ossec/etc/ossec.conf
     regexp: '<address>'
     line: "<address>{{ wazuh_manager }}</address>"
 
-- name: Enable and start wazuh-agent
+# Service handling (RHEL6 vs newer)
+# CentOS/RHEL 6 (SysV init)
+- name: Enable Wazuh agent (RHEL6)
+  command: chkconfig --add wazuh-agent
+  when: ansible_distribution_major_version | int == 6
+
+- name: Start Wazuh agent (RHEL6)
+  command: service wazuh-agent start
+  when: ansible_distribution_major_version | int == 6
+
+# RHEL7+ (systemd)
+- name: Enable and start Wazuh agent (RHEL7+)
   service:
     name: wazuh-agent
     enabled: yes
     state: started
+  when: ansible_distribution_major_version | int >= 7
