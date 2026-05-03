@@ -1,12 +1,12 @@
 ---
 
-# 1. Check if Wazuh Agent is already installed
+# Check if Wazuh Agent is already installed
 - name: Check if Wazuh Agent is already installed
   stat:
     path: /var/ossec/bin/wazuh-agentd
   register: wazuh_agent_status
 
-# 2. Install required packages for old Debian (7/8)
+# Install required packages for old Debian (7/8)
 - name: Install prerequisites for old Debian
   apt:
     name:
@@ -16,42 +16,54 @@
     update_cache: yes
   when: ansible_distribution_major_version | int <= 8
 
-# 3. Add Wazuh repo for Debian >= 9 (modern method)
+# Import GPG key (Debian >= 9)
+- name: Import Wazuh GPG key (Debian >= 9)
+  shell: |
+    curl -s https://packages.wazuh.com/key/GPG-KEY-WAZUH | \
+    gpg --no-default-keyring \
+        --keyring gnupg-ring:/usr/share/keyrings/wazuh.gpg \
+        --import
+    chmod 644 /usr/share/keyrings/wazuh.gpg
+  args:
+    creates: /usr/share/keyrings/wazuh.gpg
+  when:
+    - ansible_distribution_major_version | int >= 9
+    - not wazuh_agent_status.stat.exists
+
+# Add repo for Debian >= 9
 - name: Add Wazuh repo (Debian >= 9)
   copy:
     dest: /etc/apt/sources.list.d/wazuh.list
     content: |
-      deb [trusted=yes] {{ wazuh_repo_debian }} stable main
+      deb [signed-by=/usr/share/keyrings/wazuh.gpg] {{ wazuh_repo_debian }} stable main
   when:
-    - ansible_distribution == "Debian"
     - ansible_distribution_major_version | int >= 9
     - not wazuh_agent_status.stat.exists
 
-# 4. Add Wazuh repo for Debian 7–8 (legacy method)
+# Import GPG key (Debian 7/8)
+- name: Import Wazuh GPG key (Debian 7/8)
+  shell: |
+    curl -s https://packages.wazuh.com/key/GPG-KEY-WAZUH | apt-key add -
+  when:
+    - ansible_distribution_major_version | int <= 8
+    - not wazuh_agent_status.stat.exists
+
+# Add repo (Debian 7/8)
 - name: Add Wazuh repo (Debian 7/8)
   copy:
     dest: /etc/apt/sources.list.d/wazuh.list
     content: |
       deb {{ wazuh_repo_debian }} stable main
   when:
-    - ansible_distribution == "Debian"
     - ansible_distribution_major_version | int <= 8
     - not wazuh_agent_status.stat.exists
 
-# 5. Disable GPG check globally
-- name: Disable APT GPG checks
-  copy:
-    dest: /etc/apt/apt.conf.d/99insecure
-    content: |
-      Acquire::AllowInsecureRepositories "true";
-      Acquire::AllowDowngradeToInsecureRepositories "true";
-
-# 6. Update apt cache
+# Update apt cache
 - name: Update apt cache
   apt:
     update_cache: yes
 
-# 7. Install Wazuh agent 
+# Install Wazuh agent 
 - name: Install Wazuh agent
   apt:
     name: "wazuh-agent={{ wazuh_agent_version }}"
@@ -61,16 +73,26 @@
     WAZUH_AGENT_GROUP: "{{ wazuh_agent_groups }}"
   when: not wazuh_agent_status.stat.exists
 
-# 8. Disable repo after install (prevent auto-updates)
+# Disable repo after install (prevent auto-updates)
 - name: Disable Wazuh repo after install
   replace:
     path: /etc/apt/sources.list.d/wazuh.list
     regexp: '^deb'
     replace: '#deb'
 
-# 9. Enable and start service
+# Debian >= 8 use systemd
 - name: Enable and start wazuh-agent
   service:
     name: wazuh-agent
     enabled: yes
     state: started
+  when: ansible_distribution_major_version | int >= 8
+
+# Debian 7 → SysV init
+- name: Enable wazuh-agent (SysV)
+  command: update-rc.d wazuh-agent defaults
+  when: ansible_distribution_major_version | int < 8
+
+- name: Start wazuh-agent (SysV)
+  command: service wazuh-agent start
+  when: ansible_distribution_major_version | int < 8
