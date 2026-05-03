@@ -39,6 +39,9 @@
   package:
     name: "wazuh-agent-{{ wazuh_agent_version }}"
     state: present
+  environment:
+    WAZUH_MANAGER: "{{ wazuh_manager_ip }}"
+    WAZUH_AGENT_GROUP: "{{ wazuh_agent_groups }}"
   when: not wazuh_agent_status.stat.exists
 
 # Disable repo after installation (Avoid Auto Update)
@@ -53,7 +56,7 @@
   lineinfile:
     path: /var/ossec/etc/ossec.conf
     regexp: '<address>'
-    line: "<address>{{ wazuh_manager }}</address>"
+    line: "<address>{{ wazuh_manager_ip }}</address>"
 
 # Service handling (RHEL6 vs newer)
 # CentOS/RHEL 6 (SysV init)
