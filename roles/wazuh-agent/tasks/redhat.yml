@@ -52,11 +52,11 @@
     replace: 'enabled=0'
 
 # Configure Wazuh manager
-- name: Configure Wazuh manager
-  lineinfile:
-    path: /var/ossec/etc/ossec.conf
-    regexp: '<address>'
-    line: "<address>{{ wazuh_manager_ip }}</address>"
+# - name: Configure Wazuh manager
+#   lineinfile:
+#     path: /var/ossec/etc/ossec.conf
+#     regexp: '<address>'
+#     line: "<address>{{ wazuh_manager_ip }}</address>"
 
 # Service handling (RHEL6 vs newer)
 # CentOS/RHEL 6 (SysV init)
