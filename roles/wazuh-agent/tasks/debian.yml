@@ -1,34 +1,74 @@
 ---
 
-- name: Add Wazuh repo (Debian-based)
-  apt_repository:
-    repo: "{{ wazuh_repo_debian }}"
-    state: present
-    filename: wazuh
-    validate_certs: no
+# 1. Check if Wazuh Agent is already installed
+- name: Check if Wazuh Agent is already installed
+  stat:
+    path: /var/ossec/bin/wazuh-agentd
+  register: wazuh_agent_status
 
-- name: Disable GPG check workaround
+# 2. Install required packages for old Debian (7/8)
+- name: Install prerequisites for old Debian
+  apt:
+    name:
+      - gnupg
+      - apt-transport-https
+    state: present
+    update_cache: yes
+  when: ansible_distribution_major_version | int <= 8
+
+# 3. Add Wazuh repo for Debian >= 9 (modern method)
+- name: Add Wazuh repo (Debian >= 9)
+  copy:
+    dest: /etc/apt/sources.list.d/wazuh.list
+    content: |
+      deb [trusted=yes] {{ wazuh_repo_debian }} stable main
+  when:
+    - ansible_distribution == "Debian"
+    - ansible_distribution_major_version | int >= 9
+    - not wazuh_agent_status.stat.exists
+
+# 4. Add Wazuh repo for Debian 7–8 (legacy method)
+- name: Add Wazuh repo (Debian 7/8)
+  copy:
+    dest: /etc/apt/sources.list.d/wazuh.list
+    content: |
+      deb {{ wazuh_repo_debian }} stable main
+  when:
+    - ansible_distribution == "Debian"
+    - ansible_distribution_major_version | int <= 8
+    - not wazuh_agent_status.stat.exists
+
+# 5. Disable GPG check globally
+- name: Disable APT GPG checks
   copy:
     dest: /etc/apt/apt.conf.d/99insecure
     content: |
       Acquire::AllowInsecureRepositories "true";
       Acquire::AllowDowngradeToInsecureRepositories "true";
 
+# 6. Update apt cache
 - name: Update apt cache
   apt:
     update_cache: yes
 
+# 7. Install Wazuh agent 
 - name: Install Wazuh agent
   apt:
-    name: wazuh-agent
+    name: "wazuh-agent={{ wazuh_agent_version }}"
     state: present
+  environment:
+    WAZUH_MANAGER: "{{ wazuh_manager_ip }}"
+    WAZUH_AGENT_GROUP: "{{ wazuh_agent_groups }}"
+  when: not wazuh_agent_status.stat.exists
 
-- name: Configure manager
-  lineinfile:
-    path: /var/ossec/etc/ossec.conf
-    regexp: '<address>'
-    line: "<address>{{ wazuh_manager }}</address>"
+# 8. Disable repo after install (prevent auto-updates)
+- name: Disable Wazuh repo after install
+  replace:
+    path: /etc/apt/sources.list.d/wazuh.list
+    regexp: '^deb'
+    replace: '#deb'
 
+# 9. Enable and start service
 - name: Enable and start wazuh-agent
   service:
     name: wazuh-agent
