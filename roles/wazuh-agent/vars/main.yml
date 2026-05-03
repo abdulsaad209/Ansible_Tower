@@ -1,6 +1,6 @@
 ---
 wazuh_manager_ip: "192.168.100.77"
-wazuh_agent_groups: "SZCoders-PROD"
+wazuh_agent_groups: "default"
 wazuh_agent_version: "4.12.0"
 
 # Repos

@@ -1,0 +1,97 @@
+---
+
+# Check if Wazuh Agent is already installed
+- name: Check if Wazuh Agent is already installed
+  stat:
+    path: /var/ossec/bin/wazuh-agentd
+  register: wazuh_agent_status
+
+- name: Install prerequisites for old Ubuntu
+  apt:
+    name:
+      - gnupg
+      - apt-transport-https
+    state: present
+    update_cache: yes
+  when:
+    - ansible_distribution_major_version | int <= 14
+
+# Import GPG key
+- name: Import Wazuh GPG key (Ubuntu >= 16)
+  shell: |
+    curl -s https://packages.wazuh.com/key/GPG-KEY-WAZUH | \
+    gpg --no-default-keyring \
+        --keyring gnupg-ring:/usr/share/keyrings/wazuh.gpg \
+        --import
+    chmod 644 /usr/share/keyrings/wazuh.gpg
+  args:
+    creates: /usr/share/keyrings/wazuh.gpg
+  when:
+    - ansible_distribution_major_version | int >= 16
+    - not wazuh_agent_status.stat.exists
+
+# Add repo
+- name: Add Wazuh repo (Ubuntu >= 16)
+  copy:
+    dest: /etc/apt/sources.list.d/wazuh.list
+    content: |
+      deb [signed-by=/usr/share/keyrings/wazuh.gpg] {{ wazuh_repo_debian }} stable main
+  when:
+    - ansible_distribution_major_version | int >= 16
+    - not wazuh_agent_status.stat.exists
+
+# Import GPG key (legacy)
+- name: Import Wazuh GPG key (Ubuntu 12/14)
+  shell: |
+    curl -s https://packages.wazuh.com/key/GPG-KEY-WAZUH | apt-key add -
+  when:
+    - ansible_distribution_major_version | int <= 14
+    - not wazuh_agent_status.stat.exists
+
+# Add repo (legacy)
+- name: Add Wazuh repo (Ubuntu 12/14)
+  copy:
+    dest: /etc/apt/sources.list.d/wazuh.list
+    content: |
+      deb {{ wazuh_repo_debian }} stable main
+  when:
+    - ansible_distribution_major_version | int <= 14
+    - not wazuh_agent_status.stat.exists
+
+# Installation of Wazuh agent
+- name: Update apt cache
+  apt:
+    update_cache: yes
+
+- name: Install Wazuh agent
+  apt:
+    name: "wazuh-agent={{ wazuh_agent_version }}"
+    state: present
+  environment:
+    WAZUH_MANAGER: "{{ wazuh_manager_ip }}"
+    WAZUH_AGENT_GROUP: "{{ wazuh_agent_groups }}"
+  when: not wazuh_agent_status.stat.exists
+
+# Disable repo (optional)
+- name: Disable Wazuh repo after install
+  replace:
+    path: /etc/apt/sources.list.d/wazuh.list
+    regexp: '^deb'
+    replace: '#deb'
+
+# Ubuntu systemd (safe rule: >=16)
+- name: Enable and start wazuh-agent
+  service:
+    name: wazuh-agent
+    enabled: yes
+    state: started
+  when: ansible_distribution_major_version | int >= 16
+
+# Ubuntu 12/14 SysV / Upstart
+- name: Enable wazuh-agent (legacy)
+  command: update-rc.d wazuh-agent defaults
+  when: ansible_distribution_major_version | int <= 14
+
+- name: Start wazuh-agent (legacy)
+  command: service wazuh-agent start
+  when: ansible_distribution_major_version | int <= 14
