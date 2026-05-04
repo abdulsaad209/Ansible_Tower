@@ -5,5 +5,5 @@ wazuh_agent_version: "4.12.0"
 
 # Repos
 wazuh_repo_redhat: "https://packages.wazuh.com/4.x/yum/"
-wazuh_repo_debian: "deb https://packages.wazuh.com/4.x/apt/ stable main"
+wazuh_repo_debian: "https://packages.wazuh.com/4.x/apt/ stable main"
 wazuh_repo_windows: "https://packages.wazuh.com/4.x/windows/wazuh-agent.msi"
