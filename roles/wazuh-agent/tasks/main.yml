@@ -25,7 +25,8 @@
 - name: Include Ubuntu tasks (Ubuntu >= 12)
   include_tasks: ubuntu.yml
   when:
-    - ansible_distribution == "Ubuntu"
+    - ansible_os_family == "Debian"
+    - "'Ubuntu' in ansible_distribution"
     - ansible_distribution_major_version | int >= 12
 
 # Windows (no version restriction here)
