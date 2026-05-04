@@ -70,7 +70,7 @@
 
 - name: Install Wazuh agent
   apt:
-    name: "wazuh-agent={{ wazuh_agent_version }}"
+    name: "wazuh-agent={{ wazuh_agent_version }}-1"
     state: present
   environment:
     WAZUH_MANAGER: "{{ wazuh_manager_ip }}"
