@@ -26,7 +26,9 @@
 
 # Import GPG key
 - name: Import Wazuh GPG key (Ubuntu >= 16)
-  command: curl -s https://packages.wazuh.com/key/GPG-KEY-WAZUH | gpg --no-default-keyring --keyring gnupg-ring:/usr/share/keyrings/wazuh.gpg --import && chmod 644 /usr/share/keyrings/wazuh.gpg
+  shell: |
+    curl -s https://packages.wazuh.com/key/GPG-KEY-WAZUH | gpg --dearmor -o /usr/share/keyrings/wazuh.gpg
+    chmod 644 /usr/share/keyrings/wazuh.gpg
   args:
     creates: /usr/share/keyrings/wazuh.gpg
   when:
